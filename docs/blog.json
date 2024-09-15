@@ -1,7 +1,0 @@
-{
-  "url_title": "WEBSITE-FINALLY-UP", // the title you provide while creating a new blog, this appears in url
-  "title": "Lorem ipsum dolor sit amet", // main title of blog
-  "sub_title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", // sub-title of blog
-  "top_image": "https://images.unsplash.com/photo-1553748024-d1b27fb3f960?w=1450", // main image of blog
-  "visible": true // don't worry about this
-}
