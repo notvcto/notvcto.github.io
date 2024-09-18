@@ -52,7 +52,7 @@ export default function Meta() {
       <meta name="og:site_name" content="vcto's Personal Portfolio" />
       <meta name="og:locale" content="en_IN" />
       <meta name="og:type" content="website" />
-      <link rel="icon" href="images/logos/fevicon.svg" />
+      <link rel="icon" href="images/logos/fevicon.png" />
       <link rel="apple-touch-icon" href="images/logos/logo.png" />
       <link
         rel="preload"
