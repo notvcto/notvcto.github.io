@@ -340,7 +340,7 @@ function Projects() {
     },
     {
       name: "omen",
-      date: "Nov 2021",
+      date: "Sep 2024",
       link: "https://github.com/notvcto/omen",
       description: ["Website for my Discord bot!"],
       domains: ["javascript", "next.js"],
