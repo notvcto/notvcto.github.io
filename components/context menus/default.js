@@ -52,7 +52,7 @@ function DefaultMenu(props) {
       </a>
       <a
         rel="noreferrer noopener"
-        href="mailto:vctoispro@gmail.com"
+        href="mailto:contact@notvc.to"
         target="_blank"
         className="w-full block cursor-default py-0.5 hover:bg-ub-warm-grey hover:bg-opacity-20 mb-1.5"
       >
