@@ -18,6 +18,7 @@ class MyDocument extends Document {
           data-description="Support me on Buy me a coffee!"
           data-message=""
           data-color="#FF813F"
+          data-bg="#000000" 
           data-position="Right"
           data-x_margin="18"
           data-y_margin="18"
