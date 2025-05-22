@@ -11,17 +11,17 @@ class MyDocument extends Document {
       <Html lang="en">
         <Head />
         <script
-          data-name="BMC-Widget"
-          data-cfasync="false"
-          src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js"
-          data-id="vcto"
-          data-description="Support me on Buy me a coffee!"
-          data-message=""
-          data-color="#FF813F"
-          data-bg="#000000" 
-          data-position="Right"
-          data-x_margin="18"
-          data-y_margin="18"
+          type="text/javascript"
+          src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+          data-name="bmc-button"
+          data-slug="vcto"
+          data-color="#000000"
+          data-emoji=""
+          data-font="Cookie"
+          data-text="Buy me a coffee"
+          data-outline-color="#ffffff"
+          data-font-color="#ffffff"
+          data-coffee-color="#FFDD00"
         ></script>
         <body>
           <Main />
