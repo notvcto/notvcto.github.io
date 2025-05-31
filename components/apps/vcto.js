@@ -348,11 +348,19 @@ function Projects() {
 
     {
       name: "GardenBot",
-      date: "Sep 2024",
+      date: "May 2025",
       link: "https://github.com/notvcto/GardenBot",
       description: [
         "Discord Bot with an integrated API to check for the Grow a Garden stock.",
       ],
+      domains: ["javascript"],
+    },
+
+    {
+      name: "thorn-bootstrap",
+      date: "May 2025",
+      link: "https://github.com/notvcto/thorn-bootstrap",
+      description: ["Bootstrap for my all new programming language, Thorn"],
       domains: ["javascript"],
     },
   ];
