@@ -345,6 +345,16 @@ function Projects() {
       description: ["Website for my Discord bot!"],
       domains: ["javascript", "next.js"],
     },
+
+    {
+      name: "GardenBot",
+      date: "Sep 2024",
+      link: "https://github.com/notvcto/GardenBot",
+      description: [
+        "Discord Bot with an integrated API to check for the Grow a Garden stock.",
+      ],
+      domains: ["javascript"],
+    },
   ];
 
   const tag_colors = {
