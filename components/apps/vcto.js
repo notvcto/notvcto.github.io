@@ -361,7 +361,7 @@ function Projects() {
       date: "May 2025",
       link: "https://github.com/notvcto/thorn-bootstrap",
       description: ["Bootstrap for my all new programming language, Thorn"],
-      domains: ["javascript"],
+      domains: ["thorn", "python"],
     },
   ];
 
