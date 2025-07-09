@@ -20,8 +20,4 @@ export default VoidNet;
 
 export const displayVoidNet = () => {
   return <VoidNet> </VoidNet>;
-<<<<<<< Updated upstream
 };
-=======
-};
->>>>>>> Stashed changes
