@@ -14,6 +14,6 @@ loading="lazy">
 }
 
 export const displaySpotify = () => {
-  <Spotify> </Spotify>;
+  return <Spotify> </Spotify>;
 };
 
