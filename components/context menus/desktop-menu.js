@@ -5,9 +5,13 @@ function DesktopMenu(props) {
     const [isFullScreen, setIsFullScreen] = useState(false)
 
     useEffect(() => {
-        document.addEventListener('fullscreenchange', checkFullScreen);
+        if (typeof document !== 'undefined') {
+            document.addEventListener('fullscreenchange', checkFullScreen);
+        }
         return () => {
-            document.removeEventListener('fullscreenchange', checkFullScreen);
+            if (typeof document !== 'undefined') {
+                document.removeEventListener('fullscreenchange', checkFullScreen);
+            }
         };
     }, [])
 
@@ -21,7 +25,7 @@ function DesktopMenu(props) {
     }
 
     const checkFullScreen = () => {
-        if (document.fullscreenElement) {
+        if (typeof document !== 'undefined' && document.fullscreenElement) {
             setIsFullScreen(true)
         } else {
             setIsFullScreen(false)
@@ -31,10 +35,12 @@ function DesktopMenu(props) {
     const goFullScreen = () => {
         // make website full screen
         try {
-            if (document.fullscreenElement) {
-                document.exitFullscreen()
-            } else {
-                document.documentElement.requestFullscreen()
+            if (typeof document !== 'undefined') {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen()
+                } else {
+                    document.documentElement.requestFullscreen()
+                }
             }
         }
         catch (e) {

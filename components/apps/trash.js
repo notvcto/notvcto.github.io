@@ -43,9 +43,11 @@ export class Trash extends Component {
 
     componentDidMount() {
         // get user preference from local-storage
-        let wasEmpty = localStorage.getItem("trash-empty");
-        if (wasEmpty !== null && wasEmpty !== undefined) {
-            if (wasEmpty === "true") this.setState({ empty: true });
+        if (typeof window !== 'undefined') {
+            let wasEmpty = localStorage.getItem("trash-empty");
+            if (wasEmpty !== null && wasEmpty !== undefined) {
+                if (wasEmpty === "true") this.setState({ empty: true });
+            }
         }
     }
 
@@ -58,7 +60,9 @@ export class Trash extends Component {
 
     emptyTrash = () => {
         this.setState({ empty: true });
-        localStorage.setItem("trash-empty", true);
+        if (typeof window !== 'undefined') {
+            localStorage.setItem("trash-empty", true);
+        }
     };
 
     emptyScreen = () => {

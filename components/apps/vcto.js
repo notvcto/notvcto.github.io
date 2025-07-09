@@ -20,20 +20,27 @@ export class AboutVcto extends Component {
       resume: <Resume />,
     };
 
-    let lastVisitedScreen = localStorage.getItem("about-section");
-    if (lastVisitedScreen === null || lastVisitedScreen === undefined) {
-      lastVisitedScreen = "about";
+    let lastVisitedScreen = "about";
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem("about-section");
+      if (stored !== null && stored !== undefined) {
+        lastVisitedScreen = stored;
+      }
     }
 
     // focus last visited screen
-    this.changeScreen(document.getElementById(lastVisitedScreen));
+    if (typeof document !== 'undefined') {
+      this.changeScreen(document.getElementById(lastVisitedScreen));
+    }
   }
 
   changeScreen = (e) => {
     const screen = e.id || e.target.id;
 
     // store this state
-    localStorage.setItem("about-section", screen);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("about-section", screen);
+    }
 
     // google analytics
     ReactGA.send({
