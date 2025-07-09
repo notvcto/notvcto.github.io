@@ -31,17 +31,21 @@ export class Window extends Component {
         ReactGA.send({ hitType: "pageview", page: `/${this.id}`, title: "Custom Title" });
 
         // on window resize, resize boundary
-        window.addEventListener('resize', this.resizeBoundries);
+        if (typeof window !== 'undefined') {
+            window.addEventListener('resize', this.resizeBoundries);
+        }
     }
 
     componentWillUnmount() {
         ReactGA.send({ hitType: "pageview", page: "/desktop", title: "Custom Title" });
 
-        window.removeEventListener('resize', this.resizeBoundries);
+        if (typeof window !== 'undefined') {
+            window.removeEventListener('resize', this.resizeBoundries);
+        }
     }
 
     setDefaultWindowDimenstion = () => {
-        if (window.innerWidth < 640) {
+        if (typeof window !== 'undefined' && window.innerWidth < 640) {
             this.setState({ height: 60, width: 85 }, this.resizeBoundries);
         }
         else {
@@ -52,11 +56,11 @@ export class Window extends Component {
     resizeBoundries = () => {
         this.setState({
             parentSize: {
-                height: window.innerHeight //parent height
+                height: (typeof window !== 'undefined' ? window.innerHeight : 800) //parent height
                     - (window.innerHeight * (this.state.height / 100.0))  // this window's height
                     - 28 // some padding
                 ,
-                width: window.innerWidth // parent width
+                width: (typeof window !== 'undefined' ? window.innerWidth : 1200) // parent width
                     - (window.innerWidth * (this.state.width / 100.0)) //this window's width
             }
         });
@@ -83,20 +87,28 @@ export class Window extends Component {
     }
 
     setWinowsPosition = () => {
-        var r = document.querySelector("#" + this.id);
-        var rect = r.getBoundingClientRect();
-        r.style.setProperty('--window-transform-x', rect.x.toFixed(1).toString() + "px");
-        r.style.setProperty('--window-transform-y', (rect.y.toFixed(1) - 32).toString() + "px");
+        if (typeof document !== 'undefined') {
+            var r = document.querySelector("#" + this.id);
+            if (r) {
+                var rect = r.getBoundingClientRect();
+                r.style.setProperty('--window-transform-x', rect.x.toFixed(1).toString() + "px");
+                r.style.setProperty('--window-transform-y', (rect.y.toFixed(1) - 32).toString() + "px");
+            }
+        }
     }
 
     checkOverlap = () => {
-        var r = document.querySelector("#" + this.id);
-        var rect = r.getBoundingClientRect();
-        if (rect.x.toFixed(1) < 50) { // if this window overlapps with SideBar
-            this.props.hideSideBar(this.id, true);
-        }
-        else {
-            this.props.hideSideBar(this.id, false);
+        if (typeof document !== 'undefined') {
+            var r = document.querySelector("#" + this.id);
+            if (r) {
+                var rect = r.getBoundingClientRect();
+                if (rect.x.toFixed(1) < 50) { // if this window overlapps with SideBar
+                    this.props.hideSideBar(this.id, true);
+                }
+                else {
+                    this.props.hideSideBar(this.id, false);
+                }
+            }
         }
     }
 
@@ -111,27 +123,37 @@ export class Window extends Component {
         }
         this.setWinowsPosition();
         // get corrosponding sidebar app's position
-        var r = document.querySelector("#sidebar-" + this.id);
-        var sidebBarApp = r.getBoundingClientRect();
+        if (typeof document !== 'undefined') {
+            var r = document.querySelector("#sidebar-" + this.id);
+            if (r) {
+                var sidebBarApp = r.getBoundingClientRect();
 
-        r = document.querySelector("#" + this.id);
-        // translate window to that position
-        r.style.transform = `translate(${posx}px,${sidebBarApp.y.toFixed(1) - 240}px) scale(0.2)`;
+                r = document.querySelector("#" + this.id);
+                if (r) {
+                    // translate window to that position
+                    r.style.transform = `translate(${posx}px,${sidebBarApp.y.toFixed(1) - 240}px) scale(0.2)`;
+                }
+            }
+        }
         this.props.hasMinimised(this.id);
     }
 
     restoreWindow = () => {
-        var r = document.querySelector("#" + this.id);
-        this.setDefaultWindowDimenstion();
-        // get previous position
-        let posx = r.style.getPropertyValue("--window-transform-x");
-        let posy = r.style.getPropertyValue("--window-transform-y");
+        if (typeof document !== 'undefined') {
+            var r = document.querySelector("#" + this.id);
+            if (r) {
+                this.setDefaultWindowDimenstion();
+                // get previous position
+                let posx = r.style.getPropertyValue("--window-transform-x");
+                let posy = r.style.getPropertyValue("--window-transform-y");
 
-        r.style.transform = `translate(${posx},${posy})`;
-        setTimeout(() => {
-            this.setState({ maximized: false });
-            this.checkOverlap();
-        }, 300);
+                r.style.transform = `translate(${posx},${posy})`;
+                setTimeout(() => {
+                    this.setState({ maximized: false });
+                    this.checkOverlap();
+                }, 300);
+            }
+        }
     }
 
     maximizeWindow = () => {
@@ -140,12 +162,16 @@ export class Window extends Component {
         }
         else {
             this.focusWindow();
-            var r = document.querySelector("#" + this.id);
-            this.setWinowsPosition();
-            // translate window to maximize position
-            r.style.transform = `translate(-1pt,-2pt)`;
-            this.setState({ maximized: true, height: 96.3, width: 100.2 });
-            this.props.hideSideBar(this.id, true);
+            if (typeof document !== 'undefined') {
+                var r = document.querySelector("#" + this.id);
+                if (r) {
+                    this.setWinowsPosition();
+                    // translate window to maximize position
+                    r.style.transform = `translate(-1pt,-2pt)`;
+                    this.setState({ maximized: true, height: 96.3, width: 100.2 });
+                    this.props.hideSideBar(this.id, true);
+                }
+            }
         }
     }
 

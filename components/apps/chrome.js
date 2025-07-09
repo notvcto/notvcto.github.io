@@ -11,23 +11,29 @@ export class Chrome extends Component {
   }
 
   componentDidMount() {
-    let lastVisitedUrl = localStorage.getItem("chrome-url");
-    let lastDisplayedUrl = localStorage.getItem("chrome-display-url");
-    if (lastVisitedUrl !== null && lastVisitedUrl !== undefined) {
-      this.setState(
-        { url: lastVisitedUrl, display_url: lastDisplayedUrl },
-        this.refreshChrome
-      );
+    if (typeof window !== 'undefined') {
+      let lastVisitedUrl = localStorage.getItem("chrome-url");
+      let lastDisplayedUrl = localStorage.getItem("chrome-display-url");
+      if (lastVisitedUrl !== null && lastVisitedUrl !== undefined) {
+        this.setState(
+          { url: lastVisitedUrl, display_url: lastDisplayedUrl },
+          this.refreshChrome
+        );
+      }
     }
   }
 
   storeVisitedUrl = (url, display_url) => {
-    localStorage.setItem("chrome-url", url);
-    localStorage.setItem("chrome-display-url", display_url);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("chrome-url", url);
+      localStorage.setItem("chrome-display-url", display_url);
+    }
   };
 
   refreshChrome = () => {
-    document.getElementById("chrome-screen").src += "";
+    if (typeof document !== 'undefined') {
+      document.getElementById("chrome-screen").src += "";
+    }
   };
 
   goToHome = () => {
@@ -59,7 +65,9 @@ export class Chrome extends Component {
       }
       this.setState({ url, display_url: url });
       this.storeVisitedUrl(url, display_url);
-      document.getElementById("chrome-url-bar").blur();
+      if (typeof document !== 'undefined') {
+        document.getElementById("chrome-url-bar").blur();
+      }
     }
   };
 
