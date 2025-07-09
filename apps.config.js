@@ -7,6 +7,8 @@ import { displayTrash } from "./components/apps/trash";
 import { displayGedit } from "./components/apps/gedit";
 import { displayAboutVcto } from "./components/apps/vcto";
 import { displayTerminalCalc } from "./components/apps/calc";
+import { displayVoidNet } from "./components/apps/voidnet";
+import { displayVSH } from "./components/apps/vsh";
 
 const apps = [
   {
@@ -17,6 +19,24 @@ const apps = [
     favourite: true,
     desktop_shortcut: true,
     screen: displayChrome,
+  },
+  {
+    id: "voidnet",
+    title: "voidnet.ink",
+    icon: "./themes/Yaru/apps/chrome.png",
+    disabled: false,
+    favourite: false,
+    desktop_shortcut: true,
+    screen: displayVoidNet,
+  },
+  {
+    id: "vsh",
+    title: "vsh.ink",
+    icon: "./themes/Yaru/apps/chrome.png",
+    disabled: false,
+    favourite: false,
+    desktop_shortcut: true,
+    screen: displayVSH,
   },
   {
     id: "calc",
