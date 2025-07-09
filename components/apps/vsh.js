@@ -20,8 +20,4 @@ export default VSH;
 
 export const displayVSH = () => {
   return <VSH> </VSH>;
-<<<<<<< Updated upstream
 };
-=======
-};
->>>>>>> Stashed changes

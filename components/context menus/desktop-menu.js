@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 
 function DesktopMenu(props) {
-  const [isFullScreen, setIsFullScreen] = useState(false);
 
-<<<<<<< Updated upstream
     const [isFullScreen, setIsFullScreen] = useState(false)
 
     useEffect(() => {
@@ -20,57 +18,20 @@ function DesktopMenu(props) {
 
     const openTerminal = () => {
         props.openApp("terminal");
-=======
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      document.addEventListener("fullscreenchange", checkFullScreen);
->>>>>>> Stashed changes
     }
-    return () => {
-      if (typeof document !== "undefined") {
-        document.removeEventListener("fullscreenchange", checkFullScreen);
-      }
-    };
-  }, []);
 
-  const openTerminal = () => {
-    props.openApp("terminal");
-  };
-
-  const openSettings = () => {
-    props.openApp("settings");
-  };
-
-  const checkFullScreen = () => {
-    if (typeof document !== "undefined" && document.fullscreenElement) {
-      setIsFullScreen(true);
-    } else {
-      setIsFullScreen(false);
+    const openSettings = () => {
+        props.openApp("settings");
     }
-  };
 
-<<<<<<< Updated upstream
     const checkFullScreen = () => {
         if (typeof document !== 'undefined' && document.fullscreenElement) {
             setIsFullScreen(true)
-=======
-  const goFullScreen = () => {
-    // make website full screen
-    try {
-      if (typeof document !== "undefined") {
-        if (document.fullscreenElement) {
-          document.exitFullscreen();
->>>>>>> Stashed changes
         } else {
-          document.documentElement.requestFullscreen();
+            setIsFullScreen(false)
         }
-      }
-    } catch (e) {
-      console.log(e);
     }
-  };
 
-<<<<<<< Updated upstream
     const goFullScreen = () => {
         // make website full screen
         try {
@@ -120,72 +81,15 @@ function DesktopMenu(props) {
             </div>
         </div>
     )
-=======
-  return (
-    <div
-      id="desktop-menu"
-      className={
-        (props.active ? " block " : " hidden ") +
-        " cursor-default w-52 context-menu-bg border text-left font-light border-gray-900 rounded text-white py-4 absolute z-50 text-sm"
-      }
-    >
-      <div
-        onClick={props.addNewFolder}
-        className="w-full py-0.5 hover:bg-ub-warm-grey hover:bg-opacity-20 mb-1.5"
-      >
-        <span className="ml-5">New Folder</span>
-      </div>
-      <Devider />
-      <div className="w-full py-0.5 hover:bg-ub-warm-grey hover:bg-opacity-20 mb-1.5 text-gray-400">
-        <span className="ml-5">Paste</span>
-      </div>
-      <Devider />
-      <div className="w-full py-0.5 hover:bg-ub-warm-grey hover:bg-opacity-20 mb-1.5 text-gray-400">
-        <span className="ml-5">Show Desktop in Files</span>
-      </div>
-      <div
-        onClick={openTerminal}
-        className="w-full py-0.5 hover:bg-ub-warm-grey hover:bg-opacity-20 mb-1.5"
-      >
-        <span className="ml-5">Open in Terminal</span>
-      </div>
-      <Devider />
-      <div
-        onClick={openSettings}
-        className="w-full py-0.5 hover:bg-ub-warm-grey hover:bg-opacity-20 mb-1.5"
-      >
-        <span className="ml-5">Change Background...</span>
-      </div>
-      <Devider />
-      <div className="w-full py-0.5 hover:bg-ub-warm-grey hover:bg-opacity-20 mb-1.5 text-gray-400">
-        <span className="ml-5">Display Settings</span>
-      </div>
-      <div
-        onClick={openSettings}
-        className="w-full py-0.5 hover:bg-ub-warm-grey hover:bg-opacity-20 mb-1.5"
-      >
-        <span className="ml-5">Settings</span>
-      </div>
-      <Devider />
-      <div
-        onClick={goFullScreen}
-        className="w-full py-0.5 hover:bg-ub-warm-grey hover:bg-opacity-20 mb-1.5"
-      >
-        <span className="ml-5">
-          {isFullScreen ? "Exit" : "Enter"} Full Screen
-        </span>
-      </div>
-    </div>
-  );
->>>>>>> Stashed changes
 }
 
 function Devider() {
-  return (
-    <div className="flex justify-center w-full">
-      <div className=" border-t border-gray-900 py-1 w-2/5"></div>
-    </div>
-  );
+    return (
+        <div className="flex justify-center w-full">
+            <div className=" border-t border-gray-900 py-1 w-2/5"></div>
+        </div>
+    );
 }
 
-export default DesktopMenu;
+
+export default DesktopMenu
