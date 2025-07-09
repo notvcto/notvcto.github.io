@@ -21,7 +21,11 @@ export class AboutVcto extends Component {
     };
 
     let lastVisitedScreen = "about";
+<<<<<<< Updated upstream
     if (typeof window !== 'undefined') {
+=======
+    if (typeof window !== "undefined") {
+>>>>>>> Stashed changes
       const stored = localStorage.getItem("about-section");
       if (stored !== null && stored !== undefined) {
         lastVisitedScreen = stored;
@@ -29,7 +33,11 @@ export class AboutVcto extends Component {
     }
 
     // focus last visited screen
+<<<<<<< Updated upstream
     if (typeof document !== 'undefined') {
+=======
+    if (typeof document !== "undefined") {
+>>>>>>> Stashed changes
       this.changeScreen(document.getElementById(lastVisitedScreen));
     }
   }
@@ -38,7 +46,11 @@ export class AboutVcto extends Component {
     const screen = e.id || e.target.id;
 
     // store this state
+<<<<<<< Updated upstream
     if (typeof window !== 'undefined') {
+=======
+    if (typeof window !== "undefined") {
+>>>>>>> Stashed changes
       localStorage.setItem("about-section", screen);
     }
 

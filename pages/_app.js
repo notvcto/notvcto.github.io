@@ -1,6 +1,12 @@
+<<<<<<< Updated upstream
 import 'tailwindcss/tailwind.css'
 import '../styles/index.css'
 import Script from 'next/script'
+=======
+import "tailwindcss/tailwind.css";
+import "../styles/index.css";
+import Script from "next/script";
+>>>>>>> Stashed changes
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -20,7 +26,11 @@ function MyApp({ Component, pageProps }) {
         strategy="afterInteractive"
       />
     </>
+<<<<<<< Updated upstream
   )
+=======
+  );
+>>>>>>> Stashed changes
 }
 
-export default MyApp
+export default MyApp;
