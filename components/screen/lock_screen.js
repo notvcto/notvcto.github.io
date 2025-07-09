@@ -15,8 +15,10 @@ export default function LockScreen(props) {
     };
 
     if (props.isLocked) {
-        window.addEventListener('click', props.unLockScreen);
-        window.addEventListener('keypress', props.unLockScreen);
+        if (typeof window !== 'undefined') {
+            window.addEventListener('click', props.unLockScreen);
+            window.addEventListener('keypress', props.unLockScreen);
+        }
     };
 
     return (

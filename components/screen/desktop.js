@@ -49,42 +49,53 @@ export class Desktop extends Component {
     }
 
     checkForNewFolders = () => {
-        var new_folders = localStorage.getItem('new_folders');
-        if (new_folders === null && new_folders !== undefined) {
-            localStorage.setItem("new_folders", JSON.stringify([]));
-        }
-        else {
-            new_folders = JSON.parse(new_folders);
-            new_folders.forEach(folder => {
-                apps.push({
-                    id: `new-folder-${folder.id}`,
-                    title: folder.name,
-                    icon: './themes/Yaru/system/folder.png',
-                    disabled: true,
-                    favourite: false,
-                    desktop_shortcut: true,
-                    screen: () => { },
+        if (typeof window !== 'undefined') {
+            var new_folders = localStorage.getItem('new_folders');
+            if (new_folders === null || new_folders === undefined) {
+                localStorage.setItem("new_folders", JSON.stringify([]));
+            }
+            else {
+                new_folders = JSON.parse(new_folders);
+                new_folders.forEach(folder => {
+                    apps.push({
+                        id: `new-folder-${folder.id}`,
+                        title: folder.name,
+                        icon: './themes/Yaru/system/folder.png',
+                        disabled: true,
+                        favourite: false,
+                        desktop_shortcut: true,
+                        screen: () => { },
+                    });
                 });
-            });
-            this.updateAppsData();
+                this.updateAppsData();
+            }
         }
     }
 
     setEventListeners = () => {
-        document.getElementById("open-settings").addEventListener("click", () => {
-            this.openApp("settings");
-        });
+        if (typeof document !== 'undefined') {
+            const settingsBtn = document.getElementById("open-settings");
+            if (settingsBtn) {
+                settingsBtn.addEventListener("click", () => {
+                    this.openApp("settings");
+                });
+            }
+        }
     }
 
     setContextListeners = () => {
-        document.addEventListener('contextmenu', this.checkContextMenu);
-        // on click, anywhere, hide all menus
-        document.addEventListener('click', this.hideAllContextMenu);
+        if (typeof document !== 'undefined') {
+            document.addEventListener('contextmenu', this.checkContextMenu);
+            // on click, anywhere, hide all menus
+            document.addEventListener('click', this.hideAllContextMenu);
+        }
     }
 
     removeContextListeners = () => {
-        document.removeEventListener("contextmenu", this.checkContextMenu);
-        document.removeEventListener("click", this.hideAllContextMenu);
+        if (typeof document !== 'undefined') {
+            document.removeEventListener("contextmenu", this.checkContextMenu);
+            document.removeEventListener("click", this.hideAllContextMenu);
+        }
     }
 
     checkContextMenu = (e) => {
@@ -109,16 +120,19 @@ export class Desktop extends Component {
 
     showContextMenu = (e, menuName /* context menu name */) => {
         let { posx, posy } = this.getMenuPosition(e);
-        let contextMenu = document.getElementById(`${menuName}-menu`);
+        if (typeof document !== 'undefined') {
+            let contextMenu = document.getElementById(`${menuName}-menu`);
+            if (contextMenu) {
+                if (posx + $(contextMenu).width() > window.innerWidth) posx -= $(contextMenu).width();
+                if (posy + $(contextMenu).height() > window.innerHeight) posy -= $(contextMenu).height();
 
-        if (posx + $(contextMenu).width() > window.innerWidth) posx -= $(contextMenu).width();
-        if (posy + $(contextMenu).height() > window.innerHeight) posy -= $(contextMenu).height();
+                posx = posx.toString() + "px";
+                posy = posy.toString() + "px";
 
-        posx = posx.toString() + "px";
-        posy = posy.toString() + "px";
-
-        contextMenu.style.left = posx;
-        contextMenu.style.top = posy;
+                contextMenu.style.left = posx;
+                contextMenu.style.top = posy;
+            }
+        }
 
         this.setState({ context_menus: { ...this.state.context_menus, [menuName]: true } });
     }
@@ -141,10 +155,12 @@ export class Desktop extends Component {
             posx = e.pageX;
             posy = e.pageY;
         } else if (e.clientX || e.clientY) {
-            posx = e.clientX + document.body.scrollLeft +
-                document.documentElement.scrollLeft;
-            posy = e.clientY + document.body.scrollTop +
-                document.documentElement.scrollTop;
+            if (typeof document !== 'undefined') {
+                posx = e.clientX + document.body.scrollLeft +
+                    document.documentElement.scrollLeft;
+                posy = e.clientY + document.body.scrollTop +
+                    document.documentElement.scrollTop;
+            }
         }
         return {
             posx, posy
@@ -376,7 +392,13 @@ export class Desktop extends Component {
         else {
             let closed_windows = this.state.closed_windows;
             let favourite_apps = this.state.favourite_apps;
-            var frequentApps = localStorage.getItem('frequentApps') ? JSON.parse(localStorage.getItem('frequentApps')) : [];
+            var frequentApps = [];
+            if (typeof window !== 'undefined') {
+                const stored = localStorage.getItem('frequentApps');
+                if (stored) {
+                    frequentApps = JSON.parse(stored);
+                }
+            }
             var currentApp = frequentApps.find(app => app.id === objId);
             if (currentApp) {
                 frequentApps.forEach((app) => {
@@ -398,7 +420,9 @@ export class Desktop extends Component {
                 return 0; // sort according to decreasing frequencies
             });
 
-            localStorage.setItem("frequentApps", JSON.stringify(frequentApps));
+            if (typeof window !== 'undefined') {
+                localStorage.setItem("frequentApps", JSON.stringify(frequentApps));
+            }
 
             setTimeout(() => {
                 favourite_apps[objId] = true; // adds opened app to sideBar
@@ -460,9 +484,11 @@ export class Desktop extends Component {
             screen: () => { },
         });
         // store in local storage
-        var new_folders = JSON.parse(localStorage.getItem('new_folders'));
-        new_folders.push({ id: `new-folder-${folder_id}`, name: folder_name });
-        localStorage.setItem("new_folders", JSON.stringify(new_folders));
+        if (typeof window !== 'undefined') {
+            var new_folders = JSON.parse(localStorage.getItem('new_folders') || '[]');
+            new_folders.push({ id: `new-folder-${folder_id}`, name: folder_name });
+            localStorage.setItem("new_folders", JSON.stringify(new_folders));
+        }
 
         this.setState({ showNameBar: false }, this.updateAppsData);
     }
@@ -471,8 +497,13 @@ export class Desktop extends Component {
 
     renderNameBar = () => {
         let addFolder = () => {
-            let folder_name = document.getElementById("folder-name-input").value;
-            this.addToDesktop(folder_name);
+            if (typeof document !== 'undefined') {
+                const input = document.getElementById("folder-name-input");
+                if (input) {
+                    let folder_name = input.value;
+                    this.addToDesktop(folder_name);
+                }
+            }
         }
 
         let removeCard = () => {
