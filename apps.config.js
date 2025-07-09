@@ -23,7 +23,7 @@ const apps = [
   {
     id: "voidnet",
     title: "voidnet.ink",
-    icon: "./themes/Yaru/apps/chrome.png",
+    icon: "./themes/Yaru/apps/voidnet.png",
     disabled: false,
     favourite: false,
     desktop_shortcut: true,
