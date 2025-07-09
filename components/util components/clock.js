@@ -7,11 +7,14 @@ export default class Clock extends Component {
         this.day_list = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         this.state = {
             hour_12: true,
-            current_time: new Date()
+            current_time: null
         };
     }
 
     componentDidMount() {
+        // Set initial time after component mounts to avoid hydration mismatch
+        this.setState({ current_time: new Date() });
+        
         this.update_time = setInterval(() => {
             this.setState({ current_time: new Date() });
         }, 10 * 1000);
@@ -23,6 +26,11 @@ export default class Clock extends Component {
 
     render() {
         const { current_time } = this.state;
+
+        // Return empty span during server-side rendering or before hydration
+        if (!current_time) {
+            return <span></span>;
+        }
 
         let day = this.day_list[current_time.getDay()];
         let hour = current_time.getHours();
