@@ -11,7 +11,7 @@ export class Chrome extends Component {
   }
 
   componentDidMount() {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       let lastVisitedUrl = localStorage.getItem("chrome-url");
       let lastDisplayedUrl = localStorage.getItem("chrome-display-url");
       if (lastVisitedUrl !== null && lastVisitedUrl !== undefined) {
@@ -24,14 +24,14 @@ export class Chrome extends Component {
   }
 
   storeVisitedUrl = (url, display_url) => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.setItem("chrome-url", url);
       localStorage.setItem("chrome-display-url", display_url);
     }
   };
 
   refreshChrome = () => {
-    if (typeof document !== 'undefined') {
+    if (typeof document !== "undefined") {
       document.getElementById("chrome-screen").src += "";
     }
   };
@@ -65,7 +65,7 @@ export class Chrome extends Component {
       }
       this.setState({ url, display_url: url });
       this.storeVisitedUrl(url, display_url);
-      if (typeof document !== 'undefined') {
+      if (typeof document !== "undefined") {
         document.getElementById("chrome-url-bar").blur();
       }
     }

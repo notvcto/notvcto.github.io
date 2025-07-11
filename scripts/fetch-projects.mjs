@@ -2,17 +2,15 @@ import fs from "fs/promises";
 import fetch from "node-fetch";
 
 const GITHUB_USERNAME = "notvcto";
-const NUM_PROJECTS = 5;
 
 const fetchLanguages = async (url) => {
   try {
     const res = await fetch(url);
     if (!res.ok) return [];
-
     const data = await res.json();
     return Object.keys(data); // language names only
   } catch (err) {
-    console.error(`Failed to fetch languages for ${url}:`, err);
+    console.error(`❌ Failed to fetch languages for ${url}:`, err);
     return [];
   }
 };
@@ -24,15 +22,14 @@ const fetchLanguages = async (url) => {
     );
 
     if (!res.ok) {
-      throw new Error(`Failed to fetch projects: ${res.status}`);
+      throw new Error(`❌ Failed to fetch projects: ${res.status}`);
     }
 
     const repos = await res.json();
 
     const filtered = repos
       .filter((repo) => !repo.fork && !repo.private)
-      .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
-      .slice(0, NUM_PROJECTS);
+      .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)); // newest first
 
     const projects = [];
 
@@ -55,7 +52,7 @@ const fetchLanguages = async (url) => {
     }
 
     await fs.writeFile("data/projects.json", JSON.stringify(projects, null, 2));
-    console.log("✅ Successfully fetched and saved projects!");
+    console.log(`✅ Saved ${projects.length} projects to data/projects.json`);
   } catch (error) {
     console.error("❌ Error fetching projects:", error);
   }

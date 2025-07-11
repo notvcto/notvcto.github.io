@@ -1,6 +1,6 @@
-import 'tailwindcss/tailwind.css'
-import '../styles/index.css'
-import Script from 'next/script'
+import "tailwindcss/tailwind.css";
+import "../styles/index.css";
+import Script from "next/script";
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -20,7 +20,7 @@ function MyApp({ Component, pageProps }) {
         strategy="beforeInteractive"
       />
     </>
-  )
+  );
 }
 
-export default MyApp
+export default MyApp;

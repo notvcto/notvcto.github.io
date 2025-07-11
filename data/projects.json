@@ -33,5 +33,33 @@
     "link": "https://github.com/notvcto/GardenBot",
     "description": ["Discord bot for Grow a Garden stock notifying."],
     "domains": ["javascript"]
+  },
+  {
+    "name": "thorn-bootstrap",
+    "date": "May 2025",
+    "link": "https://github.com/notvcto/thorn-bootstrap",
+    "description": ["No description provided."],
+    "domains": ["python"]
+  },
+  {
+    "name": "omen",
+    "date": "Sept 2024",
+    "link": "https://github.com/notvcto/omen",
+    "description": ["No description provided."],
+    "domains": ["javascript", "scss"]
+  },
+  {
+    "name": "omen-source",
+    "date": "Sept 2024",
+    "link": "https://github.com/notvcto/omen-source",
+    "description": ["Source code for the Omen Discord bot."],
+    "domains": ["javascript", "html"]
+  },
+  {
+    "name": "click-me",
+    "date": "Feb 2025",
+    "link": "https://github.com/notvcto/click-me",
+    "description": ["No description provided."],
+    "domains": ["javascript", "css", "html"]
   }
 ]
