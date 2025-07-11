@@ -1,6 +1,43 @@
 body{
-    font-family: 'Ubuntu', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, 'Helvetica Neue', Arial, sans-serif;
     font-display: swap
+}
+
+/* macOS-style glassmorphism effects */
+.mac-glassmorphism {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mac-window-glassmorphism {
+    background: rgba(28, 28, 30, 0.8);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* macOS-style scrollbars */
+.windowMainScreen::-webkit-scrollbar {
+    width: 8px;
+    background: transparent;
+}
+
+.windowMainScreen::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.windowMainScreen::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+.windowMainScreen::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+    background-clip: content-box;
 }
 
 /* Top NavBar styling */
