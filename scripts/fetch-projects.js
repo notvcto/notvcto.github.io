@@ -23,7 +23,7 @@ const NUM_PROJECTS = 5;
       }),
       link: repo.html_url,
       description: [repo.description || "No description provided."],
-      domains: ["javascript"], // You can enhance this by using repo topics!
+      domains: ["javascript"],
     }));
 
   fs.writeFileSync("data/projects.json", JSON.stringify(projects, null, 2));
