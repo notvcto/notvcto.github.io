@@ -21,7 +21,7 @@ export class AboutVcto extends Component {
     };
 
     let lastVisitedScreen = "about";
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const stored = localStorage.getItem("about-section");
       if (stored !== null && stored !== undefined) {
         lastVisitedScreen = stored;
@@ -29,7 +29,7 @@ export class AboutVcto extends Component {
     }
 
     // focus last visited screen
-    if (typeof document !== 'undefined') {
+    if (typeof document !== "undefined") {
       this.changeScreen(document.getElementById(lastVisitedScreen));
     }
   }
@@ -38,7 +38,7 @@ export class AboutVcto extends Component {
     const screen = e.id || e.target.id;
 
     // store this state
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.setItem("about-section", screen);
     }
 
