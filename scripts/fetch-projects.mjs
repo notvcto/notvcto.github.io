@@ -1,8 +1,21 @@
-import fs from "fs";
+import fs from "fs/promises";
 import fetch from "node-fetch";
 
 const GITHUB_USERNAME = "notvcto";
 const NUM_PROJECTS = 5;
+
+const fetchLanguages = async (url) => {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    return Object.keys(data); // language names only
+  } catch (err) {
+    console.error(`Failed to fetch languages for ${url}:`, err);
+    return [];
+  }
+};
 
 (async () => {
   try {
@@ -14,13 +27,19 @@ const NUM_PROJECTS = 5;
       throw new Error(`Failed to fetch projects: ${res.status}`);
     }
 
-    const data = await res.json();
+    const repos = await res.json();
 
-    const projects = data
+    const filtered = repos
       .filter((repo) => !repo.fork && !repo.private)
       .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
-      .slice(0, NUM_PROJECTS)
-      .map((repo) => ({
+      .slice(0, NUM_PROJECTS);
+
+    const projects = [];
+
+    for (const repo of filtered) {
+      const languages = await fetchLanguages(repo.languages_url);
+
+      projects.push({
         name: repo.name,
         date: new Date(repo.created_at).toLocaleString("default", {
           month: "short",
@@ -28,12 +47,16 @@ const NUM_PROJECTS = 5;
         }),
         link: repo.html_url,
         description: [repo.description || "No description provided."],
-        domains: repo.topics || ["javascript"], // Using repo topics as suggested
-      }));
+        domains:
+          languages.length > 0
+            ? languages.map((l) => l.toLowerCase())
+            : [repo.language?.toLowerCase() || "unknown"],
+      });
+    }
 
-    fs.writeFileSync("data/projects.json", JSON.stringify(projects, null, 2));
-    console.log("Successfully fetched and saved projects! ✅");
+    await fs.writeFile("data/projects.json", JSON.stringify(projects, null, 2));
+    console.log("✅ Successfully fetched and saved projects!");
   } catch (error) {
-    console.error("Error fetching projects: ❌", error);
+    console.error("❌ Error fetching projects:", error);
   }
 })();
