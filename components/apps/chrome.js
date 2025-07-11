@@ -5,13 +5,19 @@ export class Chrome extends Component {
     super();
     this.home_url = "https://www.google.com/webhp?igu=1";
     this.state = {
+      isClient: false,
       url: "https://www.google.com/webhp?igu=1",
       display_url: "https://www.google.com",
     };
   }
 
   componentDidMount() {
-    if (typeof window !== 'undefined') {
+    this.setState({ isClient: true });
+    this.loadStoredUrl();
+  }
+
+  loadStoredUrl = () => {
+    if (this.state.isClient) {
       let lastVisitedUrl = localStorage.getItem("chrome-url");
       let lastDisplayedUrl = localStorage.getItem("chrome-display-url");
       if (lastVisitedUrl !== null && lastVisitedUrl !== undefined) {
@@ -24,14 +30,14 @@ export class Chrome extends Component {
   }
 
   storeVisitedUrl = (url, display_url) => {
-    if (typeof window !== 'undefined') {
+    if (this.state.isClient) {
       localStorage.setItem("chrome-url", url);
       localStorage.setItem("chrome-display-url", display_url);
     }
   };
 
   refreshChrome = () => {
-    if (typeof document !== 'undefined') {
+    if (this.state.isClient) {
       document.getElementById("chrome-screen").src += "";
     }
   };
@@ -65,7 +71,7 @@ export class Chrome extends Component {
       }
       this.setState({ url, display_url: url });
       this.storeVisitedUrl(url, display_url);
-      if (typeof document !== 'undefined') {
+      if (this.state.isClient) {
         document.getElementById("chrome-url-bar").blur();
       }
     }

@@ -6,6 +6,7 @@ export class AboutVcto extends Component {
     super();
     this.screens = {};
     this.state = {
+      isClient: false,
       screen: () => {},
       active_screen: "about",
       navbar: false,
@@ -13,6 +14,7 @@ export class AboutVcto extends Component {
   }
 
   componentDidMount() {
+    this.setState({ isClient: true });
     this.screens = {
       about: <About />,
       skills: <Skills />,
@@ -21,24 +23,24 @@ export class AboutVcto extends Component {
     };
 
     let lastVisitedScreen = "about";
-    if (typeof window !== 'undefined') {
+    if (this.state.isClient) {
       const stored = localStorage.getItem("about-section");
       if (stored !== null && stored !== undefined) {
         lastVisitedScreen = stored;
       }
     }
 
-    if (typeof document !== 'undefined') {
+    if (this.state.isClient) {
       this.changeScreen(document.getElementById(lastVisitedScreen));
     }
   }
 
   changeScreen = (e) => {
+    if (!this.state.isClient) return;
+    
     const screen = e.id || e.target.id;
 
-    if (typeof window !== 'undefined') {
-      localStorage.setItem("about-section", screen);
-    }
+    localStorage.setItem("about-section", screen);
 
     ReactGA.send({
       hitType: "pageview",
