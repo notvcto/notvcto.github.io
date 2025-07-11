@@ -17,6 +17,7 @@ export class Desktop extends Component {
         this.initFavourite = {};
         this.allWindowClosed = false;
         this.state = {
+            isClient: false,
             focused_windows: {},
             closed_windows: {},
             allAppsView: false,
@@ -35,6 +36,7 @@ export class Desktop extends Component {
     }
 
     componentDidMount() {
+        this.setState({ isClient: true });
         // google analytics
         ReactGA.send({ hitType: "pageview", page: "/desktop", title: "Custom Title" });
 
@@ -49,7 +51,7 @@ export class Desktop extends Component {
     }
 
     checkForNewFolders = () => {
-        if (typeof window !== 'undefined') {
+        if (this.state.isClient) {
             var new_folders = localStorage.getItem('new_folders');
             if (new_folders === null || new_folders === undefined) {
                 localStorage.setItem("new_folders", JSON.stringify([]));
@@ -73,7 +75,7 @@ export class Desktop extends Component {
     }
 
     setEventListeners = () => {
-        if (typeof document !== 'undefined') {
+        if (this.state.isClient) {
             const settingsBtn = document.getElementById("open-settings");
             if (settingsBtn) {
                 settingsBtn.addEventListener("click", () => {
@@ -84,7 +86,7 @@ export class Desktop extends Component {
     }
 
     setContextListeners = () => {
-        if (typeof document !== 'undefined') {
+        if (this.state.isClient) {
             document.addEventListener('contextmenu', this.checkContextMenu);
             // on click, anywhere, hide all menus
             document.addEventListener('click', this.hideAllContextMenu);
@@ -92,7 +94,7 @@ export class Desktop extends Component {
     }
 
     removeContextListeners = () => {
-        if (typeof document !== 'undefined') {
+        if (this.state.isClient) {
             document.removeEventListener("contextmenu", this.checkContextMenu);
             document.removeEventListener("click", this.hideAllContextMenu);
         }
@@ -120,7 +122,7 @@ export class Desktop extends Component {
 
     showContextMenu = (e, menuName /* context menu name */) => {
         let { posx, posy } = this.getMenuPosition(e);
-        if (typeof document !== 'undefined') {
+        if (this.state.isClient) {
             let contextMenu = document.getElementById(`${menuName}-menu`);
             if (contextMenu) {
                 if (posx + $(contextMenu).width() > window.innerWidth) posx -= $(contextMenu).width();
@@ -155,7 +157,7 @@ export class Desktop extends Component {
             posx = e.pageX;
             posy = e.pageY;
         } else if (e.clientX || e.clientY) {
-            if (typeof document !== 'undefined') {
+            if (this.state.isClient) {
                 posx = e.clientX + document.body.scrollLeft +
                     document.documentElement.scrollLeft;
                 posy = e.clientY + document.body.scrollTop +
@@ -393,7 +395,7 @@ export class Desktop extends Component {
             let closed_windows = this.state.closed_windows;
             let favourite_apps = this.state.favourite_apps;
             var frequentApps = [];
-            if (typeof window !== 'undefined') {
+            if (this.state.isClient) {
                 const stored = localStorage.getItem('frequentApps');
                 if (stored) {
                     frequentApps = JSON.parse(stored);
@@ -420,7 +422,7 @@ export class Desktop extends Component {
                 return 0; // sort according to decreasing frequencies
             });
 
-            if (typeof window !== 'undefined') {
+            if (this.state.isClient) {
                 localStorage.setItem("frequentApps", JSON.stringify(frequentApps));
             }
 
@@ -484,7 +486,7 @@ export class Desktop extends Component {
             screen: () => { },
         });
         // store in local storage
-        if (typeof window !== 'undefined') {
+        if (this.state.isClient) {
             var new_folders = JSON.parse(localStorage.getItem('new_folders') || '[]');
             new_folders.push({ id: `new-folder-${folder_id}`, name: folder_name });
             localStorage.setItem("new_folders", JSON.stringify(new_folders));
@@ -497,7 +499,7 @@ export class Desktop extends Component {
 
     renderNameBar = () => {
         let addFolder = () => {
-            if (typeof document !== 'undefined') {
+            if (this.state.isClient) {
                 const input = document.getElementById("folder-name-input");
                 if (input) {
                     let folder_name = input.value;

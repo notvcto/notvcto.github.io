@@ -1,7 +1,50 @@
 import React from 'react';
+import React, { Component } from 'react';
 import Clock from '../util components/clock';
 
-export default function LockScreen(props) {
+export default class LockScreen extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isClient: false
+        };
+    }
+
+    componentDidMount() {
+        this.setState({ isClient: true });
+        this.setupEventListeners();
+    }
+
+    componentWillUnmount() {
+        this.removeEventListeners();
+    }
+
+    setupEventListeners = () => {
+        if (this.props.isLocked && this.state.isClient) {
+            window.addEventListener('click', this.props.unLockScreen);
+            window.addEventListener('keypress', this.props.unLockScreen);
+        }
+    }
+
+    removeEventListeners = () => {
+        if (this.state.isClient) {
+            window.removeEventListener('click', this.props.unLockScreen);
+            window.removeEventListener('keypress', this.props.unLockScreen);
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.isLocked !== this.props.isLocked) {
+            if (this.props.isLocked) {
+                this.setupEventListeners();
+            } else {
+                this.removeEventListeners();
+            }
+        }
+    }
+
+    render() {
+        const { isLocked, bgImgName } = this.props;
 
     const wallpapers = {
         "wall-1": "./images/wallpapers/wall-1.webp",
@@ -14,16 +57,9 @@ export default function LockScreen(props) {
         "wall-8": "./images/wallpapers/wall-8.webp",
     };
 
-    if (props.isLocked) {
-        if (typeof window !== 'undefined') {
-            window.addEventListener('click', props.unLockScreen);
-            window.addEventListener('keypress', props.unLockScreen);
-        }
-    };
-
     return (
-        <div id="ubuntu-lock-screen" style={{ zIndex: "100" }} className={(props.isLocked ? " visible translate-y-0 " : " invisible -translate-y-full ") + " absolute outline-none bg-black bg-opacity-90 transform duration-500 select-none top-0 right-0 overflow-hidden m-0 p-0 h-screen w-screen"}>
-            <div style={{ backgroundImage: `url(${wallpapers[props.bgImgName]})`, backgroundSize: "cover", backgroundRepeat: "no-repeat", backgroundPositionX: "center" }} className="absolute top-0 left-0 w-full h-full transform z-20 blur-md "></div>
+        <div id="ubuntu-lock-screen" style={{ zIndex: "100" }} className={(isLocked ? " visible translate-y-0 " : " invisible -translate-y-full ") + " absolute outline-none bg-black bg-opacity-90 transform duration-500 select-none top-0 right-0 overflow-hidden m-0 p-0 h-screen w-screen"}>
+            <div style={{ backgroundImage: `url(${wallpapers[bgImgName]})`, backgroundSize: "cover", backgroundRepeat: "no-repeat", backgroundPositionX: "center" }} className="absolute top-0 left-0 w-full h-full transform z-20 blur-md "></div>
             <div className="w-full h-full z-50 overflow-hidden relative flex flex-col justify-center items-center text-white">
                 <div className=" text-7xl">
                     <Clock onlyTime={true} />
@@ -36,5 +72,6 @@ export default function LockScreen(props) {
                 </div>
             </div>
         </div>
-    )
+    );
+    }
 }

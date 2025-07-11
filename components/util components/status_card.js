@@ -24,6 +24,7 @@ export class StatusCard extends Component {
 		super();
 		this.wrapperRef = React.createRef();
 		this.state = {
+			isClient: false,
 			sound_level: 75, // better of setting default values from localStorage
 			brightness_level: 100 // setting default value to 100 so that by default its always full.
 		};
@@ -32,38 +33,42 @@ export class StatusCard extends Component {
 		this.props.toggleVisible();
 	};
 	componentDidMount() {
+		this.setState({ isClient: true });
+		this.loadSettings();
+	}
+
+	loadSettings = () => {
+		if (!this.state.isClient) return;
+		
 		this.setState({
-			sound_level: typeof window !== 'undefined' ? (localStorage.getItem('sound-level') || 75) : 75,
-			brightness_level: typeof window !== 'undefined' ? (localStorage.getItem('brightness-level') || 100) : 100
+			sound_level: localStorage.getItem('sound-level') || 75,
+			brightness_level: localStorage.getItem('brightness-level') || 100
 		}, () => {
-			if (typeof document !== 'undefined') {
-				const screen = document.getElementById('monitor-screen');
-				if (screen) {
-					screen.style.filter = `brightness(${3 / 400 * this.state.brightness_level + 0.25})`;
-				}
+			const screen = document.getElementById('monitor-screen');
+			if (screen) {
+				screen.style.filter = `brightness(${3 / 400 * this.state.brightness_level + 0.25})`;
 			}
-		})
+		});
 	}
 
 	handleBrightness = (e) => {
+		if (!this.state.isClient) return;
+		
 		this.setState({ brightness_level: e.target.value });
-		if (typeof window !== 'undefined') {
-			localStorage.setItem('brightness-level', e.target.value);
-		}
+		localStorage.setItem('brightness-level', e.target.value);
+		
 		// the function below inside brightness() is derived from a linear equation such that at 0 value of slider brightness still remains 0.25 so that it doesn't turn black.
-		if (typeof document !== 'undefined') {
-			const screen = document.getElementById('monitor-screen');
-			if (screen) {
-				screen.style.filter = `brightness(${3 / 400 * e.target.value + 0.25})`; // Using css filter to adjust the brightness in the root div.
-			}
+		const screen = document.getElementById('monitor-screen');
+		if (screen) {
+			screen.style.filter = `brightness(${3 / 400 * e.target.value + 0.25})`; // Using css filter to adjust the brightness in the root div.
 		}
 	};
 
 	handleSound = (e) => {
+		if (!this.state.isClient) return;
+		
 		this.setState({ sound_level: e.target.value });
-		if (typeof window !== 'undefined') {
-			localStorage.setItem('sound-level', e.target.value);
-		}
+		localStorage.setItem('sound-level', e.target.value);
 	};
 
 	render() {
