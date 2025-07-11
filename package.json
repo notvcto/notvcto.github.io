@@ -2,7 +2,6 @@
   "name": "vcto-portfolio",
   "version": "2.0.0",
   "private": true,
-  "type": "module",
   "homepage": "https://notvcto.github.io/",
   "scripts": {
     "dev": "next dev",
