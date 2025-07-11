@@ -18,10 +18,8 @@ export class Terminal extends Component {
         "personal-documents",
         "skills",
         "languages",
-        "PDPU",
         "interests",
       ],
-      PDPU: ["Sem-6"],
       books: [
         "Eric-Jorgenson_The-Almanack-of-Naval-Ravikant.pdf",
         "Elon Musk: How the Billionaire CEO of SpaceX.pdf",
@@ -49,9 +47,7 @@ export class Terminal extends Component {
       interests: ["Software Engineering", "Deep Learning", "Computer Vision"],
       languages: ["Javascript", "C++", "Java", "Dart"],
     };
-    this.state = {
-      terminal: [],
-    };
+    this.state = { terminal: [] };
   }
 
   componentDidMount() {
@@ -70,67 +66,57 @@ export class Terminal extends Component {
   reStartTerminal = () => {
     clearInterval(this.cursor);
     $("#terminal-body").empty();
-    this.appendTerminalRow();
+    this.setState({ terminal: [] }, () => {
+      this.terminal_rows = 1;
+      this.appendTerminalRow();
+    });
   };
 
   appendTerminalRow = () => {
-    let terminal = this.state.terminal;
+    const terminal = [...this.state.terminal];
     terminal.push(this.terminalRow(this.terminal_rows));
     this.setState({ terminal });
     this.terminal_rows += 2;
   };
 
-  terminalRow = (id) => {
-    return (
-      <React.Fragment key={id}>
-        <div className="flex w-full h-5">
-          <div className="flex">
-            <div className=" text-ubt-green">vcto@Dell</div>
-            <div className="text-white mx-px font-medium">:</div>
-            <div className=" text-ubt-blue">{this.current_directory}</div>
-            <div className="text-white mx-px font-medium mr-1">$</div>
-          </div>
-          <div
-            id="cmd"
-            onClick={this.focusCursor}
-            className=" bg-transperent relative flex-1 overflow-hidden"
-          >
-            <span
-              id={`show-${id}`}
-              className=" float-left whitespace-pre pb-1 opacity-100 font-normal tracking-wider"
-            ></span>
-            <div
-              id={`cursor-${id}`}
-              className=" float-left mt-1 w-1.5 h-3.5 bg-white"
-            ></div>
-            <input
-              id={`terminal-input-${id}`}
-              data-row-id={id}
-              onKeyDown={this.checkKey}
-              onBlur={this.unFocusCursor}
-              className=" absolute top-0 left-0 w-full opacity-0 outline-none bg-transparent"
-              spellCheck={false}
-              autoFocus={true}
-              autoComplete="off"
-              type="text"
-            />
-            <input
-              id={`terminal-input-${id}`}
-              data-row-id={id}
-              onKeyDown={this.checkKey}
-              onBlur={this.unFocusCursor}
-              className=" absolute top-0 left-0 w-full opacity-0 outline-none bg-transparent"
-              spellCheck={false}
-              autoFocus={typeof window !== "undefined"}
-              autoComplete="off"
-              type="text"
-            />
-          </div>
+  terminalRow = (id) => (
+    <React.Fragment key={id}>
+      <div className="flex w-full h-5">
+        <div className="flex">
+          <div className=" text-ubt-green">vcto@Dell</div>
+          <div className="text-white mx-px font-medium">:</div>
+          <div className=" text-ubt-blue">{this.current_directory}</div>
+          <div className="text-white mx-px font-medium mr-1">$</div>
         </div>
-        <div id={`row-result-${id}`} className={"my-2 font-normal"}></div>
-      </React.Fragment>
-    );
-  };
+        <div
+          id="cmd"
+          onClick={this.focusCursor}
+          className=" bg-transperent relative flex-1 overflow-hidden"
+        >
+          <span
+            id={`show-${id}`}
+            className=" float-left whitespace-pre pb-1 opacity-100 font-normal tracking-wider"
+          ></span>
+          <div
+            id={`cursor-${id}`}
+            className=" float-left mt-1 w-1.5 h-3.5 bg-white"
+          ></div>
+          <input
+            id={`terminal-input-${id}`}
+            data-row-id={id}
+            onKeyDown={this.checkKey}
+            onBlur={this.unFocusCursor}
+            className=" absolute top-0 left-0 w-full opacity-0 outline-none bg-transparent"
+            spellCheck={false}
+            autoFocus={typeof window !== "undefined"}
+            autoComplete="off"
+            type="text"
+          />
+        </div>
+      </div>
+      <div id={`row-result-${id}`} className="my-2 font-normal"></div>
+    </React.Fragment>
+  );
 
   focusCursor = (e) => {
     clearInterval(this.cursor);
@@ -144,16 +130,15 @@ export class Terminal extends Component {
   startCursor = (id) => {
     clearInterval(this.cursor);
     $(`input#terminal-input-${id}`).trigger("focus");
-    // On input change, set current text in span
     $(`input#terminal-input-${id}`).on("input", function () {
       $(`#cmd span#show-${id}`).text($(this).val());
     });
     this.cursor = window.setInterval(function () {
-      if ($(`#cursor-${id}`).css("visibility") === "visible") {
-        $(`#cursor-${id}`).css({ visibility: "hidden" });
-      } else {
-        $(`#cursor-${id}`).css({ visibility: "visible" });
-      }
+      const cursor = $(`#cursor-${id}`);
+      cursor.css(
+        "visibility",
+        cursor.css("visibility") === "visible" ? "hidden" : "visible"
+      );
     }, 500);
   };
 
@@ -172,56 +157,42 @@ export class Terminal extends Component {
   };
 
   checkKey = (e) => {
+    const terminal_row_id = $(e.target).data("row-id");
+
     if (e.key === "Enter") {
-      let terminal_row_id = $(e.target).data("row-id");
-      let command = $(`input#terminal-input-${terminal_row_id}`).val().trim();
-      if (command.length !== 0) {
-        this.removeCursor(terminal_row_id);
-        this.handleCommands(command, terminal_row_id);
-      } else return;
-      // push to history
+      const command = $(`input#terminal-input-${terminal_row_id}`).val().trim();
+      if (!command) return;
+
+      this.removeCursor(terminal_row_id);
+      this.handleCommands(command, terminal_row_id);
+
       this.prev_commands.push(command);
-      this.commands_index = this.prev_commands.length - 1;
+      this.commands_index = this.prev_commands.length;
 
       this.clearInput(terminal_row_id);
     } else if (e.key === "ArrowUp") {
-      let prev_command;
-
-      if (this.commands_index <= -1) prev_command = "";
-      else prev_command = this.prev_commands[this.commands_index];
-
-      let terminal_row_id = $(e.target).data("row-id");
-
+      if (this.commands_index > 0) this.commands_index--;
+      const prev_command = this.prev_commands[this.commands_index] || "";
       $(`input#terminal-input-${terminal_row_id}`).val(prev_command);
       $(`#show-${terminal_row_id}`).text(prev_command);
-
-      this.commands_index--;
     } else if (e.key === "ArrowDown") {
-      let prev_command;
-
-      if (this.commands_index >= this.prev_commands.length) return;
-      if (this.commands_index <= -1) this.commands_index = 0;
-
-      if (this.commands_index === this.prev_commands.length) prev_command = "";
-      else prev_command = this.prev_commands[this.commands_index];
-
-      let terminal_row_id = $(e.target).data("row-id");
-
+      if (this.commands_index < this.prev_commands.length - 1)
+        this.commands_index++;
+      const prev_command = this.prev_commands[this.commands_index] || "";
       $(`input#terminal-input-${terminal_row_id}`).val(prev_command);
       $(`#show-${terminal_row_id}`).text(prev_command);
-
-      this.commands_index++;
     }
   };
 
   childDirectories = (parent) => {
-    let files = [];
-    files.push(`<div class="flex justify-start flex-wrap">`);
-    this.child_directories[parent].forEach((file) => {
-      files.push(`<span class="font-bold mr-2 text-ubt-blue">'${file}'</span>`);
-    });
-    files.push(`</div>`);
-    return files;
+    const dirs = this.child_directories[parent] || [];
+    return [
+      `<div class="flex justify-start flex-wrap">`,
+      ...dirs.map(
+        (file) => `<span class="font-bold mr-2 text-ubt-blue">'${file}'</span>`
+      ),
+      `</div>`,
+    ];
   };
 
   closeTerminal = () => {
@@ -229,210 +200,123 @@ export class Terminal extends Component {
   };
 
   handleCommands = (command, rowId) => {
-    let words = command.split(" ").filter(Boolean);
-    let main = words[0];
-    words.shift();
+    const words = command.split(" ").filter(Boolean);
+    const main = words.shift();
+    const rest = words.join(" ").trim();
     let result = "";
-    let rest = words.join(" ");
-    rest = rest.trim();
+
     switch (main) {
-      case "cd":
-        if (words.length === 0 || rest === "") {
+      case "help": {
+        result = `Available commands: <br>[ cd, ls, pwd, mkdir, echo, code, spotify, chrome, todoist, trash, about-vcto, terminal, settings, sendmsg, clear, exit, sudo, sudo rm -rf /, help ]`;
+        break;
+      }
+      case "sudo": {
+        if (rest === "rm -rf /") {
+          result =
+            "<span class='text-red-500'>Nuking system... brb</span><script>setTimeout(() => window.location.reload(), 2000);</script>";
+        } else {
+          ReactGA.event({ category: "Sudo Access", action: "lol" });
+          result =
+            "<img class='w-2/5' src='./images/memes/used-sudo-command.webp' />";
+        }
+        break;
+      }
+      case "cd": {
+        if (!rest) {
           this.current_directory = "~";
           this.curr_dir_name = "root";
           break;
         }
         if (words.length > 1) {
-          result = "too many arguments, arguments must be <1.";
+          result = "cd: too many arguments.";
           break;
         }
-
+        if (["..", "../"].includes(rest)) {
+          if (this.current_directory !== "~") {
+            const parts = this.current_directory.split("/");
+            parts.pop();
+            this.current_directory = parts.join("/") || "~";
+            this.curr_dir_name =
+              this.current_directory === "~" ? "root" : parts[parts.length - 1];
+          } else {
+            result = "Already at root directory.";
+          }
+          break;
+        }
+        if (rest === "." || rest === "./") break;
         if (rest === "personal-documents") {
-          result = `bash /${this.curr_dir_name} : Permission denied 😏`;
+          result = `bash /${this.curr_dir_name}: Permission denied 😏`;
           break;
         }
-
-        if (this.child_directories[this.curr_dir_name].includes(rest)) {
-          this.current_directory += "/" + rest;
+        const children = this.child_directories[this.curr_dir_name] || [];
+        if (children.includes(rest)) {
+          this.current_directory += `/${rest}`;
           this.curr_dir_name = rest;
-        } else if (rest === "." || rest === ".." || rest === "../") {
-          result = "Type 'cd' to go back 😅";
-          break;
         } else {
-          result = `bash: cd: ${words}: No such file or directory`;
+          result = `cd: ${rest}: No such file or directory`;
         }
         break;
-      case "ls":
-        let target = words[0];
-        if (target === "" || target === undefined || target === null)
-          target = this.curr_dir_name;
-
-        if (words.length > 1) {
-          result = "too many arguments, arguments must be <1.";
-          break;
-        }
-        if (target in this.child_directories) {
+      }
+      case "ls": {
+        const target = rest || this.curr_dir_name;
+        if (this.child_directories.hasOwnProperty(target)) {
           result = this.childDirectories(target).join("");
         } else if (target === "personal-documents") {
           result = "Nope! 🙃";
-          break;
         } else {
-          result = `ls: cannot access '${words}': No such file or directory                    `;
+          result = `ls: cannot access '${rest}': No such file or directory`;
         }
         break;
-      case "mkdir":
-        if (words[0] !== undefined && words[0] !== "") {
-          this.props.addFolder(words[0]);
-          result = "";
-        } else {
-          result = "mkdir: missing operand";
-        }
+      }
+      case "pwd": {
+        result = this.current_directory.replace("~", "/home/vcto");
         break;
-      case "pwd":
-        let str = this.current_directory;
-        result = str.replace("~", "/home/vcto");
+      }
+      case "mkdir": {
+        if (rest) this.props.addFolder(rest);
+        else result = "mkdir: missing operand";
         break;
+      }
+      case "echo": {
+        result = this.xss(rest);
+        break;
+      }
       case "code":
-        if (words[0] === "." || words.length === 0) {
-          this.props.openApp("vscode");
-        } else {
-          result =
-            "Command '" +
-            main +
-            "' not found, or not yet implemented.<br>Available Commands:[ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vcto, todoist, trash, settings, sendmsg]";
-        }
-        break;
-      case "echo":
-        result = this.xss(words.join(" "));
-        break;
       case "spotify":
-        if (words[0] === "." || words.length === 0) {
-          this.props.openApp("spotify");
-        } else {
-          result =
-            "Command '" +
-            main +
-            "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vcto, todoist, trash, settings, sendmsg ]";
-        }
-        break;
       case "chrome":
-        if (words[0] === "." || words.length === 0) {
-          this.props.openApp("chrome");
-        } else {
-          result =
-            "Command '" +
-            main +
-            "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vcto, todoist, trash, settings, sendmsg ]";
-        }
-        break;
       case "todoist":
-        if (words[0] === "." || words.length === 0) {
-          this.props.openApp("todo-ist");
-        } else {
-          result =
-            "Command '" +
-            main +
-            "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vcto, todoist, trash, settings, sendmsg ]";
-        }
-        break;
       case "trash":
-        if (words[0] === "." || words.length === 0) {
-          this.props.openApp("trash");
-        } else {
-          result =
-            "Command '" +
-            main +
-            "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vcto, todoist, trash, settings, sendmsg ]";
-        }
-        break;
       case "about-vcto":
-        if (words[0] === "." || words.length === 0) {
-          this.props.openApp("about-vcto");
-        } else {
-          result =
-            "Command '" +
-            main +
-            "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vcto, todoist, trash, settings, sendmsg ]";
-        }
-        break;
       case "terminal":
-        if (words[0] === "." || words.length === 0) {
-          this.props.openApp("terminal");
-        } else {
-          result =
-            "Command '" +
-            main +
-            "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vcto, todoist, trash, settings, sendmsg ]";
-        }
-        break;
       case "settings":
-        if (words[0] === "." || words.length === 0) {
-          this.props.openApp("settings");
-        } else {
-          result =
-            "Command '" +
-            main +
-            "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vcto, todoist, trash, settings, sendmsg ]";
-        }
+      case "sendmsg": {
+        if (!rest || rest === ".")
+          this.props.openApp(main === "todoist" ? "todo-ist" : main);
+        else result = `Command '${main}' not found or not yet implemented.`;
         break;
-      case "sendmsg":
-        if (words[0] === "." || words.length === 0) {
-          this.props.openApp("gedit");
-        } else {
-          result =
-            "Command '" +
-            main +
-            "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vcto, todoist, trash, settings, sendmsg ]";
-        }
-        break;
-      case "clear":
+      }
+      case "clear": {
         this.reStartTerminal();
         return;
-      case "exit":
+      }
+      case "exit": {
         this.closeTerminal();
         return;
-      case "sudo":
-        ReactGA.event({
-          category: "Sudo Access",
-          action: "lol",
-        });
-
-        result =
-          "<img class=' w-2/5' src='./images/memes/used-sudo-command.webp' />";
-        break;
+      }
       default:
-        result =
-          "Command '" +
-          main +
-          "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vcto, todoist, trash, settings, sendmsg ]";
+        result = `Command '${main}' not found or not yet implemented.`;
     }
+
     document.getElementById(`row-result-${rowId}`).innerHTML = result;
     this.appendTerminalRow();
   };
 
   xss(str) {
     if (!str) return;
-    return str
-      .split("")
-      .map((char) => {
-        switch (char) {
-          case "&":
-            return "&amp";
-          case "<":
-            return "&lt";
-          case ">":
-            return "&gt";
-          case '"':
-            return "&quot";
-          case "'":
-            return "&#x27";
-          case "/":
-            return "&#x2F";
-          default:
-            return char;
-        }
-      })
-      .join("");
+    return str.replace(/[&<>"]/g, (char) => {
+      const map = { "&": "&amp", "<": "&lt", ">": "&gt", '"': "&quot" };
+      return map[char] || char;
+    });
   }
 
   render() {
@@ -450,9 +334,5 @@ export class Terminal extends Component {
 export default Terminal;
 
 export const displayTerminal = (addFolder, openApp) => {
-  return (
-    <Terminal addFolder={addFolder} openApp={openApp}>
-      {" "}
-    </Terminal>
-  );
+  return <Terminal addFolder={addFolder} openApp={openApp} />;
 };
