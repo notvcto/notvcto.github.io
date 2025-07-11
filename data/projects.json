@@ -1,50 +1,37 @@
 [
   {
     "name": "notvcto.github.io",
-    "date": "Sep 2024",
+    "date": "Sept 2024",
     "link": "https://github.com/notvcto/notvcto.github.io",
-    "description": [
-      "The page you're seeing right now!"
-    ],
-    "domains": []
+    "description": ["The page you're seeing right now!"],
+    "domains": ["javascript"]
   },
   {
     "name": "notvcto",
     "date": "Feb 2022",
     "link": "https://github.com/notvcto/notvcto",
-    "description": [
-      "Config files for my GitHub profile."
-    ],
-    "domains": [
-      "config",
-      "github-config"
-    ]
+    "description": ["Config files for my GitHub profile."],
+    "domains": ["unknown"]
   },
   {
     "name": "vsh",
-    "date": "Jul 2025",
+    "date": "July 2025",
     "link": "https://github.com/notvcto/vsh",
-    "description": [
-      "The beginner-friendly, power-user-capable shell."
-    ],
-    "domains": []
+    "description": ["The beginner-friendly, power-user-capable shell."],
+    "domains": ["unknown"]
   },
   {
     "name": "grow-garden-live",
-    "date": "Jun 2025",
+    "date": "June 2025",
     "link": "https://github.com/notvcto/grow-garden-live",
-    "description": [
-      "Grow a Garden stock website."
-    ],
-    "domains": []
+    "description": ["Grow a Garden stock website."],
+    "domains": ["typescript", "css", "html", "javascript"]
   },
   {
     "name": "GardenBot",
     "date": "May 2025",
     "link": "https://github.com/notvcto/GardenBot",
-    "description": [
-      "Discord bot for Grow a Garden stock notifying."
-    ],
-    "domains": []
+    "description": ["Discord bot for Grow a Garden stock notifying."],
+    "domains": ["javascript"]
   }
 ]
