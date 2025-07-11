@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ReactGA from "react-ga4";
+import project_list from "../../data/projects.json";
 
 export class AboutVcto extends Component {
   constructor() {
@@ -330,48 +331,6 @@ function Skills() {
 }
 
 function Projects() {
-  const project_list = [
-    {
-      name: "notvcto.github.io",
-      date: "Sep 2024",
-      link: "https://github.com/notvcto/notvcto.github.io",
-      description: ["The page you're seeing right now!"],
-      domains: ["javascript", "next.js"],
-    },
-    {
-      name: "omen-source",
-      date: "Sep 2024",
-      link: "https://github.com/notvcto/omen-source",
-      description: ["Source code of my Discord bot"],
-      domains: ["javascript", "node.js", "lavalink"],
-    },
-    {
-      name: "omen",
-      date: "Sep 2024",
-      link: "https://github.com/notvcto/omen",
-      description: ["Website for my Discord bot!"],
-      domains: ["javascript", "next.js"],
-    },
-
-    {
-      name: "GardenBot",
-      date: "May 2025",
-      link: "https://github.com/notvcto/GardenBot",
-      description: [
-        "Discord Bot with an integrated API to check for the Grow a Garden stock.",
-      ],
-      domains: ["javascript"],
-    },
-
-    {
-      name: "thorn-bootstrap",
-      date: "May 2025",
-      link: "https://github.com/notvcto/thorn-bootstrap",
-      description: ["Bootstrap for my all new programming language, Thorn"],
-      domains: ["thorn", "python"],
-    },
-  ];
-
   const tag_colors = {
     javascript: "yellow-300",
     firebase: "red-600",
@@ -446,21 +405,23 @@ function Projects() {
                 })}
               </ul>
               <div className="flex flex-wrap items-start justify-start text-xs py-2">
-                {project.domains
-                  ? project.domains.map((domain, index) => {
-                      const borderColorClass = `border-${tag_colors[domain]}`;
-                      const textColorClass = `text-${tag_colors[domain]}`;
+                {project.domains?.map((domain, index) => {
+                  const borderColorClass = `border-${
+                    tag_colors[domain] ?? "gray-500"
+                  }`;
+                  const textColorClass = `text-${
+                    tag_colors[domain] ?? "gray-300"
+                  }`;
 
-                      return (
-                        <span
-                          key={index}
-                          className={`px-1.5 py-0.5 w-max border ${borderColorClass} ${textColorClass} m-1 rounded-full`}
-                        >
-                          {domain}
-                        </span>
-                      );
-                    })
-                  : null}
+                  return (
+                    <span
+                      key={index}
+                      className={`px-1.5 py-0.5 w-max border ${borderColorClass} ${textColorClass} m-1 rounded-full`}
+                    >
+                      {domain}
+                    </span>
+                  );
+                })}
               </div>
             </div>
           </a>
@@ -469,6 +430,7 @@ function Projects() {
     </>
   );
 }
+
 function Resume() {
   return (
     <iframe
