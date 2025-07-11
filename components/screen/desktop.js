@@ -526,7 +526,7 @@ export class Desktop extends Component {
 
     render() {
         return (
-            <div className={" h-full w-full flex flex-col items-end justify-start content-start flex-wrap-reverse pt-8 bg-transparent relative overflow-hidden overscroll-none window-parent"}>
+            <div className="h-full w-full flex flex-col items-end justify-start content-start flex-wrap-reverse pt-8 pb-20 bg-transparent relative overflow-hidden overscroll-none window-parent">
 
                 {/* Window Area */}
                 <div className="absolute h-full w-full bg-transparent" data-context="desktop-area">
@@ -538,7 +538,6 @@ export class Desktop extends Component {
 
                 {/* Ubuntu Side Menu Bar */}
                 <SideBar apps={apps}
-                    hide={this.state.hideSideBar}
                     hideSideBar={this.hideSideBar}
                     favourite_apps={this.state.favourite_apps}
                     showAllApps={this.showAllApps}

@@ -21,6 +21,7 @@ module.exports = {
       'mac-green': '#34C759',
       'mac-dock': 'rgba(255, 255, 255, 0.15)',
       'mac-dock-dark': 'rgba(0, 0, 0, 0.3)',
+      'mac-dock': 'rgba(255, 255, 255, 0.1)',
       'mac-translucent': 'rgba(255, 255, 255, 0.8)',
       'mac-translucent-dark': 'rgba(0, 0, 0, 0.6)',
       
