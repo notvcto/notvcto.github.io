@@ -235,92 +235,157 @@ function About() {
   );
 }
 function Skills() {
+  const languagesAndTools = [
+    {
+      name: "JavaScript",
+      badge:
+        "https://img.shields.io/badge/-JavaScript-%23F7DF1C?style=flat&logo=javascript&logoColor=000000",
+    },
+    {
+      name: "Python",
+      badge:
+        "https://img.shields.io/badge/-Python-3776AB?style=flat&logo=python&logoColor=ffffff",
+    },
+    {
+      name: "HTML5",
+      badge:
+        "https://img.shields.io/badge/-HTML5-%23E44D27?style=flat&logo=html5&logoColor=ffffff",
+      link: "https://www.google.com/search?q=is+html+a+language%3F",
+      tooltip: "yes it's a language!",
+    },
+    {
+      name: "CSS",
+      badge:
+        "https://img.shields.io/badge/-CSS3-1572B6?style=flat&logo=css3&logoColor=ffffff",
+    },
+    {
+      name: "SCSS",
+      badge:
+        "https://img.shields.io/badge/-SCSS-CC6699?style=flat&logo=sass&logoColor=ffffff",
+    },
+    {
+      name: "Git",
+      badge:
+        "https://img.shields.io/badge/-Git-%23F05032?style=flat&logo=git&logoColor=%23ffffff",
+    },
+    {
+      name: "Bash",
+      badge:
+        "https://img.shields.io/badge/-Bash-121011?style=flat&logo=gnu-bash&logoColor=white",
+    },
+  ];
+
+  const frameworksAndLibs = [
+    {
+      name: "Next.js",
+      badge:
+        "https://img.shields.io/badge/Next-black?style=flat&logo=next.js&logoColor=ffffff",
+    },
+    {
+      name: "Node.js",
+      badge:
+        "https://img.shields.io/badge/-Nodejs-339933?style=flat&logo=Node.js&logoColor=ffffff",
+    },
+    {
+      name: "TailwindCSS",
+      badge:
+        "https://img.shields.io/badge/-TailwindCSS-06B6D4?style=flat&logo=tailwindcss&logoColor=ffffff",
+    },
+    {
+      name: "Firebase",
+      badge:
+        "https://img.shields.io/badge/-Firebase-FFCA28?style=flat&logo=firebase&logoColor=000000",
+    },
+    {
+      name: "Discord.js",
+      badge:
+        "https://img.shields.io/badge/-Discord.js-5865F2?style=flat&logo=discord&logoColor=ffffff",
+    },
+  ];
+
   return (
     <>
-      <div className=" font-medium relative text-2xl mt-2 md:mt-4 mb-4">
+      <div className="font-medium relative text-2xl mt-2 md:mt-4 mb-4">
         Technical Skills
         <div className="absolute pt-px bg-white mt-px top-full w-full">
           <div className="bg-white absolute rounded-full p-0.5 md:p-1 top-0 transform -translate-y-1/2 left-full"></div>
           <div className="bg-white absolute rounded-full p-0.5 md:p-1 top-0 transform -translate-y-1/2 right-full"></div>
         </div>
       </div>
-      <ul className=" tracking-tight text-sm md:text-base w-10/12 emoji-list">
-        <li className=" list-arrow text-sm md:text-base mt-4 leading-tight tracking-tight">
+
+      <ul className="tracking-tight text-sm md:text-base w-10/12 emoji-list">
+        <li className="list-arrow mt-4 leading-tight tracking-tight">
           I've worked with a wide variety of programming languages & frameworks.
         </li>
-        <li className=" list-arrow text-sm md:text-base mt-4 leading-tight tracking-tight">
-          <div>
-            {" "}
-            My areas of expertise are{" "}
-            <strong className="text-ubt-gedit-orange">
-              Next.js & JavaScript!
-            </strong>
-          </div>
+        <li className="list-arrow mt-4 leading-tight tracking-tight">
+          My areas of expertise are{" "}
+          <strong className="text-ubt-gedit-orange">
+            Next.js & JavaScript!
+          </strong>
         </li>
-        <li className=" list-arrow text-sm md:text-base mt-4 leading-tight tracking-tight">
-          <div>Here are my most frequently used</div>
+        <li className="list-arrow mt-4 leading-tight tracking-tight">
+          Here are my most frequently used
         </li>
       </ul>
+
       <div className="w-full md:w-10/12 flex mt-4">
-        <div className=" text-sm text-center md:text-base w-1/2 font-bold">
+        <div className="text-sm text-center md:text-base w-1/2 font-bold">
           Languages & Tools
         </div>
-        <div className=" text-sm text-center md:text-base w-1/2 font-bold">
+        <div className="text-sm text-center md:text-base w-1/2 font-bold">
           Frameworks & Libraries
         </div>
       </div>
+
       <div className="w-full md:w-10/12 flex justify-center items-start font-bold text-center">
         <div className="px-2 w-1/2">
           <div className="flex flex-wrap justify-center items-start w-full mt-2">
-            <img
-              className="m-1"
-              src="https://img.shields.io/badge/-JavaScript-%23F7DF1C?style=flat&logo=javascript&logoColor=000000&labelColor=%23F7DF1C&color=%23FFCE5A"
-              alt="vcto javascript"
-            />
-            <img
-              className="m-1"
-              src="http://img.shields.io/badge/-Python-3776AB?style=flat&logo=python&logoColor=ffffff"
-              alt="vcto python"
-            />
-            <a
-              href="https://www.google.com/search?q=is+html+a+language%3F"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <img
-                title="yes it's a language!"
-                className="m-1"
-                src="https://img.shields.io/badge/-HTML5-%23E44D27?style=flat&logo=html5&logoColor=ffffff"
-                alt="vcto HTML"
-              />
-            </a>
-            <img
-              src="https://img.shields.io/badge/-Git-%23F05032?style=flat&logo=git&logoColor=%23ffffff"
-              alt="vcto git"
-              className="m-1"
-            />
+            {languagesAndTools.map((tool, idx) =>
+              tool.link ? (
+                <a
+                  key={idx}
+                  href={tool.link}
+                  title={tool.tooltip}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <img
+                    className="m-1"
+                    src={tool.badge}
+                    alt={`vcto ${tool.name}`}
+                  />
+                </a>
+              ) : (
+                <img
+                  key={idx}
+                  className="m-1"
+                  src={tool.badge}
+                  alt={`vcto ${tool.name}`}
+                />
+              )
+            )}
           </div>
         </div>
-        <div className="px-2 flex flex-wrap items-start w-1/2">
+
+        <div className="px-2 w-1/2">
           <div className="flex flex-wrap justify-center items-start w-full mt-2">
-            <img
-              className=" m-1"
-              src="https://img.shields.io/badge/Next-black?style=flat&logo=next.js&logoColor=ffffff"
-              alt="vcto next"
-            />
-            <img
-              src="https://img.shields.io/badge/-Nodejs-339933?style=flat&logo=Node.js&logoColor=ffffff"
-              alt="vcto node.js"
-              className="m-1"
-            />
+            {frameworksAndLibs.map((lib, idx) => (
+              <img
+                key={idx}
+                className="m-1"
+                src={lib.badge}
+                alt={`vcto ${lib.name}`}
+              />
+            ))}
           </div>
         </div>
       </div>
-      <ul className=" tracking-tight text-sm md:text-base w-10/12 emoji-list mt-4">
-        <li className=" list-arrow text-sm md:text-base mt-4 leading-tight tracking-tight">
-          <span> And of course,</span>{" "}
+
+      <ul className="tracking-tight text-sm md:text-base w-10/12 emoji-list mt-4">
+        <li className="list-arrow mt-4 leading-tight tracking-tight">
+          <span>And of course,</span>{" "}
           <img
-            className=" inline ml-1"
+            className="inline ml-1"
             src="http://img.shields.io/badge/-Linux-0078D6?style=plastic&logo=linux&logoColor=ffffff"
             alt="vcto linux"
           />{" "}
@@ -334,6 +399,7 @@ function Skills() {
 function Projects() {
   const tag_colors = {
     javascript: "yellow-300",
+    typescript: "blue-300",
     firebase: "red-600",
     firestore: "red-500",
     "firebase auth": "red-400",
@@ -343,7 +409,9 @@ function Projects() {
     "react-native": "purple-500",
     html: "pink-600",
     html5: "pink-600",
+    css: "blue-200",
     sass: "pink-400",
+    scss: "pink-400",
     tensorflow: "yellow-600",
     django: "green-600",
     python: "green-200",
@@ -351,16 +419,22 @@ function Projects() {
     tailwindcss: "blue-300",
     "next.js": "purple-600",
     nodejs: "green-300",
+    config: "gray-400",
+    "github-config": "gray-400",
   };
 
   const [search, setSearch] = useState("");
-  const [selectedDomain, setSelectedDomain] = useState(null);
+  const [selectedTag, setSelectedTag] = useState(null);
   const [visibleCount, setVisibleCount] = useState(6);
 
-  const allDomains = useMemo(() => {
-    const set = new Set();
-    project_list.forEach((p) => p.domains?.forEach((d) => set.add(d)));
-    return Array.from(set);
+  const allTags = useMemo(() => {
+    const tagSet = new Set();
+    project_list.forEach((p) =>
+      [...(p.languages || []), ...(p.topics || [])].forEach((tag) =>
+        tagSet.add(tag)
+      )
+    );
+    return Array.from(tagSet);
   }, []);
 
   const filteredProjects = useMemo(() => {
@@ -372,13 +446,12 @@ function Projects() {
           .toLowerCase()
           .includes(search.toLowerCase());
 
-      const matchesDomain = selectedDomain
-        ? project.domains.includes(selectedDomain)
-        : true;
+      const tags = [...(project.languages || []), ...(project.topics || [])];
+      const matchesTag = selectedTag ? tags.includes(selectedTag) : true;
 
-      return matchesSearch && matchesDomain;
+      return matchesSearch && matchesTag;
     });
-  }, [search, selectedDomain]);
+  }, [search, selectedTag]);
 
   const visibleProjects = filteredProjects.slice(0, visibleCount);
 
@@ -409,38 +482,36 @@ function Projects() {
 
         <div className="flex flex-wrap gap-2 mt-2">
           <button
-            onClick={() => setSelectedDomain(null)}
+            onClick={() => setSelectedTag(null)}
             className={`px-2 py-0.5 text-xs rounded-full border ${
-              selectedDomain === null
+              selectedTag === null
                 ? "bg-white text-black"
                 : "border-gray-500 text-gray-300"
             }`}
           >
             All
           </button>
-          {allDomains.map((domain) => (
+          {allTags.map((tag) => (
             <button
-              key={domain}
-              onClick={() =>
-                setSelectedDomain(selectedDomain === domain ? null : domain)
-              }
+              key={tag}
+              onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
               className={`px-2 py-0.5 text-xs rounded-full border ${
-                selectedDomain === domain
+                selectedTag === tag
                   ? "bg-white text-black"
-                  : `border-${tag_colors[domain] || "gray-500"} text-${
-                      tag_colors[domain] || "gray-300"
+                  : `border-${tag_colors[tag] || "gray-500"} text-${
+                      tag_colors[tag] || "gray-300"
                     }`
               }`}
             >
-              {domain}
+              {tag}
             </button>
           ))}
         </div>
       </div>
 
       {visibleProjects.map((project, index) => {
-        const projectNameFromLink = project.link.split("/");
-        const projectName = projectNameFromLink[projectNameFromLink.length - 1];
+        const projectName = project.link.split("/").pop();
+        const tags = [...(project.languages || []), ...(project.topics || [])];
 
         return (
           <a
@@ -462,7 +533,7 @@ function Projects() {
                     scrolling="0"
                     width="150"
                     height="20"
-                    title={project.name.toLowerCase() + "-star"}
+                    title={`${project.name.toLowerCase()}-star`}
                   ></iframe>
                 </div>
                 <div className="text-gray-300 font-light text-sm">
@@ -477,23 +548,16 @@ function Projects() {
                 ))}
               </ul>
               <div className="flex flex-wrap items-start justify-start text-xs py-2">
-                {project.domains?.map((domain, i) => {
-                  const borderColorClass = `border-${
-                    tag_colors[domain] ?? "gray-500"
-                  }`;
-                  const textColorClass = `text-${
-                    tag_colors[domain] ?? "gray-300"
-                  }`;
-
-                  return (
-                    <span
-                      key={i}
-                      className={`px-1.5 py-0.5 w-max border ${borderColorClass} ${textColorClass} m-1 rounded-full`}
-                    >
-                      {domain}
-                    </span>
-                  );
-                })}
+                {tags.map((tag, i) => (
+                  <span
+                    key={i}
+                    className={`px-1.5 py-0.5 w-max border border-${
+                      tag_colors[tag] || "gray-500"
+                    } text-${tag_colors[tag] || "gray-300"} m-1 rounded-full`}
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
             </div>
           </a>

@@ -3,63 +3,114 @@
     "name": "notvcto.github.io",
     "date": "Sept 2024",
     "link": "https://github.com/notvcto/notvcto.github.io",
-    "description": ["The page you're seeing right now!"],
-    "domains": ["javascript"]
+    "description": [
+      "The page you're seeing right now!"
+    ],
+    "languages": [
+      "javascript"
+    ],
+    "topics": []
   },
   {
     "name": "notvcto",
     "date": "Feb 2022",
     "link": "https://github.com/notvcto/notvcto",
-    "description": ["Config files for my GitHub profile."],
-    "domains": ["unknown"]
+    "description": [
+      "Config files for my GitHub profile."
+    ],
+    "languages": [],
+    "topics": [
+      "config",
+      "github-config"
+    ]
   },
   {
     "name": "vsh",
     "date": "July 2025",
     "link": "https://github.com/notvcto/vsh",
-    "description": ["The beginner-friendly, power-user-capable shell."],
-    "domains": ["unknown"]
+    "description": [
+      "The beginner-friendly, power-user-capable shell."
+    ],
+    "languages": [],
+    "topics": []
   },
   {
     "name": "grow-garden-live",
     "date": "June 2025",
     "link": "https://github.com/notvcto/grow-garden-live",
-    "description": ["Grow a Garden stock website."],
-    "domains": ["typescript", "css", "html", "javascript"]
+    "description": [
+      "Grow a Garden stock website."
+    ],
+    "languages": [
+      "typescript",
+      "css",
+      "html",
+      "javascript"
+    ],
+    "topics": []
   },
   {
     "name": "GardenBot",
     "date": "May 2025",
     "link": "https://github.com/notvcto/GardenBot",
-    "description": ["Discord bot for Grow a Garden stock notifying."],
-    "domains": ["javascript"]
+    "description": [
+      "Discord bot for Grow a Garden stock notifying."
+    ],
+    "languages": [
+      "javascript"
+    ],
+    "topics": []
   },
   {
     "name": "thorn-bootstrap",
     "date": "May 2025",
     "link": "https://github.com/notvcto/thorn-bootstrap",
-    "description": ["No description provided."],
-    "domains": ["python"]
+    "description": [
+      "No description provided."
+    ],
+    "languages": [
+      "python"
+    ],
+    "topics": []
   },
   {
     "name": "omen",
     "date": "Sept 2024",
     "link": "https://github.com/notvcto/omen",
-    "description": ["No description provided."],
-    "domains": ["javascript", "scss"]
+    "description": [
+      "No description provided."
+    ],
+    "languages": [
+      "javascript",
+      "scss"
+    ],
+    "topics": []
   },
   {
     "name": "omen-source",
     "date": "Sept 2024",
     "link": "https://github.com/notvcto/omen-source",
-    "description": ["Source code for the Omen Discord bot."],
-    "domains": ["javascript", "html"]
+    "description": [
+      "Source code for the Omen Discord bot."
+    ],
+    "languages": [
+      "javascript",
+      "html"
+    ],
+    "topics": []
   },
   {
     "name": "click-me",
     "date": "Feb 2025",
     "link": "https://github.com/notvcto/click-me",
-    "description": ["No description provided."],
-    "domains": ["javascript", "css", "html"]
+    "description": [
+      "No description provided."
+    ],
+    "languages": [
+      "javascript",
+      "css",
+      "html"
+    ],
+    "topics": []
   }
 ]
