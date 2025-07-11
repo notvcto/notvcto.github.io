@@ -9,7 +9,6 @@ export default class Ubuntu extends Component {
 	constructor() {
 		super();
 		this.state = {
-			isClient: false,
 			screen_locked: false,
 			bg_image_name: 'wall-2',
 			booting_screen: true,
@@ -18,7 +17,6 @@ export default class Ubuntu extends Component {
 	}
 
 	componentDidMount() {
-		this.setState({ isClient: true });
 		this.getLocalData();
 	}
 
@@ -29,7 +27,7 @@ export default class Ubuntu extends Component {
 	};
 
 	getLocalData = () => {
-		if (this.state.isClient) {
+		if (typeof window !== 'undefined') {
 			// Get Previously selected Background Image
 			let bg_image_name = localStorage.getItem('bg-image');
 			if (bg_image_name !== null && bg_image_name !== undefined) {

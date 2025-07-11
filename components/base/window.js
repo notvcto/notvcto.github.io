@@ -11,7 +11,6 @@ export class Window extends Component {
         this.startX = 60;
         this.startY = 10;
         this.state = {
-            isClient: false,
             cursorType: "cursor-default",
             width: 60,
             height: 85,
@@ -25,7 +24,6 @@ export class Window extends Component {
     }
 
     componentDidMount() {
-        this.setState({ isClient: true });
         this.id = this.props.id;
         this.setDefaultWindowDimenstion();
 
@@ -33,8 +31,7 @@ export class Window extends Component {
         ReactGA.send({ hitType: "pageview", page: `/${this.id}`, title: "Custom Title" });
 
         // on window resize, resize boundary
-        this.resizeBoundries();
-        if (this.state.isClient) {
+        if (typeof window !== 'undefined') {
             window.addEventListener('resize', this.resizeBoundries);
         }
     }
@@ -42,35 +39,28 @@ export class Window extends Component {
     componentWillUnmount() {
         ReactGA.send({ hitType: "pageview", page: "/desktop", title: "Custom Title" });
 
-        if (this.state.isClient) {
+        if (typeof window !== 'undefined') {
             window.removeEventListener('resize', this.resizeBoundries);
         }
     }
 
     setDefaultWindowDimenstion = () => {
-        const defaultWidth = this.state.isClient && window.innerWidth < 640 ? 85 : 60;
-        const defaultHeight = this.state.isClient && window.innerWidth < 640 ? 60 : 85;
-        
-        this.setState({ 
-            height: defaultHeight, 
-            width: defaultWidth 
-        }, () => {
-            if (this.state.isClient) {
-                this.resizeBoundries();
-            }
-        });
+        if (typeof window !== 'undefined' && window.innerWidth < 640) {
+            this.setState({ height: 60, width: 85 }, this.resizeBoundries);
+        }
+        else {
+            this.setState({ height: 85, width: 60 }, this.resizeBoundries);
+        }
     }
 
     resizeBoundries = () => {
-        if (!this.state.isClient) return;
-        
         this.setState({
             parentSize: {
-                height: window.innerHeight //parent height
+                height: (typeof window !== 'undefined' ? window.innerHeight : 800) //parent height
                     - (window.innerHeight * (this.state.height / 100.0))  // this window's height
                     - 28 // some padding
                 ,
-                width: window.innerWidth // parent width
+                width: (typeof window !== 'undefined' ? window.innerWidth : 1200) // parent width
                     - (window.innerWidth * (this.state.width / 100.0)) //this window's width
             }
         });
