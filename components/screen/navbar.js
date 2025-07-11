@@ -13,15 +13,21 @@ export default class Navbar extends Component {
 
 	render() {
 		return (
-			<div className="main-navbar-vp absolute top-0 right-0 w-screen shadow-mac-sm flex flex-nowrap justify-between items-center bg-mac-translucent-dark backdrop-blur-mac text-mac-primary text-sm select-none z-50 h-7">
+			<div className="main-navbar-vp absolute top-0 right-0 w-screen shadow-md flex flex-nowrap justify-between items-center bg-ub-grey text-ubt-grey text-sm select-none z-50">
 				<div
-					className="pl-3 pr-3 py-1 flex items-center"
+					tabIndex="0"
+					className={
+						'pl-3 pr-3 outline-none transition duration-100 ease-in-out border-b-2 border-transparent focus:border-ubb-orange py-1 '
+					}
 				>
-					<div className="w-4 h-4 rounded-full bg-mac-primary bg-opacity-80 flex items-center justify-center">
-						<span className="text-xs font-bold text-black">🍎</span>
-					</div>
+					Activities
 				</div>
-				<div className="pl-2 pr-2 text-xs md:text-sm py-1">
+				<div
+					tabIndex="0"
+					className={
+						'pl-2 pr-2 text-xs md:text-sm outline-none transition duration-100 ease-in-out border-b-2 border-transparent focus:border-ubb-orange py-1'
+					}
+				>
 					<Clock />
 				</div>
 				<div
@@ -30,7 +36,10 @@ export default class Navbar extends Component {
 					onFocus={() => {
 						this.setState({ status_card: true });
 					}}
-					className="relative pr-3 pl-3 outline-none transition duration-100 ease-in-out py-1 hover:bg-mac-primary hover:bg-opacity-10 rounded-mac-sm"
+					// removed onBlur from here
+					className={
+						'relative pr-3 pl-3 outline-none transition duration-100 ease-in-out border-b-2 border-transparent focus:border-ubb-orange py-1 '
+					}
 				>
 					<Status />
 					<StatusCard
@@ -38,6 +47,7 @@ export default class Navbar extends Component {
 						lockScreen={this.props.lockScreen}
 						visible={this.state.status_card}
 						toggleVisible={() => {
+							// this prop is used in statusCard component in handleClickOutside callback using react-onclickoutside
 							this.setState({ status_card: false });
 						}}
 					/>
