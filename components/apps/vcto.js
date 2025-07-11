@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ReactGA from "react-ga4";
+import { useState, useMemo } from "react";
 import project_list from "../../data/projects.json";
 
 export class AboutVcto extends Component {
@@ -340,6 +341,7 @@ function Projects() {
     flutter: "blue-400",
     dart: "blue-500",
     "react-native": "purple-500",
+    html: "pink-600",
     html5: "pink-600",
     sass: "pink-400",
     tensorflow: "yellow-600",
@@ -348,26 +350,98 @@ function Projects() {
     "codeforces-api": "gray-300",
     tailwindcss: "blue-300",
     "next.js": "purple-600",
+    nodejs: "green-300",
   };
+
+  const [search, setSearch] = useState("");
+  const [selectedDomain, setSelectedDomain] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(6);
+
+  const allDomains = useMemo(() => {
+    const set = new Set();
+    project_list.forEach((p) => p.domains?.forEach((d) => set.add(d)));
+    return Array.from(set);
+  }, []);
+
+  const filteredProjects = useMemo(() => {
+    return project_list.filter((project) => {
+      const matchesSearch =
+        project.name.toLowerCase().includes(search.toLowerCase()) ||
+        project.description
+          .join(" ")
+          .toLowerCase()
+          .includes(search.toLowerCase());
+
+      const matchesDomain = selectedDomain
+        ? project.domains.includes(selectedDomain)
+        : true;
+
+      return matchesSearch && matchesDomain;
+    });
+  }, [search, selectedDomain]);
+
+  const visibleProjects = filteredProjects.slice(0, visibleCount);
 
   return (
     <>
-      <div className=" font-medium relative text-2xl mt-2 md:mt-4 mb-4">
+      <div className="font-medium relative text-2xl mt-2 md:mt-4 mb-4">
         Projects
         <div className="absolute pt-px bg-white mt-px top-full w-full">
           <div className="bg-white absolute rounded-full p-0.5 md:p-1 top-0 transform -translate-y-1/2 left-full"></div>
           <div className="bg-white absolute rounded-full p-0.5 md:p-1 top-0 transform -translate-y-1/2 right-full"></div>
         </div>
       </div>
+
       <iframe
         src="https://github.com/sponsors/notvcto/card"
         title="Sponsor vcto"
         className="my-4 w-5/6 md:w-3/4"
       ></iframe>
 
-      {project_list.map((project, index) => {
+      <div className="w-5/6 md:w-3/4 mb-4">
+        <input
+          type="text"
+          placeholder="🔍 Search projects..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full px-2 py-1 rounded bg-ub-cool-grey border border-gray-700 text-white text-sm"
+        />
+
+        <div className="flex flex-wrap gap-2 mt-2">
+          <button
+            onClick={() => setSelectedDomain(null)}
+            className={`px-2 py-0.5 text-xs rounded-full border ${
+              selectedDomain === null
+                ? "bg-white text-black"
+                : "border-gray-500 text-gray-300"
+            }`}
+          >
+            All
+          </button>
+          {allDomains.map((domain) => (
+            <button
+              key={domain}
+              onClick={() =>
+                setSelectedDomain(selectedDomain === domain ? null : domain)
+              }
+              className={`px-2 py-0.5 text-xs rounded-full border ${
+                selectedDomain === domain
+                  ? "bg-white text-black"
+                  : `border-${tag_colors[domain] || "gray-500"} text-${
+                      tag_colors[domain] || "gray-300"
+                    }`
+              }`}
+            >
+              {domain}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {visibleProjects.map((project, index) => {
         const projectNameFromLink = project.link.split("/");
         const projectName = projectNameFromLink[projectNameFromLink.length - 1];
+
         return (
           <a
             key={index}
@@ -396,16 +470,14 @@ function Projects() {
                 </div>
               </div>
               <ul className=" tracking-normal leading-tight text-sm font-light ml-4 mt-1">
-                {project.description.map((desc, index) => {
-                  return (
-                    <li key={index} className="list-disc mt-1 text-gray-100">
-                      {desc}
-                    </li>
-                  );
-                })}
+                {project.description.map((desc, i) => (
+                  <li key={i} className="list-disc mt-1 text-gray-100">
+                    {desc}
+                  </li>
+                ))}
               </ul>
               <div className="flex flex-wrap items-start justify-start text-xs py-2">
-                {project.domains?.map((domain, index) => {
+                {project.domains?.map((domain, i) => {
                   const borderColorClass = `border-${
                     tag_colors[domain] ?? "gray-500"
                   }`;
@@ -415,7 +487,7 @@ function Projects() {
 
                   return (
                     <span
-                      key={index}
+                      key={i}
                       className={`px-1.5 py-0.5 w-max border ${borderColorClass} ${textColorClass} m-1 rounded-full`}
                     >
                       {domain}
@@ -427,6 +499,23 @@ function Projects() {
           </a>
         );
       })}
+
+      {visibleCount < filteredProjects.length && (
+        <div className="w-full flex justify-center my-4">
+          <button
+            onClick={() => setVisibleCount(visibleCount + 6)}
+            className="px-4 py-1 bg-ub-orange hover:bg-opacity-80 text-white rounded text-sm"
+          >
+            Show More
+          </button>
+        </div>
+      )}
+
+      {filteredProjects.length === 0 && (
+        <div className="text-sm text-gray-400 my-6 text-center">
+          No projects found.
+        </div>
+      )}
     </>
   );
 }
