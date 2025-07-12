@@ -17,56 +17,65 @@ export class Terminal extends Component {
     this.child_directories = {
       root: [
         "books",
-        "projects", 
+        "projects",
         "personal-documents",
         "skills",
         "languages",
         "interests",
         ".sudo-pass",
-        ".hidden"
+        ".hidden",
       ],
       books: [
         "Eric-Jorgenson_The-Almanack-of-Naval-Ravikant.pdf",
-        "Elon Musk: How the Billionaire CEO of SpaceX.pdf", 
+        "Elon Musk: How the Billionaire CEO of SpaceX.pdf",
         "The $100 Startup_CHRIS_GUILLEBEAU.pdf",
         "The_Magic_of_Thinking_Big.pdf",
-        "sudo_mastery.txt"
+        "sudo_mastery.txt",
       ],
       skills: [
         "Front-end development",
-        "React.js", 
+        "React.js",
         "jQuery",
         "Flutter",
         "Express.js",
         "SQL",
         "Firebase",
-        "terminal_wisdom.log"
+        "terminal_wisdom.log",
       ],
       projects: [
         "notvcto-personal-portfolio",
         "synonyms-list-react",
-        "economist.com-unlocked", 
+        "economist.com-unlocked",
         "Improve-Codeforces",
         "flutter-banking-app",
         "Meditech-Healthcare",
         "CPU-Scheduling-APP-React-Native",
-        "deployment.log"
+        "deployment.log",
       ],
-      interests: ["Software Engineering", "Deep Learning", "Computer Vision", "hacking_ethics.md"],
+      interests: [
+        "Software Engineering",
+        "Deep Learning",
+        "Computer Vision",
+        "hacking_ethics.md",
+      ],
       languages: ["Javascript", "C++", "Java", "Dart", "assembly_notes.txt"],
     };
     this.hidden_files = {
       ".sudo-pass": "The password is hidden in the books...",
       ".hidden": "Try: cat books/sudo_mastery.txt",
-      "sudo_mastery.txt": "Remember: With great power comes great responsibility.\nThe key is: 'matrix'",
-      "terminal_wisdom.log": "Hint: The sudo password might be something from a famous movie...",
+      "sudo_mastery.txt":
+        "Remember: With great power comes great responsibility.\nThe key is: 'matrix'",
+      "terminal_wisdom.log":
+        "Hint: The sudo password might be something from a famous movie...",
       "deployment.log": "Last deployment used sudo with password: m****x",
-      "hacking_ethics.md": "# Ethical Hacking\nAlways remember: sudo responsibly.\nFamous quote: 'There is no spoon' - The Matrix",
-      "assembly_notes.txt": "Low-level programming requires sudo access.\nMatrix operations are fundamental."
+      "hacking_ethics.md":
+        "# Ethical Hacking\nAlways remember: sudo responsibly.\nFamous quote: 'There is no spoon' - The Matrix",
+      "assembly_notes.txt":
+        "Low-level programming requires sudo access.\nMatrix operations are fundamental.",
     };
-    this.state = { 
+    this.state = {
       terminal: [],
-      isClient: false
+      isClient: false,
     };
   }
 
@@ -206,7 +215,7 @@ export class Terminal extends Component {
       if (!command) return;
 
       this.removeCursor(terminal_row_id);
-      
+
       if (this.password_mode) {
         // Handle password input
         this.handlePasswordInput(command, terminal_row_id);
@@ -250,25 +259,29 @@ export class Terminal extends Component {
 
   handlePasswordInput = (password, rowId) => {
     this.password_mode = false;
-    
+
     if (password.toLowerCase() === "matrix") {
       this.sudo_unlocked = true;
       this.saveSudoState();
-      
+
       const result = `<div class="text-green-400">
         🎉 Sudo access granted! Welcome to the Matrix, Neo.<br/>
         You now have elevated privileges.
       </div>`;
-      
+
       document.getElementById(`row-result-${rowId}`).innerHTML = result;
       this.appendTerminalRow();
-      
+
       // Now execute the original sudo command
       if (this.pending_sudo_command) {
         setTimeout(() => {
           const newRowId = this.terminal_rows - 2;
-          const sudoResult = this.handleSudoCommand(this.pending_sudo_command, newRowId);
-          document.getElementById(`row-result-${newRowId}`).innerHTML = sudoResult;
+          const sudoResult = this.handleSudoCommand(
+            this.pending_sudo_command,
+            newRowId
+          );
+          document.getElementById(`row-result-${newRowId}`).innerHTML =
+            sudoResult;
           this.appendTerminalRow();
           this.pending_sudo_command = null;
         }, 1000);
@@ -376,7 +389,7 @@ export class Terminal extends Component {
   promptSudoPassword = (args, rowId) => {
     this.password_mode = true;
     this.pending_sudo_command = args;
-    
+
     const result = `<div class="text-yellow-400">
       [sudo] password for vcto: <span class="text-gray-400">(explore the filesystem for clues...)</span><br/>
       <div class="text-gray-400 text-sm">
@@ -384,7 +397,7 @@ export class Terminal extends Component {
         🔍 Look for files that might contain passwords or hints!
       </div>
     </div>`;
-    
+
     document.getElementById(`row-result-${rowId}`).innerHTML = result;
     this.appendTerminalRow();
   };
@@ -412,7 +425,9 @@ export class Terminal extends Component {
           <span class="text-white">Apps:</span><br/>
           • code, spotify, chrome, about-vcto, settings, etc.<br/><br/>
           <span class="text-white">Fun:</span><br/>
-          • sudo [command] - elevated privileges ${this.sudo_unlocked ? '✅' : '🔒'}<br/>
+          • sudo [command] - elevated privileges ${
+            this.sudo_unlocked ? "✅" : "🔒"
+          }<br/>
           • fortune - random wisdom<br/>
           • say [text] - text-to-speech effect<br/><br/>
           <span class="text-gray-400">💡 Tip: Try exploring hidden files with 'ls -la' or 'cat .[filename]'</span>
@@ -429,17 +444,17 @@ export class Terminal extends Component {
       case "ls": {
         const target = rest || this.curr_dir_name;
         const showHidden = rest.includes("-la") || rest.includes("-a");
-        
+
         if (this.child_directories.hasOwnProperty(target)) {
           let files = [...this.child_directories[target]];
           if (!showHidden) {
-            files = files.filter(file => !file.startsWith('.'));
+            files = files.filter((file) => !file.startsWith("."));
           }
           result = [
             `<div class="flex justify-start flex-wrap">`,
-            ...files.map(file => {
-              const isHidden = file.startsWith('.');
-              const color = isHidden ? 'text-gray-500' : 'text-ubt-blue';
+            ...files.map((file) => {
+              const isHidden = file.startsWith(".");
+              const color = isHidden ? "text-gray-500" : "text-ubt-blue";
               return `<span class="font-bold mr-2 ${color}">'${file}'</span>`;
             }),
             `</div>`,
@@ -475,12 +490,14 @@ export class Terminal extends Component {
       case "fortune": {
         const fortunes = [
           "The best way to predict the future is to invent it. - Alan Kay",
-          "Code never lies, comments sometimes do. - Ron Jeffries", 
+          "Code never lies, comments sometimes do. - Ron Jeffries",
           "Simplicity is the ultimate sophistication. - Leonardo da Vinci",
           "First, solve the problem. Then, write the code. - John Johnson",
-          "Experience is the name everyone gives to their mistakes. - Oscar Wilde"
+          "Experience is the name everyone gives to their mistakes. - Oscar Wilde",
         ];
-        result = `<div class="text-yellow-400">🔮 ${fortunes[Math.floor(Math.random() * fortunes.length)]}</div>`;
+        result = `<div class="text-yellow-400">🔮 ${
+          fortunes[Math.floor(Math.random() * fortunes.length)]
+        }</div>`;
         break;
       }
 
@@ -550,7 +567,8 @@ export class Terminal extends Component {
 
       case "echo": {
         if (rest === "$motd") {
-          result = "Welcome to vcto's interactive terminal! 🚀 Type 'help' for commands.";
+          result =
+            "Welcome to vcto's interactive terminal! 🚀 Type 'help' for commands.";
         } else {
           result = this.xss(rest);
         }
@@ -613,10 +631,16 @@ export class Terminal extends Component {
         id="terminal-body"
       >
         <div className="p-2">
-          <div className="text-green-400">Welcome to vcto's Terminal v2.0 🚀</div>
-          <div className="text-gray-400">Type 'help' for available commands</div>
+          <div className="text-green-400">
+            Welcome to vcto's Terminal v2.0 🚀
+          </div>
+          <div className="text-gray-400">
+            Type 'help' for available commands
+          </div>
           <div className="text-yellow-400">
-            {this.sudo_unlocked ? "🔓 Sudo access: UNLOCKED" : "🔒 Sudo access: LOCKED (find the password!)"}
+            {this.sudo_unlocked
+              ? "🔓 Sudo access: UNLOCKED"
+              : "🔒 Sudo access: LOCKED (find the password!)"}
           </div>
         </div>
         {this.state.terminal}
