@@ -154,7 +154,6 @@ export class Terminal extends Component {
             className="absolute top-0 left-0 w-full opacity-0 outline-none bg-transparent"
             spellCheck={false}
             autoComplete="off"
-            type="text"
           />
         </div>
       </div>
