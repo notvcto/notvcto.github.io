@@ -12,7 +12,8 @@ export class Terminal extends Component {
     this.prev_commands = [];
     this.commands_index = -1;
     this.sudo_unlocked = false;
-    this.sudo_session_active = false;
+    this.password_mode = false;
+    this.pending_sudo_command = null;
     this.child_directories = {
       root: [
         "books",
@@ -120,10 +121,16 @@ export class Terminal extends Component {
     <React.Fragment key={id}>
       <div className="flex w-full h-5">
         <div className="flex">
-          <div className="text-ubt-green">vcto@MacBook-Pro</div>
-          <div className="text-white mx-px font-medium">:</div>
-          <div className="text-ubt-blue">{this.current_directory}</div>
-          <div className="text-white mx-px font-medium mr-1">$</div>
+          {this.password_mode ? (
+            <div className="text-yellow-400">[sudo] password for vcto:</div>
+          ) : (
+            <>
+              <div className="text-ubt-green">vcto@MacBook-Pro</div>
+              <div className="text-white mx-px font-medium">:</div>
+              <div className="text-ubt-blue">{this.current_directory}</div>
+              <div className="text-white mx-px font-medium mr-1">$</div>
+            </>
+          )}
         </div>
         <div
           id="cmd"
@@ -141,6 +148,7 @@ export class Terminal extends Component {
           <input
             id={`terminal-input-${id}`}
             data-row-id={id}
+            type={this.password_mode ? "password" : "text"}
             onKeyDown={this.checkKey}
             onBlur={this.unFocusCursor}
             className="absolute top-0 left-0 w-full opacity-0 outline-none bg-transparent"
@@ -200,7 +208,14 @@ export class Terminal extends Component {
       if (!command) return;
 
       this.removeCursor(terminal_row_id);
-      this.handleCommands(command, terminal_row_id);
+      
+      if (this.password_mode) {
+        // Handle password input
+        this.handlePasswordInput(command, terminal_row_id);
+      } else {
+        // Handle normal commands
+        this.handleCommands(command, terminal_row_id);
+      }
 
       this.prev_commands.push(command);
       this.commands_index = this.prev_commands.length;
@@ -235,9 +250,46 @@ export class Terminal extends Component {
     $("#close-terminal").trigger("click");
   };
 
+  handlePasswordInput = (password, rowId) => {
+    this.password_mode = false;
+    
+    if (password.toLowerCase() === "matrix") {
+      this.sudo_unlocked = true;
+      this.saveSudoState();
+      
+      const result = `<div class="text-green-400">
+        🎉 Sudo access granted! Welcome to the Matrix, Neo.<br/>
+        You now have elevated privileges.
+      </div>`;
+      
+      document.getElementById(`row-result-${rowId}`).innerHTML = result;
+      this.appendTerminalRow();
+      
+      // Now execute the original sudo command
+      if (this.pending_sudo_command) {
+        setTimeout(() => {
+          const newRowId = this.terminal_rows - 2;
+          const sudoResult = this.handleSudoCommand(this.pending_sudo_command, newRowId);
+          document.getElementById(`row-result-${newRowId}`).innerHTML = sudoResult;
+          this.appendTerminalRow();
+        }, 1000);
+      }
+    } else {
+      const result = `<div class="text-red-400">
+        ❌ Sorry, try again.<br/>
+        <span class="text-gray-400">Hint: The answer might be in a famous sci-fi movie... 🕶️</span>
+      </div>`;
+      document.getElementById(`row-result-${rowId}`).innerHTML = result;
+      this.appendTerminalRow();
+    }
+    
+    this.pending_sudo_command = null;
+  };
+
   handleSudoCommand = (args, rowId) => {
     if (!this.sudo_unlocked) {
-      return this.promptSudoPassword(args, rowId);
+      this.promptSudoPassword(args, rowId);
+      return;
     }
 
     const command = args.join(" ");
@@ -319,35 +371,24 @@ export class Terminal extends Component {
         Available sudo commands: nuke, vim ~/life.lessons, hack the-mainframe, deploy, rickroll`;
     }
 
-    return result;
+    document.getElementById(`row-result-${rowId}`).innerHTML = result;
+    this.appendTerminalRow();
   };
 
   promptSudoPassword = (args, rowId) => {
-    const command = args.join(" ");
-    return `<div class="text-yellow-400">
-      [sudo] password for vcto: <span class="text-gray-400">(hint: explore the filesystem for clues...)</span><br/>
-      <div class="text-red-400">sudo: ${command}: authentication required</div><br/>
+    this.password_mode = true;
+    this.pending_sudo_command = args;
+    
+    const result = `<div class="text-yellow-400">
+      [sudo] password for vcto: <span class="text-gray-400">(explore the filesystem for clues...)</span><br/>
       <div class="text-gray-400 text-sm">
         💡 Try exploring with 'ls', 'cat', and 'cd' to find hidden files...<br/>
         🔍 Look for files that might contain passwords or hints!
       </div>
     </div>`;
-  };
-
-  handleSudoAuth = (password) => {
-    if (password.toLowerCase() === "matrix") {
-      this.sudo_unlocked = true;
-      this.saveSudoState();
-      return `<div class="text-green-400">
-        🎉 Sudo access granted! Welcome to the Matrix, Neo.<br/>
-        You now have elevated privileges. Try: sudo nuke, sudo hack the-mainframe, etc.
-      </div>`;
-    } else {
-      return `<div class="text-red-400">
-        ❌ Sorry, try again.<br/>
-        <span class="text-gray-400">Hint: The answer might be in a famous sci-fi movie... 🕶️</span>
-      </div>`;
-    }
+    
+    document.getElementById(`row-result-${rowId}`).innerHTML = result;
+    this.appendTerminalRow();
   };
 
   handleCommands = (command, rowId) => {
@@ -355,15 +396,6 @@ export class Terminal extends Component {
     const main = words.shift();
     const rest = words.join(" ").trim();
     let result = "";
-
-    // Check for sudo password input
-    if (command.startsWith("sudo-auth ")) {
-      const password = command.replace("sudo-auth ", "");
-      result = this.handleSudoAuth(password);
-      document.getElementById(`row-result-${rowId}`).innerHTML = result;
-      this.appendTerminalRow();
-      return;
-    }
 
     switch (main) {
       case "help": {
@@ -391,7 +423,8 @@ export class Terminal extends Component {
       }
 
       case "sudo": {
-        result = this.handleSudoCommand(words, rowId);
+        this.handleSudoCommand(words, rowId);
+        return;
         break;
       }
 
