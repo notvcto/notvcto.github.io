@@ -272,6 +272,7 @@ export class Terminal extends Component {
           const sudoResult = this.handleSudoCommand(this.pending_sudo_command, newRowId);
           document.getElementById(`row-result-${newRowId}`).innerHTML = sudoResult;
           this.appendTerminalRow();
+          this.pending_sudo_command = null;
         }, 1000);
       }
     } else {
@@ -281,9 +282,8 @@ export class Terminal extends Component {
       </div>`;
       document.getElementById(`row-result-${rowId}`).innerHTML = result;
       this.appendTerminalRow();
+      this.pending_sudo_command = null;
     }
-    
-    this.pending_sudo_command = null;
   };
 
   handleSudoCommand = (args, rowId) => {
