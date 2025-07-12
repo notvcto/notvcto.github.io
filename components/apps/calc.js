@@ -94,17 +94,6 @@ export class Calc extends Component {
               autoComplete="off"
               type="text"
             />
-            <input
-              id={`calculator-input-${id}`}
-              data-row-id={id}
-              onKeyDown={this.checkKey}
-              onBlur={this.unFocusCursor}
-              className=" absolute top-0 left-0 w-full opacity-0 outline-none bg-transparent"
-              spellCheck={false}
-              autoFocus={typeof window !== "undefined"}
-              autoComplete="off"
-              type="text"
-            />
           </div>
         </div>
         <div
