@@ -23,21 +23,15 @@ export class Blog extends Component {
     try {
       this.setState({ loading: true });
       
-      // Fetch the blog posts data
-      const response = await fetch('/api/blog/posts');
-      if (!response.ok) {
-        throw new Error('Failed to fetch posts');
-      }
-      
-      const posts = await response.json();
+      // Use static posts data for static export
+      const posts = this.getStaticPosts();
       this.setState({ posts, loading: false });
     } catch (error) {
       console.error('Error fetching posts:', error);
-      // Fallback to static data if API fails
       this.setState({ 
         posts: this.getStaticPosts(),
         loading: false,
-        error: 'Using offline content'
+        error: null
       });
     }
   };
@@ -72,26 +66,92 @@ export class Blog extends Component {
     ];
   };
 
+  getPostContent = (postId) => {
+    // Static content for each post
+    const content = {
+      'welcome-to-my-blog': `
+        <p>Welcome to my personal blog! I'm excited to share my thoughts, experiences, and insights about programming, technology, and life as a developer.</p>
+        <p>This blog will cover a wide range of topics including:</p>
+        <ul>
+          <li>Web development tutorials and best practices</li>
+          <li>Programming language deep dives</li>
+          <li>Technology trends and analysis</li>
+          <li>Personal projects and case studies</li>
+          <li>Career advice and industry insights</li>
+        </ul>
+        <p>I hope you find the content valuable and engaging. Feel free to reach out if you have any questions or suggestions for future posts!</p>
+      `,
+      'building-this-portfolio': `
+        <p>Building this Ubuntu-themed portfolio was an exciting challenge that combined my love for Linux with modern web development technologies.</p>
+        <h2>Technology Stack</h2>
+        <p>This portfolio is built using:</p>
+        <ul>
+          <li><strong>Next.js</strong> - React framework for production</li>
+          <li><strong>React</strong> - Component-based UI library</li>
+          <li><strong>Tailwind CSS</strong> - Utility-first CSS framework</li>
+          <li><strong>React Draggable</strong> - For window management</li>
+        </ul>
+        <h2>Key Features</h2>
+        <p>The portfolio includes several interactive elements:</p>
+        <ul>
+          <li>Draggable windows with minimize/maximize functionality</li>
+          <li>Working terminal with custom commands</li>
+          <li>Multiple applications (VS Code, Calculator, etc.)</li>
+          <li>Responsive design that works on all devices</li>
+        </ul>
+        <p>The most challenging part was recreating the Ubuntu desktop experience while maintaining good performance and accessibility.</p>
+      `,
+      'terminal-tricks-and-tips': `
+        <p>The terminal is a powerful tool that every developer should master. Here are some essential tips and tricks to boost your productivity.</p>
+        <h2>Essential Commands</h2>
+        <p>These commands will save you time every day:</p>
+        <ul>
+          <li><code>cd -</code> - Switch to the previous directory</li>
+          <li><code>!!</code> - Repeat the last command</li>
+          <li><code>ctrl + r</code> - Search command history</li>
+          <li><code>ctrl + l</code> - Clear the screen</li>
+        </ul>
+        <h2>Advanced Tips</h2>
+        <p>Take your terminal skills to the next level:</p>
+        <ul>
+          <li>Use aliases for frequently used commands</li>
+          <li>Master grep and find for searching</li>
+          <li>Learn tmux for session management</li>
+          <li>Customize your shell with oh-my-zsh</li>
+        </ul>
+        <p>Remember, the terminal is your friend - the more you use it, the more efficient you'll become!</p>
+      `
+    };
+    
+    return content[postId] || '<p>Content not available.</p>';
+  };
+
   handlePostSelect = async (postId) => {
     try {
       this.setState({ loading: true });
       
-      // Fetch individual post content
-      const response = await fetch(`/api/blog/posts/${postId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch post');
+      // Get post from static data
+      const posts = this.getStaticPosts();
+      const post = posts.find(p => p.id === postId);
+      
+      if (!post) {
+        throw new Error('Post not found');
       }
       
-      const post = await response.json();
+      // Add content for the selected post
+      const postWithContent = {
+        ...post,
+        contentHtml: this.getPostContent(postId)
+      };
+      
       this.setState({
         currentView: 'post',
         selectedPostId: postId,
-        currentPost: post,
+        currentPost: postWithContent,
         loading: false,
       });
     } catch (error) {
       console.error('Error fetching post:', error);
-      // Fallback to showing a placeholder post
       this.setState({
         currentView: 'post',
         selectedPostId: postId,
@@ -104,7 +164,7 @@ export class Blog extends Component {
           tags: ['error'],
         },
         loading: false,
-        error: 'Post content unavailable'
+        error: null
       });
     }
   };
