@@ -9,6 +9,7 @@ import { displayAboutVcto } from "./components/apps/vcto";
 import { displayTerminalCalc } from "./components/apps/calc";
 import { displayVoidNet } from "./components/apps/voidnet";
 import { displayVSH } from "./components/apps/vsh";
+import { displayBlog } from "./components/apps/blog";
 
 const apps = [
   {
@@ -19,6 +20,15 @@ const apps = [
     favourite: true,
     desktop_shortcut: true,
     screen: displayChrome,
+  },
+  {
+    id: "blog",
+    title: "Blog",
+    icon: "./themes/Yaru/apps/gedit.png",
+    disabled: false,
+    favourite: true,
+    desktop_shortcut: true,
+    screen: displayBlog,
   },
   {
     id: "voidnet",
