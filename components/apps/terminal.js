@@ -578,6 +578,7 @@ export class Terminal extends Component {
       case "code":
       case "spotify":
       case "chrome":
+      case "blog":
       case "todoist":
       case "trash":
       case "about-vcto":
