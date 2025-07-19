@@ -207,3 +207,136 @@ input[type="range"].ubuntu-slider::-webkit-slider-thumb {
 .list-arrow {
   list-style: "⇀";
 }
+
+/* Markdown Content Styling */
+.markdown-content h1 {
+  color: var(--heading-color);
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 2rem 0 1rem 0;
+  line-height: 1.2;
+}
+
+.markdown-content h2 {
+  color: var(--heading-color);
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 1.5rem 0 0.75rem 0;
+  line-height: 1.3;
+}
+
+.markdown-content h3 {
+  color: var(--heading-color);
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin: 1.25rem 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+.markdown-content h4 {
+  color: var(--heading-color);
+  font-size: 1.125rem;
+  font-weight: bold;
+  margin: 1rem 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+.markdown-content p {
+  color: var(--text-color);
+  margin: 1rem 0;
+  line-height: 1.7;
+}
+
+.markdown-content a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.markdown-content a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.markdown-content strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.markdown-content em {
+  font-style: italic;
+  color: #e5e7eb;
+}
+
+.markdown-content code {
+  color: var(--code-color);
+  background-color: var(--code-bg);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-family: 'Courier New', monospace;
+}
+
+.markdown-content pre {
+  background-color: var(--code-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+.markdown-content pre code {
+  background: none;
+  padding: 0;
+  color: #e5e7eb;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid var(--link-color);
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: #9ca3af;
+}
+
+.markdown-content ul, .markdown-content ol {
+  color: var(--text-color);
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.markdown-content li {
+  margin: 0.25rem 0;
+  line-height: 1.6;
+}
+
+.markdown-content hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 2rem 0;
+}
+
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.markdown-content th, .markdown-content td {
+  border: 1px solid var(--border-color);
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.markdown-content th {
+  background-color: var(--code-bg);
+  font-weight: bold;
+  color: var(--heading-color);
+}
+
+.markdown-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
