@@ -68,20 +68,15 @@ const BlogPost = ({ post, onBack }) => {
 
         {/* Post content */}
         <article 
-          className="prose prose-invert prose-lg max-w-none
-            prose-headings:text-white prose-headings:font-bold
-            prose-h1:text-2xl prose-h1:mb-4 prose-h1:mt-8
-            prose-h2:text-xl prose-h2:mb-3 prose-h2:mt-6
-            prose-h3:text-lg prose-h3:mb-2 prose-h3:mt-4
-            prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
-            prose-a:text-ubt-blue prose-a:no-underline hover:prose-a:text-white hover:prose-a:underline
-            prose-strong:text-white prose-strong:font-semibold
-            prose-code:text-ubt-gedit-orange prose-code:bg-ub-window-title prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
-            prose-pre:bg-ub-window-title prose-pre:border prose-pre:border-gray-700 prose-pre:rounded-lg prose-pre:p-4
-            prose-blockquote:border-l-4 prose-blockquote:border-ubt-blue prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-400
-            prose-ul:text-gray-300 prose-ol:text-gray-300
-            prose-li:mb-1
-            prose-hr:border-gray-700 prose-hr:my-8"
+          className="markdown-content text-gray-300 leading-relaxed"
+          style={{
+            '--heading-color': '#ffffff',
+            '--text-color': '#d1d5db',
+            '--link-color': '#3465A4',
+            '--code-color': '#F39A21',
+            '--code-bg': '#201f1f',
+            '--border-color': '#374151'
+          }}
           dangerouslySetInnerHTML={{ __html: post.contentHtml }}
         />
 
