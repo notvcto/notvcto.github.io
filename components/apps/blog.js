@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import BlogList from '../blog/BlogList';
 import BlogPost from '../blog/BlogPost';
+import { remark } from 'remark';
+import html from 'remark-html';
+import remarkGfm from 'remark-gfm';
 
 export class Blog extends Component {
   constructor() {
@@ -69,146 +72,162 @@ export class Blog extends Component {
   getPostContent = (postId) => {
     // Static content for each post
     const content = {
-      'welcome-to-my-blog': `
-        <h1>Welcome to My Blog! 👋</h1>
-        <p>Hey there! Welcome to my personal blog where I share my thoughts, experiences, and learnings as a developer.</p>
-        <h2>What You'll Find Here</h2>
-        <p>This blog is where I document my journey through:</p>
-        <ul>
-          <li><strong>Programming Adventures</strong> 🚀</li>
-          <li><strong>Technology Insights</strong> 💡</li>
-          <li><strong>Project Deep Dives</strong> 🔍</li>
-          <li><strong>Learning Experiences</strong> 📚</li>
-          <li><strong>Random Developer Thoughts</strong> 💭</li>
-        </ul>
-        <h2>About This Blog</h2>
-        <p>This blog is built right into my portfolio using:</p>
-        <ul>
-          <li><strong>Next.js</strong> for static site generation</li>
-          <li><strong>Markdown</strong> for easy content creation</li>
-          <li><strong>Tailwind CSS</strong> for styling</li>
-          <li><strong>Integrated</strong> into my Ubuntu-themed portfolio</li>
-        </ul>
-        <h2>Stay Connected</h2>
-        <p>Feel free to explore my other projects and connect with me:</p>
-        <ul>
-          <li>Check out my <a href="https://github.com/notvcto">GitHub</a></li>
-          <li>Explore my terminal (type <code>help</code> for commands!)</li>
-          <li>Browse my projects in the About section</li>
-        </ul>
-        <p>Thanks for stopping by, and I hope you enjoy reading my posts!</p>
-        <hr>
-        <p><em>Happy coding!</em> ✨</p>
-      `,
-      'building-this-portfolio': `
-        <h1>Building This Ubuntu Portfolio 🖥️</h1>
-        <p>Creating this Ubuntu-themed portfolio was one of the most fun projects I've worked on. Let me walk you through the journey!</p>
-        <h2>The Inspiration</h2>
-        <p>I wanted to create something that would:</p>
-        <ul>
-          <li>Stand out from typical portfolio websites</li>
-          <li>Showcase my technical skills interactively</li>
-          <li>Provide an engaging user experience</li>
-          <li>Demonstrate my creativity and attention to detail</li>
-        </ul>
-        <h2>Technology Stack</h2>
-        <h3>Core Technologies</h3>
-        <ul>
-          <li><strong>Next.js</strong> - For the React framework and static site generation</li>
-          <li><strong>Tailwind CSS</strong> - For rapid styling and responsive design</li>
-          <li><strong>React Draggable</strong> - For the window dragging functionality</li>
-          <li><strong>jQuery</strong> - For some DOM manipulations (I know, I know... but it works!)</li>
-        </ul>
-        <h3>Key Features Implemented</h3>
-        <h4>1. Window Management System</h4>
-        <pre><code>// Each app runs in its own draggable window
+      'welcome-to-my-blog': `# Welcome to My Blog! 👋
+
+Hey there! Welcome to my personal blog where I share my thoughts, experiences, and learnings as a developer.
+
+## What You'll Find Here
+
+This blog is where I document my journey through:
+
+- **Programming Adventures** 🚀
+- **Technology Insights** 💡
+- **Project Deep Dives** 🔍
+- **Learning Experiences** 📚
+- **Random Developer Thoughts** 💭
+
+## About This Blog
+
+This blog is built right into my portfolio using:
+
+- **Next.js** for static site generation
+- **Markdown** for easy content creation
+- **Tailwind CSS** for styling
+- **Integrated** into my Ubuntu-themed portfolio
+
+## Stay Connected
+
+Feel free to explore my other projects and connect with me:
+
+- Check out my [GitHub](https://github.com/notvcto)
+- Explore my terminal (type \`help\` for commands!)
+- Browse my projects in the About section
+
+Thanks for stopping by, and I hope you enjoy reading my posts!
+
+---
+
+*Happy coding!* ✨`,
+      'building-this-portfolio': `# Building This Ubuntu Portfolio 🖥️
+
+Creating this Ubuntu-themed portfolio was one of the most fun projects I've worked on. Let me walk you through the journey!
+
+## The Inspiration
+
+I wanted to create something that would:
+- Stand out from typical portfolio websites
+- Showcase my technical skills interactively
+- Provide an engaging user experience
+- Demonstrate my creativity and attention to detail
+
+## Technology Stack
+
+### Core Technologies
+- **Next.js** - For the React framework and static site generation
+- **Tailwind CSS** - For rapid styling and responsive design
+- **React Draggable** - For the window dragging functionality
+- **jQuery** - For some DOM manipulations (I know, I know... but it works!)
+
+### Key Features Implemented
+
+#### 1. Window Management System
+\`\`\`javascript
+// Each app runs in its own draggable window
 const Window = ({ title, id, screen, ... }) => {
   // Window state management
   // Dragging, resizing, minimizing, maximizing
   // Focus management
-}</code></pre>
-        <h4>2. Virtual File System</h4>
-        <p>The terminal includes a complete virtual file system with:</p>
-        <ul>
-          <li>Directory navigation (<code>cd</code>, <code>ls</code>, <code>pwd</code>)</li>
-          <li>File reading (<code>cat</code>)</li>
-          <li>Hidden files and easter eggs</li>
-          <li>A sudo puzzle system!</li>
-        </ul>
-        <h4>3. Interactive Terminal</h4>
-        <p>The terminal was the most complex part:</p>
-        <ul>
-          <li>Command history with arrow keys</li>
-          <li>Real-time command parsing</li>
-          <li>Sudo authentication system</li>
-          <li>Easter eggs and hidden commands</li>
-        </ul>
-        <h2>Challenges Faced</h2>
-        <h3>1. State Management</h3>
-        <p>Managing the state of multiple windows, their positions, focus states, and interactions was complex. I used a combination of:</p>
-        <ul>
-          <li>React state for UI state</li>
-          <li>localStorage for persistence</li>
-          <li>Event listeners for global interactions</li>
-        </ul>
-        <h3>2. Terminal Implementation</h3>
-        <p>Creating a realistic terminal experience required:</p>
-        <ul>
-          <li>Proper command parsing</li>
-          <li>Cursor blinking animation</li>
-          <li>Command history</li>
-          <li>File system simulation</li>
-        </ul>
-        <h3>3. Performance Optimization</h3>
-        <p>With multiple animated windows and complex interactions, performance was crucial:</p>
-        <ul>
-          <li>Efficient re-rendering strategies</li>
-          <li>Proper cleanup of event listeners</li>
-          <li>Optimized animations</li>
-        </ul>
-        <h2>Cool Easter Eggs</h2>
-        <h3>Sudo Puzzle</h3>
-        <p>Users can unlock sudo access by exploring the file system and finding hidden clues. Once unlocked, they can run commands like:</p>
-        <ul>
-          <li><code>sudo nuke</code> - System meltdown animation</li>
-          <li><code>sudo hack the-mainframe</code> - Matrix-style hacking sequence</li>
-          <li><code>sudo deploy</code> - Fake deployment sequence</li>
-        </ul>
-        <h3>Hidden Files</h3>
-        <p>The file system contains hidden files with clues, jokes, and references scattered throughout.</p>
-        <h2>What I Learned</h2>
-        <ol>
-          <li><strong>Complex State Management</strong> - Handling multiple interconnected components</li>
-          <li><strong>User Experience Design</strong> - Creating intuitive interactions</li>
-          <li><strong>Performance Optimization</strong> - Keeping animations smooth</li>
-          <li><strong>Creative Problem Solving</strong> - Implementing unique features</li>
-        </ol>
-        <h2>Future Enhancements</h2>
-        <ul>
-          <li>Add more applications (text editor, file manager)</li>
-          <li>Implement a package manager simulation</li>
-          <li>Add network simulation features</li>
-          <li>Create more interactive easter eggs</li>
-        </ul>
-        <h2>Conclusion</h2>
-        <p>This project pushed me to think creatively about web development and user interaction. It's not just a portfolio - it's an experience that showcases both technical skills and creativity.</p>
-        <p>The code is open source on <a href="https://github.com/notvcto/notvcto.github.io">GitHub</a>, so feel free to explore and get inspired for your own projects!</p>
-        <hr>
-        <p><em>Keep coding and stay creative!</em> 🚀</p>
-      `,
-      'terminal-tricks-and-tips': `
-        <h1>Terminal Tricks and Tips 💻</h1>
-        <p>The terminal is a developer's best friend. Here are some of my favorite tricks and tips that have made me more productive over the years.</p>
-        <h2>Essential Commands</h2>
-        <h3>Navigation</h3>
-        <pre><code># Quick directory navigation
+}
+\`\`\`
+
+#### 2. Virtual File System
+The terminal includes a complete virtual file system with:
+- Directory navigation (\`cd\`, \`ls\`, \`pwd\`)
+- File reading (\`cat\`)
+- Hidden files and easter eggs
+- A sudo puzzle system!
+
+#### 3. Interactive Terminal
+The terminal was the most complex part:
+- Command history with arrow keys
+- Real-time command parsing
+- Sudo authentication system
+- Easter eggs and hidden commands
+
+## Challenges Faced
+
+### 1. State Management
+Managing the state of multiple windows, their positions, focus states, and interactions was complex. I used a combination of:
+- React state for UI state
+- localStorage for persistence
+- Event listeners for global interactions
+
+### 2. Terminal Implementation
+Creating a realistic terminal experience required:
+- Proper command parsing
+- Cursor blinking animation
+- Command history
+- File system simulation
+
+### 3. Performance Optimization
+With multiple animated windows and complex interactions, performance was crucial:
+- Efficient re-rendering strategies
+- Proper cleanup of event listeners
+- Optimized animations
+
+## Cool Easter Eggs
+
+### Sudo Puzzle
+Users can unlock sudo access by exploring the file system and finding hidden clues. Once unlocked, they can run commands like:
+- \`sudo nuke\` - System meltdown animation
+- \`sudo hack the-mainframe\` - Matrix-style hacking sequence
+- \`sudo deploy\` - Fake deployment sequence
+
+### Hidden Files
+The file system contains hidden files with clues, jokes, and references scattered throughout.
+
+## What I Learned
+
+1. **Complex State Management** - Handling multiple interconnected components
+2. **User Experience Design** - Creating intuitive interactions
+3. **Performance Optimization** - Keeping animations smooth
+4. **Creative Problem Solving** - Implementing unique features
+
+## Future Enhancements
+
+- Add more applications (text editor, file manager)
+- Implement a package manager simulation
+- Add network simulation features
+- Create more interactive easter eggs
+
+## Conclusion
+
+This project pushed me to think creatively about web development and user interaction. It's not just a portfolio - it's an experience that showcases both technical skills and creativity.
+
+The code is open source on [GitHub](https://github.com/notvcto/notvcto.github.io), so feel free to explore and get inspired for your own projects!
+
+---
+
+*Keep coding and stay creative!* 🚀`,
+      'terminal-tricks-and-tips': `# Terminal Tricks and Tips 💻
+
+The terminal is a developer's best friend. Here are some of my favorite tricks and tips that have made me more productive over the years.
+
+## Essential Commands
+
+### Navigation
+\`\`\`bash
+# Quick directory navigation
 cd -          # Go back to previous directory
 cd ~          # Go to home directory
 cd            # Also goes to home directory
 pushd /path   # Save current dir and go to /path
-popd          # Return to saved directory</code></pre>
-        <h3>File Operations</h3>
-        <pre><code># Find files quickly
+popd          # Return to saved directory
+\`\`\`
+
+### File Operations
+\`\`\`bash
+# Find files quickly
 find . -name "*.js" -type f
 find . -name "*config*" -type f
 
@@ -218,10 +237,14 @@ grep -n "TODO" *.js
 
 # File permissions
 chmod +x script.sh    # Make executable
-chmod 755 file.txt    # Set specific permissions</code></pre>
-        <h2>Productivity Boosters</h2>
-        <h3>History and Shortcuts</h3>
-        <pre><code># Command history
+chmod 755 file.txt    # Set specific permissions
+\`\`\`
+
+## Productivity Boosters
+
+### History and Shortcuts
+\`\`\`bash
+# Command history
 !!            # Repeat last command
 !n            # Repeat command number n
 !string       # Repeat last command starting with string
@@ -232,9 +255,12 @@ Ctrl+R        # Search command history
 Ctrl+A        # Go to beginning of line
 Ctrl+E        # Go to end of line
 Ctrl+U        # Clear line before cursor
-Ctrl+K        # Clear line after cursor</code></pre>
-        <h3>Process Management</h3>
-        <pre><code># Background processes
+Ctrl+K        # Clear line after cursor
+\`\`\`
+
+### Process Management
+\`\`\`bash
+# Background processes
 command &     # Run in background
 jobs          # List background jobs
 fg %1         # Bring job 1 to foreground
@@ -244,10 +270,14 @@ bg %1         # Send job 1 to background
 ps aux        # List all processes
 top           # Real-time process monitor
 htop          # Better process monitor (if installed)
-kill -9 PID   # Force kill process</code></pre>
-        <h2>Advanced Tricks</h2>
-        <h3>Pipes and Redirection</h3>
-        <pre><code># Combine commands
+kill -9 PID   # Force kill process
+\`\`\`
+
+## Advanced Tricks
+
+### Pipes and Redirection
+\`\`\`bash
+# Combine commands
 ls -la | grep "config"
 cat file.txt | sort | uniq
 
@@ -255,15 +285,21 @@ cat file.txt | sort | uniq
 command > file.txt     # Redirect output to file
 command >> file.txt    # Append output to file
 command 2> error.log   # Redirect errors to file
-command &> all.log     # Redirect both output and errors</code></pre>
-        <h3>Text Processing</h3>
-        <pre><code># Powerful text tools
+command &> all.log     # Redirect both output and errors
+\`\`\`
+
+### Text Processing
+\`\`\`bash
+# Powerful text tools
 sed 's/old/new/g' file.txt    # Replace text
 awk '{print $1}' file.txt     # Print first column
 cut -d',' -f1 file.csv        # Extract first field from CSV
-sort file.txt | uniq -c       # Count unique lines</code></pre>
-        <h3>Network and System</h3>
-        <pre><code># Network diagnostics
+sort file.txt | uniq -c       # Count unique lines
+\`\`\`
+
+### Network and System
+\`\`\`bash
+# Network diagnostics
 ping google.com
 curl -I https://example.com
 netstat -tuln
@@ -273,38 +309,52 @@ ss -tuln
 df -h         # Disk usage
 du -sh *      # Directory sizes
 free -h       # Memory usage
-uname -a      # System information</code></pre>
-        <h2>Git Integration</h2>
-        <h3>Useful Git Aliases</h3>
-        <pre><code># Add to ~/.gitconfig
+uname -a      # System information
+\`\`\`
+
+## Git Integration
+
+### Useful Git Aliases
+\`\`\`bash
+# Add to ~/.gitconfig
 [alias]
     st = status
     co = checkout
     br = branch
     ci = commit
     lg = log --oneline --graph --decorate
-    unstage = reset HEAD --</code></pre>
-        <h3>Git Terminal Tips</h3>
-        <pre><code># Quick status check
+    unstage = reset HEAD --
+\`\`\`
+
+### Git Terminal Tips
+\`\`\`bash
+# Quick status check
 git status -s
 
 # Interactive staging
 git add -p
 
 # Beautiful log
-git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'</code></pre>
-        <h2>Customization</h2>
-        <h3>Bash/Zsh Aliases</h3>
-        <pre><code># Add to ~/.bashrc or ~/.zshrc
+git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
+\`\`\`
+
+## Customization
+
+### Bash/Zsh Aliases
+\`\`\`bash
+# Add to ~/.bashrc or ~/.zshrc
 alias ll='ls -la'
 alias la='ls -A'
 alias l='ls -CF'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias grep='grep --color=auto'
-alias mkdir='mkdir -pv'</code></pre>
-        <h3>Custom Functions</h3>
-        <pre><code># Create and enter directory
+alias mkdir='mkdir -pv'
+\`\`\`
+
+### Custom Functions
+\`\`\`bash
+# Create and enter directory
 mkcd() {
     mkdir -p "$1" && cd "$1"
 }
@@ -329,32 +379,50 @@ extract() {
     else
         echo "'$1' is not a valid file"
     fi
-}</code></pre>
-        <h2>Pro Tips</h2>
-        <ol>
-          <li><strong>Use Tab Completion</strong> - It's your friend for file names and commands</li>
-          <li><strong>Learn Regex</strong> - It makes grep, sed, and awk incredibly powerful</li>
-          <li><strong>Master Your Shell</strong> - Whether bash, zsh, or fish, know its features</li>
-          <li><strong>Use a Terminal Multiplexer</strong> - tmux or screen for session management</li>
-          <li><strong>Customize Your Prompt</strong> - Make it informative and beautiful</li>
-        </ol>
-        <h2>Terminal Emulators</h2>
-        <h3>Recommended Options</h3>
-        <ul>
-          <li><strong>iTerm2</strong> (macOS) - Feature-rich with great customization</li>
-          <li><strong>Alacritty</strong> - Fast, GPU-accelerated, cross-platform</li>
-          <li><strong>Hyper</strong> - Electron-based, highly customizable</li>
-          <li><strong>Windows Terminal</strong> (Windows) - Modern terminal for Windows</li>
-        </ul>
-        <h2>Conclusion</h2>
-        <p>The terminal might seem intimidating at first, but mastering it will make you significantly more productive as a developer. Start with the basics and gradually incorporate more advanced techniques into your workflow.</p>
-        <p>Remember: the best terminal setup is the one that works for your specific needs and workflow!</p>
-        <hr>
-        <p><em>Happy terminal-ing!</em> ⚡</p>
-      `
+}
+\`\`\`
+
+## Pro Tips
+
+1. **Use Tab Completion** - It's your friend for file names and commands
+2. **Learn Regex** - It makes grep, sed, and awk incredibly powerful
+3. **Master Your Shell** - Whether bash, zsh, or fish, know its features
+4. **Use a Terminal Multiplexer** - tmux or screen for session management
+5. **Customize Your Prompt** - Make it informative and beautiful
+
+## Terminal Emulators
+
+### Recommended Options
+- **iTerm2** (macOS) - Feature-rich with great customization
+- **Alacritty** - Fast, GPU-accelerated, cross-platform
+- **Hyper** - Electron-based, highly customizable
+- **Windows Terminal** (Windows) - Modern terminal for Windows
+
+## Conclusion
+
+The terminal might seem intimidating at first, but mastering it will make you significantly more productive as a developer. Start with the basics and gradually incorporate more advanced techniques into your workflow.
+
+Remember: the best terminal setup is the one that works for your specific needs and workflow!
+
+---
+
+*Happy terminal-ing!* ⚡`
     };
     
-    return content[postId] || '<p>Content not available.</p>';
+    return content[postId] || '# Content Not Available\n\nThis post is currently not available.';
+  };
+
+  processMarkdown = async (markdownContent) => {
+    try {
+      const processedContent = await remark()
+        .use(remarkGfm)
+        .use(html)
+        .process(markdownContent);
+      return processedContent.toString();
+    } catch (error) {
+      console.error('Error processing markdown:', error);
+      return '<p>Error processing content.</p>';
+    }
   };
 
   handlePostSelect = async (postId) => {
@@ -369,10 +437,13 @@ extract() {
         throw new Error('Post not found');
       }
       
-      // Add content for the selected post
+      // Get markdown content and process it
+      const markdownContent = this.getPostContent(postId);
+      const contentHtml = await this.processMarkdown(markdownContent);
+      
       const postWithContent = {
         ...post,
-        contentHtml: this.getPostContent(postId)
+        contentHtml
       };
       
       this.setState({
@@ -391,7 +462,7 @@ extract() {
           title: 'Post Not Available',
           date: new Date().toISOString().split('T')[0],
           author: 'vcto',
-          contentHtml: '<p>This post is currently not available. Please try again later.</p>',
+          contentHtml: await this.processMarkdown('# Post Not Available\n\nThis post is currently not available. Please try again later.'),
           tags: ['error'],
         },
         loading: false,
