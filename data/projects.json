@@ -12,6 +12,18 @@
     "topics": []
   },
   {
+    "name": "GardenBot",
+    "date": "May 2025",
+    "link": "https://github.com/notvcto/GardenBot",
+    "description": [
+      "Discord bot for Grow a Garden stock notifying."
+    ],
+    "languages": [
+      "javascript"
+    ],
+    "topics": []
+  },
+  {
     "name": "notvcto",
     "date": "Feb 2022",
     "link": "https://github.com/notvcto/notvcto",
@@ -45,18 +57,6 @@
       "typescript",
       "css",
       "html",
-      "javascript"
-    ],
-    "topics": []
-  },
-  {
-    "name": "GardenBot",
-    "date": "May 2025",
-    "link": "https://github.com/notvcto/GardenBot",
-    "description": [
-      "Discord bot for Grow a Garden stock notifying."
-    ],
-    "languages": [
       "javascript"
     ],
     "topics": []
