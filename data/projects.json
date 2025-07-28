@@ -1,17 +1,5 @@
 [
   {
-    "name": "notvcto.github.io",
-    "date": "Sep 2024",
-    "link": "https://github.com/notvcto/notvcto.github.io",
-    "description": [
-      "The page you're seeing right now!"
-    ],
-    "languages": [
-      "javascript"
-    ],
-    "topics": []
-  },
-  {
     "name": "GardenBot",
     "date": "May 2025",
     "link": "https://github.com/notvcto/GardenBot",
@@ -37,6 +25,18 @@
     ]
   },
   {
+    "name": "notvcto.github.io",
+    "date": "Sep 2024",
+    "link": "https://github.com/notvcto/notvcto.github.io",
+    "description": [
+      "The page you're seeing right now!"
+    ],
+    "languages": [
+      "javascript"
+    ],
+    "topics": []
+  },
+  {
     "name": "vsh",
     "date": "Jul 2025",
     "link": "https://github.com/notvcto/vsh",
@@ -44,6 +44,18 @@
       "The beginner-friendly, power-user-capable shell."
     ],
     "languages": [],
+    "topics": []
+  },
+  {
+    "name": "thorn-bootstrap",
+    "date": "May 2025",
+    "link": "https://github.com/notvcto/thorn-bootstrap",
+    "description": [
+      "No description provided."
+    ],
+    "languages": [
+      "python"
+    ],
     "topics": []
   },
   {
@@ -58,18 +70,6 @@
       "css",
       "html",
       "javascript"
-    ],
-    "topics": []
-  },
-  {
-    "name": "thorn-bootstrap",
-    "date": "May 2025",
-    "link": "https://github.com/notvcto/thorn-bootstrap",
-    "description": [
-      "No description provided."
-    ],
-    "languages": [
-      "python"
     ],
     "topics": []
   },
