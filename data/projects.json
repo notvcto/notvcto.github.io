@@ -1,5 +1,17 @@
 [
   {
+    "name": "notvcto.github.io",
+    "date": "Sep 2024",
+    "link": "https://github.com/notvcto/notvcto.github.io",
+    "description": [
+      "The page you're seeing right now!"
+    ],
+    "languages": [
+      "javascript"
+    ],
+    "topics": []
+  },
+  {
     "name": "GardenBot",
     "date": "May 2025",
     "link": "https://github.com/notvcto/GardenBot",
@@ -23,18 +35,6 @@
       "config",
       "github-config"
     ]
-  },
-  {
-    "name": "notvcto.github.io",
-    "date": "Sep 2024",
-    "link": "https://github.com/notvcto/notvcto.github.io",
-    "description": [
-      "The page you're seeing right now!"
-    ],
-    "languages": [
-      "javascript"
-    ],
-    "topics": []
   },
   {
     "name": "vsh",
