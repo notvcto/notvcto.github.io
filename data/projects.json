@@ -1,10 +1,10 @@
 [
   {
-    "name": "notvcto.github.io",
-    "date": "Sep 2024",
-    "link": "https://github.com/notvcto/notvcto.github.io",
+    "name": "GardenBot",
+    "date": "May 2025",
+    "link": "https://github.com/notvcto/GardenBot",
     "description": [
-      "The page you're seeing right now!"
+      "Discord bot for Grow a Garden stock notifying."
     ],
     "languages": [
       "javascript"
@@ -12,11 +12,11 @@
     "topics": []
   },
   {
-    "name": "GardenBot",
-    "date": "May 2025",
-    "link": "https://github.com/notvcto/GardenBot",
+    "name": "notvcto.github.io",
+    "date": "Sep 2024",
+    "link": "https://github.com/notvcto/notvcto.github.io",
     "description": [
-      "Discord bot for Grow a Garden stock notifying."
+      "The page you're seeing right now!"
     ],
     "languages": [
       "javascript"
