@@ -1,5 +1,18 @@
 [
   {
+    "name": "omen",
+    "date": "Sep 2024",
+    "link": "https://github.com/notvcto/omen",
+    "description": [
+      "No description provided."
+    ],
+    "languages": [
+      "javascript",
+      "scss"
+    ],
+    "topics": []
+  },
+  {
     "name": "GardenBot",
     "date": "May 2025",
     "link": "https://github.com/notvcto/GardenBot",
@@ -70,19 +83,6 @@
       "css",
       "html",
       "javascript"
-    ],
-    "topics": []
-  },
-  {
-    "name": "omen",
-    "date": "Sep 2024",
-    "link": "https://github.com/notvcto/omen",
-    "description": [
-      "No description provided."
-    ],
-    "languages": [
-      "javascript",
-      "scss"
     ],
     "topics": []
   },
