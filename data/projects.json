@@ -1,5 +1,17 @@
 [
   {
+    "name": "notvcto.github.io",
+    "date": "Sep 2024",
+    "link": "https://github.com/notvcto/notvcto.github.io",
+    "description": [
+      "The page you're seeing right now!"
+    ],
+    "languages": [
+      "javascript"
+    ],
+    "topics": []
+  },
+  {
     "name": "omen",
     "date": "Sep 2024",
     "link": "https://github.com/notvcto/omen",
@@ -18,18 +30,6 @@
     "link": "https://github.com/notvcto/GardenBot",
     "description": [
       "Discord bot for Grow a Garden stock notifying."
-    ],
-    "languages": [
-      "javascript"
-    ],
-    "topics": []
-  },
-  {
-    "name": "notvcto.github.io",
-    "date": "Sep 2024",
-    "link": "https://github.com/notvcto/notvcto.github.io",
-    "description": [
-      "The page you're seeing right now!"
     ],
     "languages": [
       "javascript"
