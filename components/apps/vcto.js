@@ -210,7 +210,7 @@ function About() {
       </div>
       <ul className=" mt-4 leading-tight tracking-tight text-sm md:text-base w-5/6 md:w-3/4 emoji-list">
         <li className=" list-pc">
-          I'm a <span className=" font-medium">Highschool student</span> looking
+          I'm a <span className=" font-medium">Highschool GRADUATE 🎓</span> looking
           to pursue Computer Science and Cybersecurity related careers.
         </li>
         <li className=" mt-3 list-building">
