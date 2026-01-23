@@ -5,7 +5,6 @@ import ReactGA from "react-ga4";
 export class Terminal extends Component {
   constructor() {
     super();
-    this.cursor = "";
     this.terminal_rows = 1;
     this.current_directory = "~";
     this.curr_dir_name = "root";
@@ -88,14 +87,11 @@ export class Terminal extends Component {
 
   componentDidUpdate() {
     if (this.state.isClient) {
-      clearInterval(this.cursor);
-      this.startCursor(this.terminal_rows - 2);
+      this.focusInput();
     }
   }
 
-  componentWillUnmount() {
-    clearInterval(this.cursor);
-  }
+  componentWillUnmount() {}
 
   loadSudoState = () => {
     if (typeof window !== "undefined") {
@@ -111,7 +107,6 @@ export class Terminal extends Component {
   };
 
   reStartTerminal = () => {
-    clearInterval(this.cursor);
     this.setState({ terminal: [] }, () => {
       this.terminal_rows = 1;
       this.appendTerminalRow();
@@ -142,7 +137,7 @@ export class Terminal extends Component {
         </div>
         <div
           id="cmd"
-          onClick={this.focusCursor}
+          onClick={this.focusInput}
           className="bg-transparent relative flex-1 overflow-hidden"
         >
           <span
@@ -151,17 +146,19 @@ export class Terminal extends Component {
           ></span>
           <div
             id={`cursor-${id}`}
-            className="float-left mt-1 w-1.5 h-3.5 bg-white"
+            className="float-left mt-1 w-1.5 h-3.5 bg-white blinking-cursor"
           ></div>
           <input
             id={`terminal-input-${id}`}
             data-row-id={id}
             type={this.password_mode ? "password" : "text"}
             onKeyDown={this.checkKey}
-            onBlur={this.unFocusCursor}
             className="absolute top-0 left-0 w-full opacity-0 outline-none bg-transparent"
             spellCheck={false}
             autoComplete="off"
+            onInput={(e) =>
+              ($(`#cmd span#show-${id}`).text(e.target.value))
+            }
           />
         </div>
       </div>
@@ -169,37 +166,12 @@ export class Terminal extends Component {
     </React.Fragment>
   );
 
-  focusCursor = (e) => {
-    clearInterval(this.cursor);
-    this.startCursor($(e.target).data("row-id"));
-  };
-
-  unFocusCursor = (e) => {
-    this.stopCursor($(e.target).data("row-id"));
-  };
-
-  startCursor = (id) => {
-    clearInterval(this.cursor);
-    $(`input#terminal-input-${id}`).trigger("focus");
-    $(`input#terminal-input-${id}`).on("input", function () {
-      $(`#cmd span#show-${id}`).text($(this).val());
-    });
-    this.cursor = window.setInterval(function () {
-      const cursor = $(`#cursor-${id}`);
-      cursor.css(
-        "visibility",
-        cursor.css("visibility") === "visible" ? "hidden" : "visible"
-      );
-    }, 500);
-  };
-
-  stopCursor = (id) => {
-    clearInterval(this.cursor);
-    $(`#cursor-${id}`).css({ visibility: "visible" });
+  focusInput = () => {
+    const input = $(`input#terminal-input-${this.terminal_rows - 2}`);
+    input.trigger("focus");
   };
 
   removeCursor = (id) => {
-    this.stopCursor(id);
     $(`#cursor-${id}`).css({ display: "none" });
   };
 
