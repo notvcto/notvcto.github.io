@@ -166,6 +166,7 @@ export default class Ubuntu extends Component {
         <Desktop
           bg_image_name={this.state.bg_image_name}
           changeBackgroundImage={this.changeBackgroundImage}
+          blogPosts={this.props.blogPosts}
         />
       </div>
     );
