@@ -2,56 +2,36 @@ import displaySpotify from "./components/apps/spotify";
 import displayVsCode from "./components/apps/vscode";
 import { displayTerminal } from "./components/apps/terminal";
 import { displaySettings } from "./components/apps/settings";
-import { displayChrome } from "./components/apps/chrome";
+import { displayFirefox } from "./components/apps/firefox";
 import { displayTrash } from "./components/apps/trash";
 import { displayGedit } from "./components/apps/gedit";
 import { displayAboutVcto } from "./components/apps/vcto";
 import { displayTerminalCalc } from "./components/apps/calc";
-import { displayVoidNet } from "./components/apps/voidnet";
-import { displayVSH } from "./components/apps/vsh";
 import { displayBlog } from "./components/apps/blog";
 
 const apps = [
   {
-    id: "chrome",
-    title: "Google Chrome",
-    icon: "./themes/Yaru/apps/chrome.png",
+    id: "firefox",
+    title: "Mozilla Firefox",
+    icon: "./themes/Yaru/apps/firefox.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: true,
-    screen: displayChrome,
+    screen: displayFirefox,
   },
   {
     id: "blog",
     title: "Blog",
-    icon: "./themes/Yaru/apps/gedit.png",
+    icon: "./themes/Yaru/apps/gedit.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: true,
     screen: displayBlog,
   },
   {
-    id: "voidnet",
-    title: "voidnet.ink",
-    icon: "./themes/Yaru/apps/voidnet.png",
-    disabled: false,
-    favourite: false,
-    desktop_shortcut: true,
-    screen: displayVoidNet,
-  },
-  {
-    id: "vsh",
-    title: "vsh.ink",
-    icon: "./themes/Yaru/apps/chrome.png",
-    disabled: false,
-    favourite: false,
-    desktop_shortcut: true,
-    screen: displayVSH,
-  },
-  {
     id: "calc",
     title: "Calc",
-    icon: "./themes/Yaru/apps/calc.png",
+    icon: "./themes/Yaru/apps/calc.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: false,
@@ -60,7 +40,7 @@ const apps = [
   {
     id: "about-vcto",
     title: "about vcto",
-    icon: "./themes/Yaru/system/user-home.png",
+    icon: "./themes/Yaru/system/user-home.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: true,
@@ -69,7 +49,7 @@ const apps = [
   {
     id: "vscode",
     title: "Visual Studio Code",
-    icon: "./themes/Yaru/apps/vscode.png",
+    icon: "./themes/Yaru/apps/vscode.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: false,
@@ -78,7 +58,7 @@ const apps = [
   {
     id: "terminal",
     title: "Terminal",
-    icon: "./themes/Yaru/apps/bash.png",
+    icon: "./themes/Yaru/apps/bash.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: false,
@@ -87,7 +67,7 @@ const apps = [
   {
     id: "spotify",
     title: "Spotify",
-    icon: "./themes/Yaru/apps/spotify.png",
+    icon: "./themes/Yaru/apps/spotify.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: false,
@@ -96,7 +76,7 @@ const apps = [
   {
     id: "settings",
     title: "Settings",
-    icon: "./themes/Yaru/apps/gnome-control-center.png",
+    icon: "./themes/Yaru/apps/gnome-control-center.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: false,
@@ -105,7 +85,7 @@ const apps = [
   {
     id: "trash",
     title: "Trash",
-    icon: "./themes/Yaru/system/user-trash-full.png",
+    icon: "./themes/Yaru/system/user-trash-full.svg",
     disabled: false,
     favourite: false,
     desktop_shortcut: true,
@@ -114,7 +94,7 @@ const apps = [
   {
     id: "gedit",
     title: "Contact Me",
-    icon: "./themes/Yaru/apps/gedit.png",
+    icon: "./themes/Yaru/apps/gedit.svg",
     disabled: false,
     favourite: false,
     desktop_shortcut: true,

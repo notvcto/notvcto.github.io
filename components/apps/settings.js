@@ -13,6 +13,7 @@ export function Settings(props) {
     "wall-8": "./images/wallpapers/wall-8.webp",
     "wall-9": "./images/wallpapers/wall-9.webp",
     "wall-10": "./images/wallpapers/wall-10.webp",
+    "minimal": "./images/wallpapers/minimal.png",
   };
 
   const accentColors = [
