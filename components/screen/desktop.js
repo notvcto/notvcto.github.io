@@ -301,10 +301,16 @@ export class Desktop extends Component {
     let windowsJsx = [];
     apps.forEach((app, index) => {
       if (this.state.closed_windows[app.id] === false) {
+        let screen = app.screen;
+        if (app.id === "blog") {
+          screen = (props) =>
+            app.screen({ ...props, blogPosts: this.props.blogPosts });
+        }
+
         const props = {
           title: app.title,
           id: app.id,
-          screen: app.screen,
+          screen: screen,
           addFolder: this.addToDesktop,
           closed: this.closeApp,
           openApp: this.openApp,
