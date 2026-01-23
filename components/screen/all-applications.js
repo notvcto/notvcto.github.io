@@ -61,7 +61,7 @@ export class AllApplications extends React.Component {
         openApp: this.props.openApp,
       };
 
-      appsJsx.push(<UbuntuApp key={index} {...props} />);
+      appsJsx.push(<UbuntuApp key={app.id} {...props} />);
     });
     return appsJsx;
   };

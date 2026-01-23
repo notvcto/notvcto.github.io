@@ -340,10 +340,10 @@ function Skills() {
       <div className="w-full md:w-10/12 flex justify-center items-start font-bold text-center">
         <div className="px-2 w-1/2">
           <div className="flex flex-wrap justify-center items-start w-full mt-2">
-            {languagesAndTools.map((tool, idx) =>
+            {languagesAndTools.map((tool) =>
               tool.link ? (
                 <a
-                  key={idx}
+                  key={tool.name}
                   href={tool.link}
                   title={tool.tooltip}
                   target="_blank"
@@ -357,7 +357,7 @@ function Skills() {
                 </a>
               ) : (
                 <img
-                  key={idx}
+                  key={tool.name}
                   className="m-1"
                   src={tool.badge}
                   alt={`vcto ${tool.name}`}
@@ -369,9 +369,9 @@ function Skills() {
 
         <div className="px-2 w-1/2">
           <div className="flex flex-wrap justify-center items-start w-full mt-2">
-            {frameworksAndLibs.map((lib, idx) => (
+            {frameworksAndLibs.map((lib) => (
               <img
-                key={idx}
+                key={lib.name}
                 className="m-1"
                 src={lib.badge}
                 alt={`vcto ${lib.name}`}
@@ -509,13 +509,13 @@ function Projects() {
         </div>
       </div>
 
-      {visibleProjects.map((project, index) => {
+      {visibleProjects.map((project) => {
         const projectName = project.link.split("/").pop();
         const tags = [...(project.languages || []), ...(project.topics || [])];
 
         return (
           <a
-            key={index}
+            key={project.name}
             href={project.link}
             target="_blank"
             rel="noreferrer"
@@ -542,15 +542,15 @@ function Projects() {
               </div>
               <ul className=" tracking-normal leading-tight text-sm font-light ml-4 mt-1">
                 {project.description.map((desc, i) => (
-                  <li key={i} className="list-disc mt-1 text-gray-100">
+                  <li key={`${i}-${desc}`} className="list-disc mt-1 text-gray-100">
                     {desc}
                   </li>
                 ))}
               </ul>
               <div className="flex flex-wrap items-start justify-start text-xs py-2">
-                {tags.map((tag, i) => (
+                {tags.map((tag) => (
                   <span
-                    key={i}
+                    key={tag}
                     className={`px-1.5 py-0.5 w-max border border-${
                       tag_colors[tag] || "gray-500"
                     } text-${tag_colors[tag] || "gray-300"} m-1 rounded-full`}
