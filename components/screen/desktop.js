@@ -321,6 +321,8 @@ export class Desktop extends Component {
           minimized: this.state.minimized_windows[app.id],
           changeBackgroundImage: this.props.changeBackgroundImage,
           bg_image_name: this.props.bg_image_name,
+          changeAccentColor: this.props.changeAccentColor,
+          accentColor: this.props.accentColor,
         };
 
         windowsJsx.push(<Window key={app.id} {...props} />);

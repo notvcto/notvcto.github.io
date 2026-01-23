@@ -23,22 +23,31 @@ let renderApps = (props) => {
 };
 
 export default function SideBar(props) {
+  const [timer, setTimer] = useState(null);
+
   function showSideBar() {
+    if (timer) {
+      clearTimeout(timer);
+      setTimer(null);
+    }
     props.hideSideBar(null, false);
   }
 
   function hideSideBar() {
-    setTimeout(() => {
+    const newTimer = setTimeout(() => {
       props.hideSideBar(null, true);
     }, 2000);
+    setTimer(newTimer);
   }
 
   return (
     <>
       <div
+        onMouseEnter={showSideBar}
+        onMouseLeave={hideSideBar}
         className={
           (props.hide ? " -translate-x-full " : "") +
-          " absolute transform duration-300 select-none z-40 left-0 top-0 h-full pt-7 w-auto flex flex-col justify-start items-center border-black border-opacity-60 bg-black bg-opacity-50"
+          " absolute transform duration-300 select-none z-40 left-0 top-1/2 -translate-y-1/2 ml-2 h-auto w-auto flex flex-col justify-start items-center rounded-xl bg-ub-cool-grey bg-opacity-20 backdrop-blur-3xl border-white border-opacity-10 shadow-2xl py-2"
         }
       >
         {Object.keys(props.closed_windows).length !== 0
@@ -61,7 +70,6 @@ export function AllApps(props) {
   return (
     <div
       className={`w-10 h-10 rounded m-1 hover:bg-white hover:bg-opacity-10 flex items-center justify-center`}
-      style={{ marginTop: "auto" }}
       onMouseEnter={() => {
         setTitle(true);
       }}
