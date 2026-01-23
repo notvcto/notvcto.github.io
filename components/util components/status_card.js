@@ -24,8 +24,8 @@ export class StatusCard extends Component {
     super();
     this.wrapperRef = React.createRef();
     this.state = {
-      sound_level: 75, // better of setting default values from localStorage
-      brightness_level: 100, // setting default value to 100 so that by default its always full.
+      sound_level: 75,
+      brightness_level: 100,
     };
   }
   handleClickOutside = () => {
@@ -61,13 +61,12 @@ export class StatusCard extends Component {
     if (typeof window !== "undefined") {
       localStorage.setItem("brightness-level", e.target.value);
     }
-    // the function below inside brightness() is derived from a linear equation such that at 0 value of slider brightness still remains 0.25 so that it doesn't turn black.
     if (typeof document !== "undefined") {
       const screen = document.getElementById("monitor-screen");
       if (screen) {
         screen.style.filter = `brightness(${
           (3 / 400) * e.target.value + 0.25
-        })`; // Using css filter to adjust the brightness in the root div.
+        })`;
       }
     }
   };
@@ -84,141 +83,65 @@ export class StatusCard extends Component {
       <div
         ref={this.wrapperRef}
         className={
-          "absolute bg-ub-cool-grey rounded-md py-4 top-9 right-3 shadow border-black border border-opacity-20 status-card" +
+          "absolute bg-ub-cool-grey bg-opacity-90 backdrop-blur-3xl rounded-3xl py-4 top-9 right-3 shadow-2xl border-white border border-opacity-10 status-card select-none " +
           (this.props.visible ? " visible animateShow" : " invisible")
         }
       >
-        {" "}
-        {/* Status Card */}
         <div className="absolute w-0 h-0 -top-1 right-6 top-arrow-up" />
-        <div className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20">
-          <div className="w-8">
-            <img
-              width="16px"
-              height="16px"
-              src="./themes/Yaru/status/audio-headphones-symbolic.svg"
-              alt="ubuntu headphone"
-            />
-          </div>
-          <Slider
-            onChange={this.handleSound}
-            className="ubuntu-slider w-2/3"
-            value={this.state.sound_level}
-            name="headphone_range"
-          />
-        </div>
-        <div className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20">
-          <div className="w-8">
-            <img
-              width="16px"
-              height="16px"
-              src="./themes/Yaru/status/display-brightness-symbolic.svg"
-              alt="ubuntu brightness"
-            />
-          </div>
-          <Slider
-            onChange={this.handleBrightness}
-            className="ubuntu-slider w-2/3"
-            name="brightness_range"
-            value={this.state.brightness_level}
-          />
-        </div>
-        <div className="w-64 flex content-center justify-center">
-          <div className="w-2/4 border-black border-opacity-50 border-b my-2 border-solid" />
-        </div>
-        <div className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20">
-          <div className="w-8">
-            <img
-              width="16px"
-              height="16px"
-              src="./themes/Yaru/status/network-wireless-signal-good-symbolic.svg"
-              alt="ubuntu wifi"
-            />
-          </div>
-          <div className="w-2/3 flex items-center justify-between text-gray-400">
-            <span>OnePlus 8 Pro</span>
-            <SmallArrow angle="right" />
-          </div>
-        </div>
-        <div className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20">
-          <div className="w-8">
-            <img
-              width="16px"
-              height="16px"
-              src="./themes/Yaru/status/bluetooth-symbolic.svg"
-              alt="ubuntu bluetooth"
-            />
-          </div>
-          <div className="w-2/3 flex items-center justify-between text-gray-400">
-            <span>Off</span>
-            <SmallArrow angle="right" />
-          </div>
-        </div>
-        <div className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20">
-          <div className="w-8">
-            <img
-              width="16px"
-              height="16px"
-              src="./themes/Yaru/status/battery-good-symbolic.svg"
-              alt="ubuntu battery"
-            />
-          </div>
-          <div className="w-2/3 flex items-center justify-between text-gray-400">
-            <span>2:40 Remaining (75%)</span>
-            <SmallArrow angle="right" />
-          </div>
-        </div>
-        <div className="w-64 flex content-center justify-center">
-          <div className="w-2/4 border-black border-opacity-50 border-b my-2 border-solid" />
-        </div>
-        <div
-          id="open-settings"
-          className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20"
-        >
-          <div className="w-8">
-            <img
-              width="16px"
-              height="16px"
-              src="./themes/Yaru/status/emblem-system-symbolic.svg"
-              alt="ubuntu settings"
-            />
-          </div>
-          <div className="w-2/3 flex items-center justify-between">
-            <span>Settings</span>
-          </div>
-        </div>
-        <div
-          onClick={this.props.lockScreen}
-          className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20"
-        >
-          <div className="w-8">
-            <img
-              width="16px"
-              height="16px"
-              src="./themes/Yaru/status/changes-prevent-symbolic.svg"
-              alt="ubuntu lock"
-            />
-          </div>
-          <div className="w-2/3 flex items-center justify-between">
-            <span>Lock</span>
-          </div>
-        </div>
-        <div
-          onClick={this.props.shutDown}
-          className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20"
-        >
-          <div className="w-8">
-            <img
-              width="16px"
-              height="16px"
-              src="./themes/Yaru/status/system-shutdown-symbolic.svg"
-              alt="ubuntu power"
-            />
-          </div>
-          <div className="w-2/3 flex items-center justify-between">
-            <span>Power Off / Log Out</span>
-            <SmallArrow angle="right" />
-          </div>
+
+        <div className="w-80 px-4">
+             {/* Pills */}
+             <div className="grid grid-cols-2 gap-2 mb-4">
+                 <div className="flex flex-col justify-center pl-4 pr-2 h-16 rounded-3xl bg-ub-orange cursor-pointer hover:bg-opacity-80 transition-all text-white relative">
+                      <div className="flex items-center justify-between">
+                         <div className="flex items-center gap-3">
+                             <img src="./themes/Yaru/status/network-wireless-signal-good-symbolic.svg" alt="wifi" className="w-5" />
+                             <span className="font-medium">Wi-Fi</span>
+                         </div>
+                      </div>
+                      <span className="text-xs text-white text-opacity-80 mt-1 truncate">OnePlus 8 Pro</span>
+                 </div>
+
+                 <div className="flex flex-col justify-center pl-4 pr-2 h-16 rounded-3xl bg-ub-warm-grey bg-opacity-20 cursor-pointer hover:bg-opacity-30 transition-all text-white">
+                      <div className="flex items-center gap-3">
+                         <img src="./themes/Yaru/status/bluetooth-symbolic.svg" alt="bt" className="w-5" />
+                         <span className="font-medium">Bluetooth</span>
+                      </div>
+                      <span className="text-xs text-gray-400 mt-1">Off</span>
+                 </div>
+             </div>
+
+             {/* Sliders */}
+             <div className="space-y-4 mb-6 bg-ub-warm-grey bg-opacity-10 rounded-2xl p-4">
+                <div className="flex items-center gap-4">
+                    <img src="./themes/Yaru/status/audio-headphones-symbolic.svg" alt="sound" className="w-4" />
+                    <Slider onChange={this.handleSound} className="ubuntu-slider w-full" value={this.state.sound_level} name="headphone_range" />
+                </div>
+                <div className="flex items-center gap-4">
+                     <img src="./themes/Yaru/status/display-brightness-symbolic.svg" alt="brightness" className="w-4" />
+                     <Slider onChange={this.handleBrightness} className="ubuntu-slider w-full" value={this.state.brightness_level} name="brightness_range" />
+                </div>
+             </div>
+
+             {/* Footer */}
+             <div className="flex justify-between items-center px-2">
+                 <div className="flex items-center gap-2 text-xs text-gray-400">
+                    <img src="./themes/Yaru/status/battery-good-symbolic.svg" className="w-4" alt="battery"/>
+                    <span>2:40 (75%)</span>
+                 </div>
+
+                 <div className="flex gap-2">
+                      <div id="open-settings" className="w-10 h-10 rounded-full bg-ub-warm-grey bg-opacity-10 hover:bg-opacity-20 flex items-center justify-center cursor-pointer">
+                          <img src="./themes/Yaru/status/emblem-system-symbolic.svg" className="w-5" alt="settings" />
+                      </div>
+                      <div onClick={this.props.lockScreen} className="w-10 h-10 rounded-full bg-ub-warm-grey bg-opacity-10 hover:bg-opacity-20 flex items-center justify-center cursor-pointer">
+                          <img src="./themes/Yaru/status/changes-prevent-symbolic.svg" className="w-5" alt="lock" />
+                      </div>
+                      <div onClick={this.props.shutDown} className="w-10 h-10 rounded-full bg-ub-warm-grey bg-opacity-10 hover:bg-opacity-20 flex items-center justify-center cursor-pointer">
+                          <img src="./themes/Yaru/status/system-shutdown-symbolic.svg" className="w-5" alt="power" />
+                      </div>
+                 </div>
+             </div>
         </div>
       </div>
     );

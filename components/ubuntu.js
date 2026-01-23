@@ -10,15 +10,22 @@ export default class Ubuntu extends Component {
     super();
     this.state = {
       screen_locked: false,
-      bg_image_name: "wall-2",
+      bg_image_name: "minimal",
       booting_screen: true,
       shutDownScreen: false,
+      accent_color: "#E95420",
     };
   }
 
   componentDidMount() {
     this.getLocalData();
   }
+
+  updateAccentColorCSS = (color) => {
+    if (typeof document !== "undefined") {
+      document.documentElement.style.setProperty("--ub-orange", color);
+    }
+  };
 
   setTimeOutBootScreen = () => {
     setTimeout(() => {
@@ -42,6 +49,15 @@ export default class Ubuntu extends Component {
         // user is visiting site for the first time
         localStorage.setItem("booting_screen", false);
         this.setTimeOutBootScreen();
+      }
+
+      // get accent color
+      let accent_color = localStorage.getItem("accent-color");
+      if (accent_color !== null && accent_color !== undefined) {
+        this.setState({ accent_color });
+        this.updateAccentColorCSS(accent_color);
+      } else {
+        this.updateAccentColorCSS(this.state.accent_color);
       }
 
       // get shutdown state
@@ -111,6 +127,14 @@ export default class Ubuntu extends Component {
     }
   };
 
+  changeAccentColor = (color) => {
+    this.setState({ accent_color: color });
+    this.updateAccentColorCSS(color);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("accent-color", color);
+    }
+  };
+
   shutDown = () => {
     ReactGA.send({
       hitType: "pageview",
@@ -167,6 +191,8 @@ export default class Ubuntu extends Component {
           bg_image_name={this.state.bg_image_name}
           changeBackgroundImage={this.changeBackgroundImage}
           blogPosts={this.props.blogPosts}
+          changeAccentColor={this.changeAccentColor}
+          accentColor={this.state.accent_color}
         />
       </div>
     );
