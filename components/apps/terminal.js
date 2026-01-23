@@ -128,7 +128,7 @@ export class Terminal extends Component {
             <div className="text-yellow-400">[sudo] password for vcto:</div>
           ) : (
             <>
-              <div className="text-ubt-green">vcto@MacBook-Pro</div>
+              <div className="text-ubt-green">vcto@ubuntu</div>
               <div className="text-white mx-px font-medium">:</div>
               <div className="text-ubt-blue">{this.current_directory}</div>
               <div className="text-white mx-px font-medium mr-1">$</div>
@@ -138,7 +138,7 @@ export class Terminal extends Component {
         <div
           id="cmd"
           onClick={this.focusInput}
-          className="bg-transparent relative flex-1 overflow-hidden"
+          className="bg-transparent relative flex-1 overflow-hidden input-box"
         >
           <span
             id={`show-${id}`}
@@ -540,7 +540,7 @@ export class Terminal extends Component {
       case "echo": {
         if (rest === "$motd") {
           result =
-            "Welcome to vcto's interactive terminal! 🚀 Type 'help' for commands.";
+            "Welcome to Ubuntu 22.04 LTS (Jammy Jellyfish) <br/> Type 'help' for commands.";
         } else {
           result = this.xss(rest);
         }
@@ -600,17 +600,22 @@ export class Terminal extends Component {
 
     return (
       <div
-        className="h-full w-full bg-ub-drk-abrgn text-white text-sm font-bold"
+        className="h-full w-full bg-ub-drk-abrgn text-white text-sm font-mono"
         id="terminal-body"
       >
         <div className="p-2">
-          <div className="text-green-400">
-            Welcome to vcto's Terminal v2.0 🚀
+          <div>
+            Welcome to Ubuntu 22.04.2 LTS (GNU/Linux 5.15.0-76-generic x86_64)
           </div>
-          <div className="text-gray-400">
-            Type 'help' for available commands
+          <div className="mt-2">
+            * Documentation:  https://help.ubuntu.com <br />
+            * Management:     https://landscape.canonical.com <br />
+            * Support:        https://ubuntu.com/advantage
           </div>
-          <div className="text-yellow-400">
+          <div className="mt-2">
+            Last login: {new Date().toString().slice(0, 24)} from 127.0.0.1
+          </div>
+          <div className="text-yellow-400 mt-2">
             {this.sudo_unlocked
               ? "🔓 Sudo access: UNLOCKED"
               : "🔒 Sudo access: LOCKED (find the password!)"}

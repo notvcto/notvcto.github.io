@@ -340,3 +340,17 @@ input[type="range"].ubuntu-slider::-webkit-slider-thumb {
   border-radius: 0.5rem;
   margin: 1rem 0;
 }
+
+/* Terminal Blinking Cursor */
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.input-box:focus-within .blinking-cursor {
+  animation: blink 1s step-end infinite;
+}
