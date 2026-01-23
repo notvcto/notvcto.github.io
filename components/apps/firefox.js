@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-export class Chrome extends Component {
+export class Firefox extends Component {
   constructor() {
     super();
     this.home_url = "https://www.google.com/webhp?igu=1";
@@ -12,12 +12,12 @@ export class Chrome extends Component {
 
   componentDidMount() {
     if (typeof window !== "undefined") {
-      let lastVisitedUrl = localStorage.getItem("chrome-url");
-      let lastDisplayedUrl = localStorage.getItem("chrome-display-url");
+      let lastVisitedUrl = localStorage.getItem("firefox-url");
+      let lastDisplayedUrl = localStorage.getItem("firefox-display-url");
       if (lastVisitedUrl !== null && lastVisitedUrl !== undefined) {
         this.setState(
           { url: lastVisitedUrl, display_url: lastDisplayedUrl },
-          this.refreshChrome
+          this.refreshFirefox
         );
       }
     }
@@ -25,14 +25,14 @@ export class Chrome extends Component {
 
   storeVisitedUrl = (url, display_url) => {
     if (typeof window !== "undefined") {
-      localStorage.setItem("chrome-url", url);
-      localStorage.setItem("chrome-display-url", display_url);
+      localStorage.setItem("firefox-url", url);
+      localStorage.setItem("firefox-display-url", display_url);
     }
   };
 
-  refreshChrome = () => {
+  refreshFirefox = () => {
     if (typeof document !== "undefined") {
-      document.getElementById("chrome-screen").src += "";
+      document.getElementById("firefox-screen").src += "";
     }
   };
 
@@ -41,7 +41,7 @@ export class Chrome extends Component {
       url: this.home_url,
       display_url: "https://www.google.com",
     });
-    this.refreshChrome();
+    this.refreshFirefox();
   };
 
   checkKey = (e) => {
@@ -66,7 +66,7 @@ export class Chrome extends Component {
       this.setState({ url, display_url: url });
       this.storeVisitedUrl(url, display_url);
       if (typeof document !== "undefined") {
-        document.getElementById("chrome-url-bar").blur();
+        document.getElementById("firefox-url-bar").blur();
       }
     }
   };
@@ -79,13 +79,13 @@ export class Chrome extends Component {
     return (
       <div className="w-full pt-0.5 pb-1 flex justify-start items-center text-white text-sm border-b border-gray-900">
         <div
-          onClick={this.refreshChrome}
+          onClick={this.refreshFirefox}
           className=" ml-2 mr-1 flex justify-center items-center rounded-full bg-gray-50 bg-opacity-0 hover:bg-opacity-10"
         >
           <img
             className="w-5"
             src="./themes/Yaru/status/chrome_refresh.svg"
-            alt="Ubuntu Chrome Refresh"
+            alt="Ubuntu Firefox Refresh"
           />
         </div>
         <div
@@ -95,14 +95,14 @@ export class Chrome extends Component {
           <img
             className="w-5"
             src="./themes/Yaru/status/chrome_home.svg"
-            alt="Ubuntu Chrome Home"
+            alt="Ubuntu Firefox Home"
           />
         </div>
         <input
           onKeyDown={this.checkKey}
           onChange={this.handleDisplayUrl}
           value={this.state.display_url}
-          id="chrome-url-bar"
+          id="firefox-url-bar"
           className="outline-none bg-ub-grey rounded-full pl-3 py-0.5 mr-3 w-5/6 text-gray-300 focus:text-white"
           type="url"
           spellCheck={false}
@@ -119,17 +119,17 @@ export class Chrome extends Component {
         <iframe
           src={this.state.url}
           className="flex-grow"
-          id="chrome-screen"
+          id="firefox-screen"
           frameBorder="0"
-          title="Ubuntu Chrome Url"
+          title="Ubuntu Firefox Url"
         ></iframe>
       </div>
     );
   }
 }
 
-export default Chrome;
+export default Firefox;
 
-export const displayChrome = () => {
-  return <Chrome> </Chrome>;
+export const displayFirefox = () => {
+  return <Firefox> </Firefox>;
 };

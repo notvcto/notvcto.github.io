@@ -10,7 +10,7 @@ export default class Ubuntu extends Component {
     super();
     this.state = {
       screen_locked: false,
-      bg_image_name: "wall-9",
+      bg_image_name: "minimal",
       booting_screen: true,
       shutDownScreen: false,
       accent_color: "#E95420",
