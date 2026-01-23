@@ -16,9 +16,7 @@ export const Gedit = () => {
   });
 
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_USER_ID) {
-      emailjs.init(process.env.NEXT_PUBLIC_USER_ID);
-    }
+    emailjs.init("OrfJgp8SK9eKhq6oo");
   }, []);
 
   const handleChange = (e) => {
@@ -73,8 +71,8 @@ export const Gedit = () => {
 
     setSending(true);
 
-    const serviceID = process.env.NEXT_PUBLIC_SERVICE_ID;
-    const templateID = process.env.NEXT_PUBLIC_TEMPLATE_ID;
+    const serviceID = "service_mt3wq89";
+    const templateID = "template_qkqomp3";
     const templateParams = {
       name: name,
       subject: subject,
