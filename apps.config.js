@@ -94,7 +94,7 @@ const apps = [
   {
     id: "gedit",
     title: "Contact Me",
-    icon: "./themes/MoreWaita/apps/gedit.svg",
+    icon: "./themes/MoreWaita/apps/mail.svg",
     disabled: false,
     favourite: false,
     desktop_shortcut: true,
