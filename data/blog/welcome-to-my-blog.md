@@ -1,7 +1,7 @@
 ---
 title: 'Welcome to My Blog'
 date: '2025-01-27'
-author: 'vcto'
+author: 'notvcto'
 description: 'Welcome to my personal blog where I share thoughts on programming, technology, and life as a developer.'
 tags: ['welcome', 'introduction', 'programming']
 ---
