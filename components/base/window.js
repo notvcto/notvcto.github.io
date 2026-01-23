@@ -230,7 +230,7 @@ export class Window extends Component {
             (this.state.closed ? " closed-window " : "") +
             (this.state.maximized
               ? " duration-300 rounded-none"
-              : " rounded-lg rounded-b-none") +
+              : " rounded-xl") +
             (this.props.minimized ? " opacity-0 invisible duration-200 " : "") +
             (this.props.isFocused ? " z-30 " : " z-20 notFocused") +
             " opened-window overflow-hidden min-w-1/4 min-h-1/4 main-window absolute window-shadow border-black border-opacity-40 border border-t-0 flex flex-col"
@@ -251,6 +251,8 @@ export class Window extends Component {
             <Settings
               changeBackgroundImage={this.props.changeBackgroundImage}
               currBgImgName={this.props.bg_image_name}
+              changeAccentColor={this.props.changeAccentColor}
+              accentColor={this.props.accentColor}
             />
           ) : (
             <WindowMainScreen
