@@ -3,11 +3,11 @@ import SideBarApp from "../base/side_bar_app";
 
 let renderApps = (props) => {
   let sideBarAppsJsx = [];
-  props.apps.forEach((app, index) => {
+  props.apps.forEach((app) => {
     if (props.favourite_apps[app.id] === false) return;
     sideBarAppsJsx.push(
       <SideBarApp
-        key={index}
+        key={app.id}
         id={app.id}
         title={app.title}
         icon={app.icon}

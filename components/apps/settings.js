@@ -33,10 +33,10 @@ export function Settings(props) {
         }}
       ></div>
       <div className="flex flex-wrap justify-center items-center border-t border-gray-900">
-        {Object.keys(wallpapers).map((name, index) => {
+        {Object.keys(wallpapers).map((name) => {
           return (
             <div
-              key={index}
+              key={name}
               tabIndex="1"
               onFocus={changeBackgroundImage}
               data-path={name}
