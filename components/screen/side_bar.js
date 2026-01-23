@@ -47,7 +47,7 @@ export default function SideBar(props) {
         onMouseLeave={hideSideBar}
         className={
           (props.hide ? " -translate-x-full " : "") +
-          " absolute transform duration-300 select-none z-40 left-0 top-1/2 -translate-y-1/2 ml-2 h-auto w-auto flex flex-col justify-start items-center rounded-xl bg-ub-cool-grey bg-opacity-20 backdrop-blur-3xl border-white border-opacity-10 shadow-2xl py-2"
+          " absolute transform duration-300 select-none z-40 left-0 top-1/2 -translate-y-1/2 ml-2 h-auto w-auto flex flex-col justify-start items-center rounded-xl bg-ub-cool-grey bg-opacity-40 backdrop-blur-3xl border-white border-opacity-10 shadow-2xl py-2"
         }
       >
         {Object.keys(props.closed_windows).length !== 0

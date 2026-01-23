@@ -9,6 +9,7 @@ import DesktopMenu from "../context menus/desktop-menu";
 import DefaultMenu from "../context menus/default";
 import $ from "jquery";
 import ReactGA from "react-ga4";
+import Draggable from "react-draggable";
 
 export class Desktop extends Component {
   constructor() {
@@ -16,6 +17,7 @@ export class Desktop extends Component {
     this.app_stack = [];
     this.initFavourite = {};
     this.allWindowClosed = false;
+    this.gridSize = { w: 100, h: 100 };
     this.state = {
       focused_windows: {},
       closed_windows: {},
@@ -31,7 +33,12 @@ export class Desktop extends Component {
         default: false,
       },
       showNameBar: false,
+      // Icon & Selection State
+      desktop_icon_positions: {},
+      selected_icons: [],
+      selection_box: null, // {x, y, w, h}
     };
+    this.selectionStart = null;
   }
 
   componentDidMount() {
@@ -46,11 +53,61 @@ export class Desktop extends Component {
     this.setContextListeners();
     this.setEventListeners();
     this.checkForNewFolders();
+    this.loadIconPositions();
+
+    // Global mouse up to end selection if it happens outside
+    if (typeof window !== "undefined") {
+        window.addEventListener("mouseup", this.handleGlobalMouseUp);
+    }
   }
 
   componentWillUnmount() {
     this.removeContextListeners();
+    if (typeof window !== "undefined") {
+        window.removeEventListener("mouseup", this.handleGlobalMouseUp);
+    }
   }
+
+  loadIconPositions = () => {
+    if (typeof window !== "undefined") {
+      let positions = localStorage.getItem("desktop_icon_positions");
+      if (positions) {
+        this.setState({ desktop_icon_positions: JSON.parse(positions) });
+      } else {
+        const defaultPositions = this.generateDefaultPositions();
+        this.setState({ desktop_icon_positions: defaultPositions });
+        localStorage.setItem("desktop_icon_positions", JSON.stringify(defaultPositions));
+      }
+    }
+  };
+
+  generateDefaultPositions = () => {
+    let positions = {};
+    let row = 0;
+    let col = 0;
+    let startX = 20;
+    let startY = 40;
+    let cellH = 100;
+    let cellW = 100;
+
+    let maxRows = Math.floor((window.innerHeight - startY) / cellH);
+    if (maxRows < 1) maxRows = 1;
+
+    apps.forEach((app) => {
+      if (app.desktop_shortcut) {
+        positions[app.id] = {
+          x: startX + col * cellW,
+          y: startY + row * cellH,
+        };
+        row++;
+        if (row >= maxRows) {
+          row = 0;
+          col++;
+        }
+      }
+    });
+    return positions;
+  };
 
   checkForNewFolders = () => {
     if (typeof window !== "undefined") {
@@ -89,7 +146,6 @@ export class Desktop extends Component {
   setContextListeners = () => {
     if (typeof document !== "undefined") {
       document.addEventListener("contextmenu", this.checkContextMenu);
-      // on click, anywhere, hide all menus
       document.addEventListener("click", this.hideAllContextMenu);
     }
   };
@@ -102,6 +158,9 @@ export class Desktop extends Component {
   };
 
   checkContextMenu = (e) => {
+    // If selecting, don't show context menu
+    if (this.state.selection_box) return;
+
     e.preventDefault();
     this.hideAllContextMenu();
     switch (e.target.dataset.context) {
@@ -279,6 +338,132 @@ export class Desktop extends Component {
     this.initFavourite = { ...favourite_apps };
   };
 
+  // --- Drag & Drop Logic ---
+
+  handleDragStart = (e, id) => {
+    // If dragging an unselected icon, select only that one
+    if (!this.state.selected_icons.includes(id)) {
+      this.setState({ selected_icons: [id] });
+    }
+    // If dragging a selected icon, keep selection as is (for group drag)
+  };
+
+  handleDrag = (e, data, id) => {
+    const { deltaX, deltaY } = data;
+
+    // Update position of all selected icons
+    const newPositions = { ...this.state.desktop_icon_positions };
+    this.state.selected_icons.forEach(iconId => {
+      if (newPositions[iconId]) {
+        newPositions[iconId] = {
+          x: newPositions[iconId].x + deltaX,
+          y: newPositions[iconId].y + deltaY
+        };
+      }
+    });
+
+    this.setState({ desktop_icon_positions: newPositions });
+  };
+
+  handleDragStop = (e, data, id) => {
+    const newPositions = { ...this.state.desktop_icon_positions };
+    const { w: cellW, h: cellH } = this.gridSize;
+
+    // Snap all selected icons to grid
+    this.state.selected_icons.forEach(iconId => {
+      if (newPositions[iconId]) {
+        let { x, y } = newPositions[iconId];
+
+        // Snap logic
+        x = Math.round(x / cellW) * cellW + 20; // Offset startX? Wait, default startX was 20.
+        // My generateDefaultPositions uses startX=20.
+        // So I should snap to (20 + n*100).
+        // x - 20 = n * 100
+        x = Math.round((x - 20) / cellW) * cellW + 20;
+
+        // y - 40 = m * 100
+        y = Math.round((y - 40) / cellH) * cellH + 40;
+
+        if (x < 0) x = 20;
+        if (y < 0) y = 40;
+
+        newPositions[iconId] = { x, y };
+      }
+    });
+
+    this.setState({ desktop_icon_positions: newPositions });
+    localStorage.setItem("desktop_icon_positions", JSON.stringify(newPositions));
+  };
+
+  // --- Selection Logic ---
+
+  handleDesktopMouseDown = (e) => {
+    // Only handle if clicking directly on the desktop area (not windows)
+    if (e.target.dataset.context !== "desktop-area") return;
+    if (e.button !== 0) return; // Only allow left click for selection
+
+    this.selectionStart = { x: e.clientX, y: e.clientY };
+    this.setState({
+        selection_box: { x: e.clientX, y: e.clientY, w: 0, h: 0 },
+        selected_icons: [] // Clear selection on click bg
+    });
+  };
+
+  handleDesktopMouseMove = (e) => {
+    if (!this.selectionStart) return;
+
+    const currentX = e.clientX;
+    const currentY = e.clientY;
+    const startX = this.selectionStart.x;
+    const startY = this.selectionStart.y;
+
+    const x = Math.min(startX, currentX);
+    const y = Math.min(startY, currentY);
+    const w = Math.abs(currentX - startX);
+    const h = Math.abs(currentY - startY);
+
+    this.setState({ selection_box: { x, y, w, h } }, this.updateSelectionIntersection);
+  };
+
+  handleGlobalMouseUp = () => {
+    if (this.selectionStart) {
+        this.selectionStart = null;
+        this.setState({ selection_box: null });
+    }
+  };
+
+  updateSelectionIntersection = () => {
+    if (!this.state.selection_box) return;
+
+    const { x: boxX, y: boxY, w: boxW, h: boxH } = this.state.selection_box;
+    const selected = [];
+
+    // Check intersection with all icons
+    // We need DOM refs or assume dimensions.
+    // Icons are at this.state.desktop_icon_positions
+    // Icon size ~ 96x80.
+    const iconW = 96;
+    const iconH = 80;
+
+    Object.keys(this.state.desktop_icon_positions).forEach(id => {
+        const pos = this.state.desktop_icon_positions[id];
+        // Check rectangle overlap
+        // Box: [boxX, boxX+boxW] x [boxY, boxY+boxH]
+        // Icon: [pos.x, pos.x+iconW] x [pos.y, pos.y+iconH]
+
+        if (
+            boxX < pos.x + iconW &&
+            boxX + boxW > pos.x &&
+            boxY < pos.y + iconH &&
+            boxY + boxH > pos.y
+        ) {
+            selected.push(id);
+        }
+    });
+
+    this.setState({ selected_icons: selected });
+  };
+
   renderDesktopApps = () => {
     if (Object.keys(this.state.closed_windows).length === 0) return;
     let appsJsx = [];
@@ -289,9 +474,26 @@ export class Desktop extends Component {
           id: app.id,
           icon: app.icon,
           openApp: this.openApp,
+          // New prop
+          selected: this.state.selected_icons.includes(app.id),
         };
 
-        appsJsx.push(<UbuntuApp key={app.id} {...props} />);
+        const pos = this.state.desktop_icon_positions[app.id] || { x: 0, y: 0 };
+
+        // We use Draggable in 'controlled' mode via position prop
+        appsJsx.push(
+          <Draggable
+            key={app.id}
+            position={{x: pos.x, y: pos.y}}
+            onStart={(e) => this.handleDragStart(e, app.id)}
+            onDrag={(e, data) => this.handleDrag(e, data, app.id)}
+            onStop={(e, data) => this.handleDragStop(e, data, app.id)}
+          >
+              <div style={{position: 'absolute'}}>
+                <UbuntuApp {...props} />
+              </div>
+          </Draggable>
+        );
       }
     });
     return appsJsx;
@@ -528,7 +730,40 @@ export class Desktop extends Component {
       localStorage.setItem("new_folders", JSON.stringify(new_folders));
     }
 
-    this.setState({ showNameBar: false }, this.updateAppsData);
+    // Assign a position for the new folder
+    let positions = { ...this.state.desktop_icon_positions };
+    const getNextPosition = () => {
+        let row = 0;
+        let col = 0;
+        let cellW = 100;
+        let cellH = 100;
+        let startX = 20;
+        let startY = 40;
+        let maxRows = Math.floor((window.innerHeight - startY) / cellH) || 1;
+
+        while (true) {
+            const x = startX + col * cellW;
+            const y = startY + row * cellH;
+
+            const occupied = Object.values(positions).some(pos =>
+                Math.abs(pos.x - x) < 10 && Math.abs(pos.y - y) < 10
+            );
+
+            if (!occupied) return { x, y };
+
+            row++;
+            if (row >= maxRows) {
+                row = 0;
+                col++;
+            }
+            if (col > 100) return { x: 0, y: 0 }; // Safety break
+        }
+    }
+
+    positions[`new-folder-${folder_id}`] = getNextPosition();
+    localStorage.setItem("desktop_icon_positions", JSON.stringify(positions));
+
+    this.setState({ showNameBar: false, desktop_icon_positions: positions }, this.updateAppsData);
   };
 
   showAllApps = () => {
@@ -585,8 +820,10 @@ export class Desktop extends Component {
     return (
       <div
         className={
-          " h-full w-full flex flex-col items-end justify-start content-start flex-wrap-reverse pt-8 bg-transparent relative overflow-hidden overscroll-none window-parent"
+          " h-full w-full bg-transparent relative overflow-hidden overscroll-none window-parent"
         }
+        onMouseDown={this.handleDesktopMouseDown}
+        onMouseMove={this.handleDesktopMouseMove}
       >
         {/* Window Area */}
         <div
@@ -615,6 +852,19 @@ export class Desktop extends Component {
 
         {/* Desktop Apps */}
         {this.renderDesktopApps()}
+
+        {/* Selection Box */}
+        {this.state.selection_box && (
+            <div
+                className="absolute border border-ub-orange bg-ub-orange bg-opacity-20 z-50 selection-box"
+                style={{
+                    left: this.state.selection_box.x,
+                    top: this.state.selection_box.y,
+                    width: this.state.selection_box.w,
+                    height: this.state.selection_box.h
+                }}
+            />
+        )}
 
         {/* Context Menus */}
         <DesktopMenu
