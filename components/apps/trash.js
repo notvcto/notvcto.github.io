@@ -82,10 +82,10 @@ export class Trash extends Component {
   showTrashItems = () => {
     return (
       <div className="flex-grow ml-4 flex flex-wrap items-start content-start justify-start overflow-y-auto windowMainScreen">
-        {this.trashItems.map((item, index) => {
+        {this.trashItems.map((item) => {
           return (
             <div
-              key={index}
+              key={item.name}
               tabIndex="1"
               onFocus={this.focusFile}
               onBlur={this.focusFile}

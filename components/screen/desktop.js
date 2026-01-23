@@ -291,7 +291,7 @@ export class Desktop extends Component {
           openApp: this.openApp,
         };
 
-        appsJsx.push(<UbuntuApp key={index} {...props} />);
+        appsJsx.push(<UbuntuApp key={app.id} {...props} />);
       }
     });
     return appsJsx;
@@ -323,7 +323,7 @@ export class Desktop extends Component {
           bg_image_name: this.props.bg_image_name,
         };
 
-        windowsJsx.push(<Window key={index} {...props} />);
+        windowsJsx.push(<Window key={app.id} {...props} />);
       }
     });
     return windowsJsx;
