@@ -13,7 +13,7 @@ const apps = [
   {
     id: "firefox",
     title: "Mozilla Firefox",
-    icon: "./themes/Yaru/apps/firefox.svg",
+    icon: "./themes/MoreWaita/apps/firefox.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: true,
@@ -22,7 +22,7 @@ const apps = [
   {
     id: "blog",
     title: "Blog",
-    icon: "./themes/Yaru/apps/gedit.svg",
+    icon: "./themes/MoreWaita/apps/gedit.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: true,
@@ -31,7 +31,7 @@ const apps = [
   {
     id: "calc",
     title: "Calc",
-    icon: "./themes/Yaru/apps/calc.svg",
+    icon: "./themes/MoreWaita/apps/calc.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: false,
@@ -40,7 +40,7 @@ const apps = [
   {
     id: "about-vcto",
     title: "about vcto",
-    icon: "./themes/Yaru/system/user-home.svg",
+    icon: "./themes/MoreWaita/system/user-home.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: true,
@@ -49,7 +49,7 @@ const apps = [
   {
     id: "vscode",
     title: "Visual Studio Code",
-    icon: "./themes/Yaru/apps/vscode.svg",
+    icon: "./themes/MoreWaita/apps/vscode.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: false,
@@ -58,7 +58,7 @@ const apps = [
   {
     id: "terminal",
     title: "Terminal",
-    icon: "./themes/Yaru/apps/bash.svg",
+    icon: "./themes/MoreWaita/apps/terminal.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: false,
@@ -67,7 +67,7 @@ const apps = [
   {
     id: "spotify",
     title: "Spotify",
-    icon: "./themes/Yaru/apps/spotify.svg",
+    icon: "./themes/MoreWaita/apps/spotify.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: false,
@@ -76,7 +76,7 @@ const apps = [
   {
     id: "settings",
     title: "Settings",
-    icon: "./themes/Yaru/apps/gnome-control-center.svg",
+    icon: "./themes/MoreWaita/apps/settings.svg",
     disabled: false,
     favourite: true,
     desktop_shortcut: false,
@@ -85,7 +85,7 @@ const apps = [
   {
     id: "trash",
     title: "Trash",
-    icon: "./themes/Yaru/system/user-trash-full.svg",
+    icon: "./themes/MoreWaita/system/user-trash-full.svg",
     disabled: false,
     favourite: false,
     desktop_shortcut: true,
@@ -94,7 +94,7 @@ const apps = [
   {
     id: "gedit",
     title: "Contact Me",
-    icon: "./themes/Yaru/apps/gedit.svg",
+    icon: "./themes/MoreWaita/apps/gedit.svg",
     disabled: false,
     favourite: false,
     desktop_shortcut: true,
