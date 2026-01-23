@@ -13,6 +13,26 @@ Go to [https://www.emailjs.com/](https://www.emailjs.com/) and sign up for a fre
 5.  Click **Create Service**.
 6.  **Save the `Service ID`** (e.g., `service_xyz123`). You will need this later.
 
+### Using Proton Mail?
+If you use Proton Mail, you have two options:
+
+**Option A: Just Receive Emails (Recommended)**
+You can use a free Gmail or Outlook account as the "Service" to *send* the emails, but have them delivered to your Proton Mail inbox.
+1.  Connect a Gmail/Outlook account in the "Email Services" tab.
+2.  In your **Email Template** (Step 3 below), set the **"To Email"** field to your Proton Mail address (e.g., `myname@proton.me`).
+3.  This acts as a relay: `Form -> EmailJS -> Gmail -> Proton Mail`.
+
+**Option B: Send via Proton Mail (Advanced)**
+To strictly use Proton Mail as the sender, you need:
+1.  A **Paid** Proton Mail plan.
+2.  A **Custom Domain**.
+3.  An **SMTP Token** (generated in Proton Mail settings).
+4.  In EmailJS, choose **"SMTP Server"** as your service (this feature might require a paid EmailJS tier).
+   *   Host: `smtp.protonmail.ch`
+   *   Port: `587`
+   *   User: Your custom domain email.
+   *   Pass: Your Proton SMTP Token.
+
 ## 3. Create an Email Template
 1.  Go to the **Email Templates** tab.
 2.  Click **Create New Template**.
@@ -22,6 +42,7 @@ Go to [https://www.emailjs.com/](https://www.emailjs.com/) and sign up for a fre
     *   `{{message}}` - The actual message content.
 
     **Example Template:**
+    *   **To Email:** `your_actual_email@example.com` (e.g., your Proton Mail address)
     *   **Subject:** `New Message from Portfolio: {{subject}}`
     *   **Content:**
         ```text
