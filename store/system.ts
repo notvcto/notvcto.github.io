@@ -33,6 +33,8 @@ interface SystemState {
   activeDesktop: number
   windows: Record<string, WindowState>
   icons: IconState[]
+  selectedIconIds: string[]
+  wallpaper: string // For now just storing index or class
   maxZIndex: number
 
   // Actions
@@ -43,7 +45,17 @@ interface SystemState {
   switchDesktop: (desktopId: number) => void
   toggleMinimize: (id: string) => void
   toggleMaximize: (id: string) => void
+
+  // Icon Actions
   updateIconPosition: (id: string, x: number, y: number) => void
+  moveIcons: (deltaX: number, deltaY: number) => void // Batch move selected
+  snapIconsToGrid: () => void
+  selectIcons: (ids: string[]) => void
+  toggleIconSelection: (id: string) => void
+  deselectAllIcons: () => void
+
+  // System Actions
+  setWallpaper: (wallpaper: string) => void
 }
 
 const INITIAL_ICONS: IconState[] = [
@@ -53,10 +65,14 @@ const INITIAL_ICONS: IconState[] = [
   { id: '4', appId: 'resume', label: 'resume.pdf', icon: 'description', x: 128, y: 128, color: 'subtext-dark', special: true },
 ]
 
+const GRID_SIZE = 96;
+
 export const useSystemStore = create<SystemState>((set, get) => ({
   activeDesktop: 1,
   windows: {},
   icons: INITIAL_ICONS,
+  selectedIconIds: [],
+  wallpaper: 'default',
   maxZIndex: 100,
 
   spawnWindow: (appId) => {
@@ -65,8 +81,6 @@ export const useSystemStore = create<SystemState>((set, get) => ({
     const zIndex = state.maxZIndex + 1
     const desktopId = state.activeDesktop
 
-    // Default window sizing and positioning
-    // We can randomize position slightly to avoid perfect overlap
     const offset = Object.keys(state.windows).length * 20
     const x = 100 + (offset % 200)
     const y = 100 + (offset % 200)
@@ -74,7 +88,7 @@ export const useSystemStore = create<SystemState>((set, get) => ({
     const newWindow: WindowState = {
       id,
       appId,
-      title: appId.charAt(0).toUpperCase() + appId.slice(1), // Simple title gen
+      title: appId.charAt(0).toUpperCase() + appId.slice(1),
       desktopId,
       x,
       y,
@@ -86,7 +100,6 @@ export const useSystemStore = create<SystemState>((set, get) => ({
       isMaximized: false,
     }
 
-    // Unfocus all other windows
     const updatedWindows = { ...state.windows }
     Object.keys(updatedWindows).forEach((key) => {
       updatedWindows[key] = { ...updatedWindows[key], isFocused: false }
@@ -108,24 +121,22 @@ export const useSystemStore = create<SystemState>((set, get) => ({
   focusWindow: (id) => {
     set((state) => {
       if (state.windows[id].isFocused && state.windows[id].zIndex === state.maxZIndex) {
-        return {} // Already focused and on top
+        return {}
       }
 
       const newZIndex = state.maxZIndex + 1
       const updatedWindows = { ...state.windows }
 
-      // Unfocus others
       Object.keys(updatedWindows).forEach((key) => {
         updatedWindows[key] = { ...updatedWindows[key], isFocused: false }
       })
 
-      // Focus target
       if (updatedWindows[id]) {
         updatedWindows[id] = {
           ...updatedWindows[id],
           isFocused: true,
           zIndex: newZIndex,
-          isMinimized: false // Auto restore if minimized
+          isMinimized: false
         }
       }
 
@@ -187,5 +198,56 @@ export const useSystemStore = create<SystemState>((set, get) => ({
         icon.id === id ? { ...icon, x, y } : icon
       ),
     }))
+  },
+
+  moveIcons: (deltaX, deltaY) => {
+    set((state) => {
+      // Move all selected icons
+      const updatedIcons = state.icons.map(icon => {
+        if (state.selectedIconIds.includes(icon.id)) {
+          return { ...icon, x: icon.x + deltaX, y: icon.y + deltaY }
+        }
+        return icon
+      })
+      return { icons: updatedIcons }
+    })
+  },
+
+  snapIconsToGrid: () => {
+    set((state) => {
+      const updatedIcons = state.icons.map(icon => {
+        // Only snap selected ones (those being dragged/dropped)
+        if (state.selectedIconIds.includes(icon.id)) {
+          const snappedX = Math.round(icon.x / GRID_SIZE) * GRID_SIZE + 32 // +32 for offset/padding
+          const snappedY = Math.round(icon.y / GRID_SIZE) * GRID_SIZE
+          return { ...icon, x: snappedX, y: snappedY < 32 ? 32 : snappedY } // Avoid top bar
+        }
+        return icon
+      })
+      return { icons: updatedIcons }
+    })
+  },
+
+  selectIcons: (ids) => {
+    set({ selectedIconIds: ids })
+  },
+
+  toggleIconSelection: (id) => {
+    set((state) => {
+      const isSelected = state.selectedIconIds.includes(id)
+      if (isSelected) {
+        return { selectedIconIds: state.selectedIconIds.filter(i => i !== id) }
+      } else {
+        return { selectedIconIds: [...state.selectedIconIds, id] }
+      }
+    })
+  },
+
+  deselectAllIcons: () => {
+    set({ selectedIconIds: [] })
+  },
+
+  setWallpaper: (wallpaper) => {
+    set({ wallpaper })
   },
 }))
