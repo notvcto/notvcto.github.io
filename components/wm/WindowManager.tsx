@@ -2,7 +2,7 @@
 
 import { useSystemStore } from '@/store/system';
 import { WindowFrame } from './WindowFrame';
-import { AppRegistry } from '@/components/apps/registry';
+import { getAppComponent } from '@/components/apps/registry';
 
 export const WindowManager = () => {
   const { windows, activeDesktop } = useSystemStore();
@@ -13,7 +13,7 @@ export const WindowManager = () => {
   return (
     <>
       {activeWindows.map((window) => {
-        const AppComponent = AppRegistry[window.appId];
+        const AppComponent = getAppComponent(window.appId);
         return (
           <WindowFrame key={window.id} window={window}>
             {AppComponent ? <AppComponent /> : <div className="p-4">App not found: {window.appId}</div>}

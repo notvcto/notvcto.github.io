@@ -90,6 +90,8 @@ export const DesktopIcon = ({ iconData }: DesktopIconProps) => {
         }
       } else {
         // Drag Interaction Ended -> Snap
+        // We delay slightly to ensure the final move frame has processed if needed,
+        // though standard react state update batching handles it.
         snapIconsToGrid();
       }
     }
