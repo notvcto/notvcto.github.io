@@ -5,5 +5,5 @@ export const terminalManifest = {
   name: 'Terminal',
   icon: 'terminal',
   defaultSize: { width: 600, height: 400 },
-  singleton: false, // Explicitly multi-instance, though usually shells are
+  singleton: true, // Now handled by store anyway, but keeping metadata consistent
 };

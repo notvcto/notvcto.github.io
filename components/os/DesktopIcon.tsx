@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useSystemStore, IconState } from '@/store/system';
 import clsx from 'clsx';
 
@@ -25,17 +25,6 @@ export const DesktopIcon = ({ iconData }: DesktopIconProps) => {
   const dragStart = useRef({ x: 0, y: 0 });
   const [hasDragged, setHasDragged] = useState(false);
 
-  // Local ref for smooth dragging (optional, but since we batch move via store for multi-select,
-  // we might want to keep the current store-driven logic for multi-icon consistency OR optimize.
-  // Store-driven multi-icon drag updates state for ALL icons. This is heavy.
-  // Optimization:
-  // 1. If single icon drag, use local ref -> update store on up.
-  // 2. If multi drag, we kinda have to update store to move all of them?
-  //    Or we could have a "DragOverlay" layer?
-  //    For now, let's just make the threshold tiny and rely on React.
-  //    Actually, let's remove the "transition-transform" during drag to avoid lag.
-  //    See class logic below.
-
   const iconRef = useRef<HTMLDivElement>(null);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -45,14 +34,12 @@ export const DesktopIcon = ({ iconData }: DesktopIconProps) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Selection Logic
+    // Selection Logic: Select on pointer down to allow drag
     if (e.metaKey || e.ctrlKey) {
         toggleIconSelection(id);
     } else if (!isSelected) {
-        // If clicking an unselected icon without modifier, select only this one
         selectIcons([id]);
     }
-    // If clicking a selected icon, keep selection as is to allow dragging group
 
     setIsDragging(true);
     setHasDragged(false);
@@ -69,13 +56,10 @@ export const DesktopIcon = ({ iconData }: DesktopIconProps) => {
     const deltaX = e.clientX - dragStart.current.x;
     const deltaY = e.clientY - dragStart.current.y;
 
-    // Immediate threshold check
     const thresholdExceeded = hasDragged || Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2;
 
     if (thresholdExceeded) {
        if (!hasDragged) setHasDragged(true);
-
-       // Update store immediately for multi-icon support
        moveIcons(deltaX, deltaY);
        dragStart.current = { x: e.clientX, y: e.clientY };
     }
@@ -87,16 +71,21 @@ export const DesktopIcon = ({ iconData }: DesktopIconProps) => {
       (e.currentTarget as Element).releasePointerCapture(e.pointerId);
 
       if (!hasDragged) {
-        // Click action
+        // Single Click: Ensure only this icon is selected (if not dragging group)
+        // If we clicked a selected icon without modifier, we select just it.
         if (!e.metaKey && !e.ctrlKey) {
-             spawnWindow(appId);
-             selectIcons([id]); // Ensure this is the only one selected
+             selectIcons([id]);
         }
       } else {
-        // Drag Interaction Ended -> Snap
         snapIconsToGrid();
       }
     }
+  };
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+      // Standard OS behavior: Double click spawns
+      e.stopPropagation(); // Prevent bubbling
+      spawnWindow(appId);
   };
 
   // Construct color classes dynamically
@@ -114,21 +103,13 @@ export const DesktopIcon = ({ iconData }: DesktopIconProps) => {
       ref={iconRef}
       className={clsx(
         "pointer-events-auto absolute flex flex-col items-center gap-1 group w-20 cursor-pointer select-none",
-        // Remove transition during drag to prevent "following" effect/lag
-        // We use isDragging state to toggle transition class?
-        // Actually, if we update store every frame, transition makes it look floaty/laggy.
-        // We should DISABLE transition for position changes generally, or only enable for snapping?
-        // Let's rely on 'duration-75' only when NOT dragging?
-        // But we don't know if *this* icon is being dragged if it's part of a group but not the leader?
-        // Actually moveIcons updates ALL icons.
-        // Let's remove 'transition-transform' completely for now to feel raw/fast.
-        // Or make it very fast.
         isSelected && "brightness-125"
       )}
       style={{ transform: `translate(${x}px, ${y}px)` }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
+      onDoubleClick={handleDoubleClick}
     >
       <div className={clsx(
         "w-12 h-12 flex items-center justify-center rounded-xl border transition-colors relative",
