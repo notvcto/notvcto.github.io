@@ -1,43 +1,22 @@
-import Ubuntu from "../components/ubuntu";
-import ReactGA from "react-ga4";
-import { useEffect } from "react";
-import Meta from "../components/SEO/Meta";
-import { getSortedPostsData, getPostData } from "../lib/blog";
+import Head from "next/head";
 
-const TRACKING_ID = process.env.NEXT_PUBLIC_TRACKING_ID;
-
-function App({ blogPosts }) {
-  useEffect(() => {
-    // Only initialize GA if we have a valid tracking ID
-    if (TRACKING_ID && TRACKING_ID !== "G-XXXXXXXXXX") {
-      ReactGA.initialize(TRACKING_ID);
-    }
-  }, []);
-
+export default function Home() {
   return (
-    <>
-      <Meta />
-      <Ubuntu blogPosts={blogPosts} />
-    </>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-900 text-white">
+      <Head>
+        <title>Under Construction</title>
+        <meta name="description" content="Site under construction" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <main className="flex flex-col items-center justify-center p-4 text-center">
+        <h1 className="mb-4 text-4xl font-bold md:text-6xl">
+          Under Construction
+        </h1>
+        <p className="text-lg text-gray-400 md:text-xl">
+          Check back soon for v2.
+        </p>
+      </main>
+    </div>
   );
-}
-
-export default App;
-
-export async function getStaticProps() {
-  const allPostsData = getSortedPostsData();
-
-  // Get full content for each post
-  const blogPosts = await Promise.all(
-    allPostsData.map(async (post) => {
-      const postData = await getPostData(post.id);
-      return postData;
-    })
-  );
-
-  return {
-    props: {
-      blogPosts,
-    },
-  };
 }
