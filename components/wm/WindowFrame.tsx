@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { WindowState, useSystemStore } from '@/store/system';
 import clsx from 'clsx';
 
@@ -16,6 +16,22 @@ export const WindowFrame = ({ window, children }: WindowFrameProps) => {
   // Dragging state
   const [isDragging, setIsDragging] = useState(false);
   const dragOffset = useRef({ x: 0, y: 0 });
+  const windowRef = useRef<HTMLDivElement>(null);
+
+  // Use local ref for immediate position updates during drag to avoid re-renders
+  // We sync with store on drag start (to init) and drag end (to save).
+  // During drag, we manipulate the DOM directly.
+  const currentPos = useRef({ x, y });
+
+  // Sync ref with props when not dragging (in case external update happens)
+  useEffect(() => {
+    if (!isDragging) {
+      currentPos.current = { x, y };
+      if (windowRef.current) {
+        windowRef.current.style.transform = isMaximized ? 'none' : `translate(${x}px, ${y}px)`;
+      }
+    }
+  }, [x, y, isDragging, isMaximized]);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -29,8 +45,8 @@ export const WindowFrame = ({ window, children }: WindowFrameProps) => {
 
     setIsDragging(true);
     dragOffset.current = {
-      x: e.clientX - x,
-      y: e.clientY - y,
+      x: e.clientX - currentPos.current.x,
+      y: e.clientY - currentPos.current.y,
     };
 
     // Capture pointer to track movement outside the element
@@ -46,18 +62,24 @@ export const WindowFrame = ({ window, children }: WindowFrameProps) => {
     const newY = e.clientY - dragOffset.current.y;
 
     // Optional: Clamp logic could go here.
-    // For now, allowing some freedom but preventing total loss.
-    // Ensure at least 20px of the title bar is visible.
     const constrainedY = Math.max(0, newY); // Don't go above top bar
 
-    // Update store
-    updateWindowPosition(id, newX, constrainedY);
+    // Update local ref
+    currentPos.current = { x: newX, y: constrainedY };
+
+    // Direct DOM update for performance (60fps)
+    if (windowRef.current) {
+        windowRef.current.style.transform = `translate(${newX}px, ${constrainedY}px)`;
+    }
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     if (isDragging) {
       setIsDragging(false);
       (e.target as Element).releasePointerCapture(e.pointerId);
+
+      // Sync final position to store
+      updateWindowPosition(id, currentPos.current.x, currentPos.current.y);
     }
   };
 
@@ -74,6 +96,7 @@ export const WindowFrame = ({ window, children }: WindowFrameProps) => {
     height: 'calc(100% - 40px)',
     transform: 'none',
   } : {
+    // Initial render style, updated by ref effect or drag logic
     transform: `translate(${x}px, ${y}px)`,
     width: width,
     height: height,
@@ -81,15 +104,19 @@ export const WindowFrame = ({ window, children }: WindowFrameProps) => {
 
   return (
     <div
+      ref={windowRef}
       className={clsx(
-        "absolute flex flex-col overflow-hidden shadow-xl transition-all duration-300 pointer-events-auto",
-        isMaximized ? "rounded-none" : "rounded-lg",
+        "absolute flex flex-col overflow-hidden shadow-xl transition-shadow duration-300 pointer-events-auto",
+        isMaximized ? "rounded-none transition-all" : "rounded-lg", // Only animate on maximize toggle, drag is manual
         isFocused ? "shadow-glow border-primary/40 ring-1 ring-primary/20" : "border-white/10 dark:border-white/5 shadow-2xl",
         "bg-surface-light dark:bg-surface-dark border" // Base styles
       )}
       style={{
         zIndex: zIndex,
-        ...maximizedStyles
+        ...maximizedStyles,
+        // Override transform if we are dragging to prevent transition conflict?
+        // We removed transition-all from base class to avoid drag lag, added back for maximize only?
+        // Let's keep transition-shadow.
       }}
       onPointerDown={() => focusWindow(id)} // Focus on clicking anywhere in window
     >
