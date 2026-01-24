@@ -1,23 +1,28 @@
 export const About = () => {
   return (
-    <div className="h-full bg-surface-light dark:bg-surface-dark p-6 overflow-y-auto text-text-light dark:text-text-dark">
-      <h1 className="text-2xl font-bold mb-4 text-primary">About Me</h1>
-      <div className="prose dark:prose-invert max-w-none">
-        <p className="mb-4">
-          Hi, I'm a software engineer passionate about building beautiful, functional, and performant web applications.
-        </p>
-        <p className="mb-4">
-          This portfolio is designed to mimic a Linux desktop environment (specifically an Arch Linux "rice").
-          It is built with <strong>Next.js 13+ (App Router)</strong>, <strong>TypeScript</strong>, and <strong>Tailwind CSS</strong>.
-        </p>
+    <div className="h-full bg-[#1e1e2e] text-white flex flex-col items-center justify-center p-8 text-center">
+      <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white/10 mb-6 shadow-2xl">
+        <img
+            src="https://avatars.githubusercontent.com/u/notvcto?v=4" // Placeholder or dynamic if we knew URL
+            alt="Profile"
+            className="w-full h-full object-cover"
+            onError={(e) => (e.currentTarget.src = 'https://ui-avatars.com/api/?name=V&background=random')}
+        />
+      </div>
+      <h1 className="text-3xl font-bold mb-2">Vivek</h1>
+      <h2 className="text-xl text-primary mb-6">Software Engineer</h2>
+      <p className="max-w-md text-subtext-dark mb-8 leading-relaxed">
+        Passionate about building scalable web applications and exploring new technologies.
+        This portfolio is a reflection of my love for Linux and clean UI.
+      </p>
 
-        <h2 className="text-xl font-semibold mt-6 mb-2 text-secondary">Tech Stack</h2>
-        <ul className="list-disc list-inside space-y-1 ml-2 text-subtext-dark">
-          <li>React / Next.js</li>
-          <li>TypeScript</li>
-          <li>Tailwind CSS</li>
-          <li>Zustand (State Management)</li>
-        </ul>
+      <div className="flex gap-4">
+        <a href="https://github.com/notvcto" target="_blank" className="p-2 bg-white/5 rounded-full hover:bg-white/10 hover:text-primary transition-colors">
+            <span className="material-icons-round">code</span>
+        </a>
+        <a href="mailto:contact@vcto.io" className="p-2 bg-white/5 rounded-full hover:bg-white/10 hover:text-green-accent transition-colors">
+            <span className="material-icons-round">email</span>
+        </a>
       </div>
     </div>
   );
