@@ -9,7 +9,7 @@ export class Window extends Component {
     super();
     this.id = null;
     this.startX = 60;
-    this.startY = 10;
+    this.startY = 40;
     this.state = {
       cursorType: "cursor-default",
       width: 60,
@@ -105,7 +105,7 @@ export class Window extends Component {
         );
         r.style.setProperty(
           "--window-transform-y",
-          (rect.y.toFixed(1) - 32).toString() + "px"
+          rect.y.toFixed(1).toString() + "px"
         );
       }
     }

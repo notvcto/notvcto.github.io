@@ -85,10 +85,20 @@ export class Desktop extends Component {
     let positions = {};
     let row = 0;
     let col = 0;
-    let startX = 20;
     let startY = 40;
     let cellH = 100;
     let cellW = 100;
+
+    // Grid alignment: x = 20 + n * 100
+    // We want to start from the right side.
+    const screenW = window.innerWidth;
+    const maxCols = Math.floor((screenW - 20) / cellW);
+    // maxCols is the number of columns that fit.
+    // e.g. Width 1280. (1280-20)/100 = 12.6 -> 12 columns (indices 0..11).
+    // X positions: 20, 120, ..., 20 + 11*100 = 1120.
+    // We want to fill starting from col = maxCols - 1 (Rightmost).
+
+    let gridCol = maxCols - 1;
 
     let maxRows = Math.floor((window.innerHeight - startY) / cellH);
     if (maxRows < 1) maxRows = 1;
@@ -96,13 +106,13 @@ export class Desktop extends Component {
     apps.forEach((app) => {
       if (app.desktop_shortcut) {
         positions[app.id] = {
-          x: startX + col * cellW,
+          x: 20 + gridCol * cellW,
           y: startY + row * cellH,
         };
         row++;
         if (row >= maxRows) {
           row = 0;
-          col++;
+          gridCol--; // Move left
         }
       }
     });
