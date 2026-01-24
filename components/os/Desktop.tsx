@@ -3,8 +3,11 @@
 import { TopBar } from './TopBar';
 import { DesktopIcon } from './DesktopIcon';
 import { WindowManager } from '@/components/wm/WindowManager';
+import { useSystemStore } from '@/store/system';
 
 export const Desktop = () => {
+  const { icons } = useSystemStore();
+
   return (
     <>
       <div className="fixed inset-0 scanlines z-50 pointer-events-none opacity-20"></div>
@@ -18,39 +21,10 @@ export const Desktop = () => {
       <TopBar />
 
       {/* Desktop Icons Layer */}
-      <div className="absolute inset-0 z-10 pt-16 px-6 pointer-events-none">
-        <DesktopIcon
-          appId="projects"
-          label="Projects"
-          icon="folder"
-          color="blue-accent"
-          top={96} // top-24 -> 6rem * 16 = 96px
-          left={32} // left-8 -> 2rem * 16 = 32px
-        />
-        <DesktopIcon
-          appId="about"
-          label="About Me"
-          icon="person"
-          color="primary"
-          top={192} // top-48 -> 12rem * 16 = 192px
-          left={32}
-        />
-        <DesktopIcon
-          appId="contact"
-          label="Contact"
-          icon="alternate_email"
-          color="green-accent"
-          top={288} // top-72 -> 18rem * 16 = 288px
-          left={32}
-        />
-        <DesktopIcon
-          appId="resume"
-          label="resume.pdf"
-          icon="description"
-          color="subtext-dark"
-          top={128} // top-32 -> 8rem * 16 = 128px
-          left={128} // left-32 -> 8rem * 16 = 128px
-        />
+      <div className="absolute inset-0 z-10 pointer-events-none">
+        {icons.map((icon) => (
+          <DesktopIcon key={icon.id} iconData={icon} />
+        ))}
       </div>
 
       {/* Window Manager Layer */}

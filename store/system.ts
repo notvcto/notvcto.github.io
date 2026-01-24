@@ -14,12 +14,25 @@ export interface WindowState {
   zIndex: number
   isFocused: boolean
   isMinimized: boolean
+  isMaximized: boolean
+}
+
+export interface IconState {
+  id: string
+  appId: AppID
+  label: string
+  icon: string // Material Icon name
+  x: number
+  y: number
+  color?: string
+  special?: boolean
 }
 
 interface SystemState {
   // State
   activeDesktop: number
   windows: Record<string, WindowState>
+  icons: IconState[]
   maxZIndex: number
 
   // Actions
@@ -29,11 +42,21 @@ interface SystemState {
   updateWindowPosition: (id: string, x: number, y: number) => void
   switchDesktop: (desktopId: number) => void
   toggleMinimize: (id: string) => void
+  toggleMaximize: (id: string) => void
+  updateIconPosition: (id: string, x: number, y: number) => void
 }
+
+const INITIAL_ICONS: IconState[] = [
+  { id: '1', appId: 'projects', label: 'Projects', icon: 'folder', x: 32, y: 96, color: 'blue-accent' },
+  { id: '2', appId: 'about', label: 'About Me', icon: 'person', x: 32, y: 192, color: 'primary' },
+  { id: '3', appId: 'contact', label: 'Contact', icon: 'alternate_email', x: 32, y: 288, color: 'green-accent' },
+  { id: '4', appId: 'resume', label: 'resume.pdf', icon: 'description', x: 128, y: 128, color: 'subtext-dark', special: true },
+]
 
 export const useSystemStore = create<SystemState>((set, get) => ({
   activeDesktop: 1,
   windows: {},
+  icons: INITIAL_ICONS,
   maxZIndex: 100,
 
   spawnWindow: (appId) => {
@@ -60,6 +83,7 @@ export const useSystemStore = create<SystemState>((set, get) => ({
       zIndex,
       isFocused: true,
       isMinimized: false,
+      isMaximized: false,
     }
 
     // Unfocus all other windows
@@ -133,9 +157,35 @@ export const useSystemStore = create<SystemState>((set, get) => ({
       return {
         windows: {
           ...state.windows,
-          [id]: { ...window, isMinimized: !window.isMinimized, isFocused: !window.isMinimized ? false : true },
+          [id]: {
+            ...window,
+            isMinimized: !window.isMinimized,
+            isFocused: !window.isMinimized ? false : true
+          },
         },
       }
     })
+  },
+
+  toggleMaximize: (id) => {
+    set((state) => {
+      const window = state.windows[id]
+      if (!window) return {}
+
+      return {
+        windows: {
+          ...state.windows,
+          [id]: { ...window, isMaximized: !window.isMaximized },
+        },
+      }
+    })
+  },
+
+  updateIconPosition: (id, x, y) => {
+    set((state) => ({
+      icons: state.icons.map(icon =>
+        icon.id === id ? { ...icon, x, y } : icon
+      ),
+    }))
   },
 }))
