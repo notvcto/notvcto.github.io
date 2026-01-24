@@ -233,37 +233,39 @@ export class Window extends Component {
               : " rounded-xl") +
             (this.props.minimized ? " opacity-0 invisible duration-200 " : "") +
             (this.props.isFocused ? " z-30 " : " z-20 notFocused") +
-            " opened-window overflow-hidden min-w-1/4 min-h-1/4 main-window absolute window-shadow border-black border-opacity-40 border border-t-0 flex flex-col"
+            " overflow-hidden min-w-1/4 min-h-1/4 main-window absolute window-shadow border-black border-opacity-40 border border-t-0 flex flex-col"
           }
           id={this.id}
         >
-          <WindowYBorder resize={this.handleHorizontalResize} />
-          <WindowXBorder resize={this.handleVerticleResize} />
-          <WindowTopBar title={this.props.title} />
-          <WindowEditButtons
-            minimize={this.minimizeWindow}
-            maximize={this.maximizeWindow}
-            isMaximised={this.state.maximized}
-            close={this.closeWindow}
-            id={this.id}
-          />
-          {this.id === "settings" ? (
-            <Settings
-              changeBackgroundImage={this.props.changeBackgroundImage}
-              currBgImgName={this.props.bg_image_name}
-              changeAccentColor={this.props.changeAccentColor}
-              accentColor={this.props.accentColor}
+          <div className="relative w-full h-full overflow-hidden flex flex-col opened-window">
+            <WindowYBorder resize={this.handleHorizontalResize} />
+            <WindowXBorder resize={this.handleVerticleResize} />
+            <WindowTopBar title={this.props.title} />
+            <WindowEditButtons
+              minimize={this.minimizeWindow}
+              maximize={this.maximizeWindow}
+              isMaximised={this.state.maximized}
+              close={this.closeWindow}
+              id={this.id}
             />
-          ) : (
-            <WindowMainScreen
-              screen={this.props.screen}
-              title={this.props.title}
-              addFolder={
-                this.props.id === "terminal" ? this.props.addFolder : null
-              }
-              openApp={this.props.openApp}
-            />
-          )}
+            {this.id === "settings" ? (
+              <Settings
+                changeBackgroundImage={this.props.changeBackgroundImage}
+                currBgImgName={this.props.bg_image_name}
+                changeAccentColor={this.props.changeAccentColor}
+                accentColor={this.props.accentColor}
+              />
+            ) : (
+              <WindowMainScreen
+                screen={this.props.screen}
+                title={this.props.title}
+                addFolder={
+                  this.props.id === "terminal" ? this.props.addFolder : null
+                }
+                openApp={this.props.openApp}
+              />
+            )}
+          </div>
         </div>
       </Draggable>
     );

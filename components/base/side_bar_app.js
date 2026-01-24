@@ -44,7 +44,7 @@ export class SideBarApp extends Component {
           (this.props.isClose[this.id] === false && this.props.isFocus[this.id]
             ? "bg-white bg-opacity-10 "
             : "") +
-          " w-auto p-2 outline-none relative transition hover:bg-white hover:bg-opacity-10 rounded m-1"
+          " w-auto p-2 outline-none relative transition hover:bg-white hover:bg-opacity-10 rounded m-1 transform duration-200 hover:scale-110"
         }
         id={"sidebar-" + this.props.id}
       >
