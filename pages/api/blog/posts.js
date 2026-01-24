@@ -1,9 +1,9 @@
 import { getSortedPostsData } from '../../../lib/blog';
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
-      const posts = getSortedPostsData();
+      const posts = await getSortedPostsData();
       res.status(200).json(posts);
     } catch (error) {
       console.error('Error fetching posts:', error);

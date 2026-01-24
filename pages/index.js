@@ -25,7 +25,7 @@ function App({ blogPosts }) {
 export default App;
 
 export async function getStaticProps() {
-  const allPostsData = getSortedPostsData();
+  const allPostsData = await getSortedPostsData();
 
   // Get full content for each post
   const blogPosts = await Promise.all(
