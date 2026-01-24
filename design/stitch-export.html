@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Catppuccin Desktop Portfolio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        // Catppuccin Mocha Palette
+                        primary: "#b4befe", // Lavender
+                        secondary: "#cba6f7", // Mauve
+                        // Backgrounds
+                        "background-light": "#eff1f5", // Latte Base
+                        "background-dark": "#1e1e2e", // Mocha Base
+                        // Surface layers
+                        "surface-light": "#e6e9ef", // Latte Mantle
+                        "surface-dark": "#181825", // Mocha Mantle
+                        // Text
+                        "text-light": "#4c4f69", // Latte Text
+                        "text-dark": "#cdd6f4", // Mocha Text
+                        // Accents
+                        "subtext-dark": "#a6adc8",
+                        "overlay-dark": "#6c7086",
+                        "red-accent": "#f38ba8",
+                        "green-accent": "#a6e3a1",
+                        "yellow-accent": "#f9e2af",
+                        "blue-accent": "#89b4fa",
+                    },
+                    fontFamily: {
+                        display: ["JetBrains Mono", "monospace"],
+                        sans: ["Inter", "sans-serif"],
+                        mono: ["JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.75rem",
+                    },
+                    boxShadow: {
+                        'glow': '0 0 15px -3px rgba(180, 190, 254, 0.15)',
+                    }
+                },
+            },
+        };
+    </script>
+<style>::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #45475a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #585b70;
+        }.scanlines {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.05) 50%,
+                rgba(0,0,0,0.05)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+        }.glass {
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-sans h-screen w-screen overflow-hidden selection:bg-primary selection:text-background-dark transition-colors duration-300 relative">
+<div class="fixed inset-0 scanlines z-50 pointer-events-none opacity-20"></div>
+<div class="fixed inset-0 z-0 bg-gradient-to-br from-background-light to-[#dce0e8] dark:from-background-dark dark:to-[#11111b]">
+<div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl"></div>
+</div>
+<div class="absolute inset-0 z-10 pt-16 px-6 pointer-events-none">
+<div class="pointer-events-auto absolute top-24 left-8 flex flex-col items-center gap-1 group w-20 cursor-pointer">
+<div class="w-12 h-12 flex items-center justify-center bg-blue-accent/10 rounded-xl border border-blue-accent/20 group-hover:bg-blue-accent/20 transition-colors">
+<span class="material-icons-round text-3xl text-blue-accent">folder</span>
+</div>
+<span class="text-xs font-medium text-text-dark shadow-black drop-shadow-md text-center group-hover:bg-primary/20 group-hover:rounded px-1">Projects</span>
+</div>
+<div class="pointer-events-auto absolute top-48 left-8 flex flex-col items-center gap-1 group w-20 cursor-pointer">
+<div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-xl border border-primary/20 group-hover:bg-primary/20 transition-colors">
+<span class="material-icons-round text-3xl text-primary">person</span>
+</div>
+<span class="text-xs font-medium text-text-dark shadow-black drop-shadow-md text-center group-hover:bg-primary/20 group-hover:rounded px-1">About Me</span>
+</div>
+<div class="pointer-events-auto absolute top-72 left-8 flex flex-col items-center gap-1 group w-20 cursor-pointer">
+<div class="w-12 h-12 flex items-center justify-center bg-green-accent/10 rounded-xl border border-green-accent/20 group-hover:bg-green-accent/20 transition-colors">
+<span class="material-icons-round text-3xl text-green-accent">alternate_email</span>
+</div>
+<span class="text-xs font-medium text-text-dark shadow-black drop-shadow-md text-center group-hover:bg-primary/20 group-hover:rounded px-1">Contact</span>
+</div>
+<div class="pointer-events-auto absolute top-32 left-32 flex flex-col items-center gap-1 group w-20 cursor-pointer">
+<div class="w-12 h-12 flex items-center justify-center bg-white/5 rounded-xl border border-white/10 group-hover:bg-white/10 transition-colors">
+<span class="material-icons-round text-3xl text-subtext-dark">description</span>
+</div>
+<span class="text-xs font-medium text-text-dark shadow-black drop-shadow-md text-center group-hover:bg-primary/20 group-hover:rounded px-1">resume.pdf</span>
+</div>
+</div>
+<header class="fixed top-0 left-0 right-0 h-10 px-4 z-40 flex items-center justify-between text-sm font-mono bg-surface-light/80 dark:bg-surface-dark/80 glass border-b border-white/10 dark:border-white/5">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+<span class="material-icons-round text-base text-primary">terminal</span>
+<span class="font-bold text-primary">1</span>
+</div>
+<div class="flex gap-2 text-subtext-dark/50">
+<span class="hover:text-text-dark cursor-pointer transition-colors">2</span>
+<span class="hover:text-text-dark cursor-pointer transition-colors">3</span>
+<span class="hover:text-text-dark cursor-pointer transition-colors">4</span>
+<span class="hover:text-text-dark cursor-pointer transition-colors">5</span>
+</div>
+</div>
+<div class="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2 text-subtext-dark opacity-0 md:opacity-100 transition-opacity">
+<span class="material-icons-round text-base">schedule</span>
+<span id="clock">12:39 AM • 11-11-24</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-3 px-3 py-1 bg-surface-light dark:bg-[#1e1e2e] rounded-full border border-white/5">
+<div class="flex items-center gap-1 text-xs">
+<span class="material-icons-round text-sm text-green-accent">memory</span>
+<span>16%</span>
+</div>
+<div class="flex items-center gap-1 text-xs">
+<span class="material-icons-round text-sm text-red-accent">thermostat</span>
+<span>36°C</span>
+</div>
+<div class="flex items-center gap-1 text-xs hidden sm:flex">
+<span class="material-icons-round text-sm text-blue-accent">wifi</span>
+</div>
+<div class="flex items-center gap-1 text-xs">
+<span class="material-icons-round text-sm">volume_up</span>
+</div>
+</div>
+<button class="hover:text-primary transition-colors">
+<span class="material-icons-round">power_settings_new</span>
+</button>
+</div>
+</header>
+<main class="relative z-20 w-full h-full pt-14 pb-4 px-4 sm:px-8 grid grid-cols-1 md:grid-cols-12 gap-6 overflow-hidden pointer-events-none">
+<div class="md:col-start-2 md:col-span-5 md:row-start-2 md:self-center self-center animate-[fadeIn_0.5s_ease-out] pointer-events-auto">
+<div class="bg-surface-dark border border-primary/40 rounded-lg shadow-glow overflow-hidden flex flex-col h-auto w-full max-w-xl mx-auto transform hover:scale-[1.01] transition-all duration-300 ring-1 ring-primary/20">
+<div class="h-8 bg-[#11111b] border-b border-white/5 flex items-center px-3 justify-between">
+<div class="flex gap-1.5">
+<div class="w-2.5 h-2.5 rounded-full bg-red-accent"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-yellow-accent"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-green-accent"></div>
+</div>
+<div class="text-xs font-mono text-subtext-dark opacity-60">user@arch: ~</div>
+<div class="w-8"></div>
+</div>
+<div class="p-4 font-mono text-sm bg-[#1e1e2e]/95 h-80 overflow-y-auto text-text-dark">
+<div class="mb-2">
+<span class="text-green-accent">user@arch</span><span class="text-text-dark">:</span><span class="text-blue-accent">~</span><span class="text-text-dark">$ neofetch</span>
+</div>
+<div class="flex flex-col sm:flex-row gap-4 mb-4">
+<div class="text-primary flex-shrink-0 select-none">
+<pre class="text-xs sm:text-sm leading-tight">       /\
+      /  \
+     /    \
+    /      \
+   /   ,,   \
+  /   |  |  -\
+ /_-''    ''-_\
+</pre>
+</div>
+<div class="flex-1 space-y-0.5 text-xs sm:text-sm">
+<div class="mb-2">
+<span class="text-primary font-bold">user</span><span class="text-text-dark">@</span><span class="text-primary font-bold">arch</span>
+</div>
+<div class="flex"><span class="w-24 text-primary">OS</span> <span class="text-text-dark">Arch Linux x86_64</span></div>
+<div class="flex"><span class="w-24 text-primary">Host</span> <span class="text-text-dark">MacBookPro16,1</span></div>
+<div class="flex"><span class="w-24 text-primary">Kernel</span> <span class="text-text-dark">6.6.7-arch1-1</span></div>
+<div class="flex"><span class="w-24 text-primary">Uptime</span> <span class="text-text-dark">4 hours, 20 mins</span></div>
+<div class="flex"><span class="w-24 text-primary">Packages</span> <span class="text-text-dark">1142 (pacman)</span></div>
+<div class="flex"><span class="w-24 text-primary">Shell</span> <span class="text-text-dark">zsh 5.9</span></div>
+<div class="flex"><span class="w-24 text-primary">WM</span> <span class="text-text-dark">Hyprland</span></div>
+<div class="flex"><span class="w-24 text-primary">Theme</span> <span class="text-text-dark">Catppuccin Mocha</span></div>
+<div class="flex"><span class="w-24 text-primary">Terminal</span> <span class="text-text-dark">kitty</span></div>
+<div class="pt-2 flex gap-1">
+<div class="w-3 h-3 rounded-full bg-black"></div>
+<div class="w-3 h-3 rounded-full bg-red-accent"></div>
+<div class="w-3 h-3 rounded-full bg-green-accent"></div>
+<div class="w-3 h-3 rounded-full bg-yellow-accent"></div>
+<div class="w-3 h-3 rounded-full bg-blue-accent"></div>
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<div class="w-3 h-3 rounded-full bg-white"></div>
+</div>
+</div>
+</div>
+<div class="mb-1">
+<span class="text-green-accent">user@arch</span><span class="text-text-dark">:</span><span class="text-blue-accent">~</span><span class="text-text-dark">$ ls -la Projects/</span>
+</div>
+<div class="grid grid-cols-[auto_1fr] gap-x-4 mb-4 text-subtext-dark text-xs sm:text-sm">
+<span class="text-primary">drwxr-xr-x</span> <span>.</span>
+<span class="text-primary">drwxr-xr-x</span> <span>..</span>
+<span class="text-primary">drwxr-xr-x</span> <span class="text-blue-accent">portfolio-v2</span>
+<span class="text-primary">drwxr-xr-x</span> <span class="text-blue-accent">arch-rice</span>
+<span class="text-text-dark">-rw-r--r--</span> <span>readme.md</span>
+</div>
+<div class="flex items-center">
+<span class="text-green-accent">user@arch</span><span class="text-text-dark">:</span><span class="text-blue-accent">~</span><span class="text-text-dark">$ </span>
+<span class="w-2 h-4 bg-text-dark ml-1 cursor-blink"></span>
+</div>
+</div>
+</div>
+</div>
+<div class="md:col-start-7 md:col-span-5 md:row-start-1 md:row-span-2 self-start mt-8 md:mt-16 animate-[fadeIn_0.7s_ease-out] pointer-events-auto">
+<div class="bg-surface-light dark:bg-surface-dark border border-white/10 dark:border-white/5 rounded-lg shadow-xl overflow-hidden flex flex-col h-full min-h-[500px] w-full transform hover:shadow-glow hover:border-primary/40 focus-within:border-primary/40 focus-within:shadow-glow transition-all duration-300 group">
+<div class="h-8 bg-[#11111b]/50 border-b border-white/5 flex items-center px-3 justify-between group-hover:bg-surface-dark transition-colors">
+<div class="flex gap-1.5 opacity-50 group-hover:opacity-100 transition-opacity">
+<div class="w-2.5 h-2.5 rounded-full bg-red-accent"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-yellow-accent"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-green-accent"></div>
+</div>
+<div class="text-xs font-sans text-subtext-dark opacity-80 flex items-center gap-2">
+<span class="material-icons-round text-sm">folder_open</span>
+                Home
+            </div>
+<div class="flex gap-2 text-subtext-dark opacity-40">
+<span class="material-icons-round text-sm">minimize</span>
+<span class="material-icons-round text-sm">crop_square</span>
+<span class="material-icons-round text-sm">close</span>
+</div>
+</div>
+<div class="h-10 bg-[#1e1e2e] border-b border-white/5 flex items-center px-4 gap-4 text-subtext-dark">
+<div class="flex gap-2">
+<span class="material-icons-round text-lg hover:text-text-dark cursor-pointer">arrow_back</span>
+<span class="material-icons-round text-lg hover:text-text-dark cursor-pointer">arrow_forward</span>
+<span class="material-icons-round text-lg hover:text-text-dark cursor-pointer">arrow_upward</span>
+</div>
+<div class="flex-1 bg-[#11111b] rounded h-6 px-2 flex items-center text-xs font-mono border border-white/5">
+<span class="text-subtext-dark">/home/user/</span>
+</div>
+<span class="material-icons-round text-lg hover:text-text-dark cursor-pointer">search</span>
+<span class="material-icons-round text-lg hover:text-text-dark cursor-pointer">menu</span>
+</div>
+<div class="flex-1 bg-[#1e1e2e] flex overflow-hidden">
+<div class="w-40 bg-[#181825] border-r border-white/5 p-2 flex flex-col gap-1 text-xs text-subtext-dark hidden sm:flex">
+<div class="px-2 py-1 font-bold opacity-50 uppercase tracking-wider text-[10px] mt-2">Places</div>
+<div class="flex items-center gap-2 px-2 py-1.5 rounded bg-surface-light/5 text-primary cursor-pointer">
+<span class="material-icons-round text-base">home</span>
+<span>Home</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-surface-light/5 cursor-pointer transition-colors">
+<span class="material-icons-round text-base">desktop_windows</span>
+<span>Desktop</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-surface-light/5 cursor-pointer transition-colors">
+<span class="material-icons-round text-base">description</span>
+<span>Documents</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-surface-light/5 cursor-pointer transition-colors">
+<span class="material-icons-round text-base">download</span>
+<span>Downloads</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-surface-light/5 cursor-pointer transition-colors">
+<span class="material-icons-round text-base">image</span>
+<span>Pictures</span>
+</div>
+<div class="px-2 py-1 font-bold opacity-50 uppercase tracking-wider text-[10px] mt-4">Devices</div>
+<div class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-surface-light/5 cursor-pointer transition-colors">
+<span class="material-icons-round text-base">storage</span>
+<span>File System</span>
+</div>
+</div>
+<div class="flex-1 p-4 overflow-y-auto">
+<div class="grid grid-cols-3 sm:grid-cols-4 gap-4">
+<div class="flex flex-col items-center gap-1 group cursor-pointer p-2 rounded hover:bg-[#313244] transition-colors">
+<span class="material-icons-round text-4xl text-blue-accent group-hover:scale-105 transition-transform">folder</span>
+<span class="text-xs text-text-dark text-center">Projects</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer p-2 rounded hover:bg-[#313244] transition-colors">
+<span class="material-icons-round text-4xl text-blue-accent group-hover:scale-105 transition-transform">folder</span>
+<span class="text-xs text-text-dark text-center">Documents</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer p-2 rounded hover:bg-[#313244] transition-colors">
+<span class="material-icons-round text-4xl text-blue-accent group-hover:scale-105 transition-transform">folder</span>
+<span class="text-xs text-text-dark text-center">Downloads</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer p-2 rounded hover:bg-[#313244] transition-colors">
+<span class="material-icons-round text-4xl text-blue-accent group-hover:scale-105 transition-transform">folder</span>
+<span class="text-xs text-text-dark text-center">Pictures</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer p-2 rounded hover:bg-[#313244] transition-colors">
+<span class="material-icons-round text-4xl text-blue-accent group-hover:scale-105 transition-transform">folder</span>
+<span class="text-xs text-text-dark text-center">Music</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer p-2 rounded hover:bg-[#313244] transition-colors">
+<span class="material-icons-round text-4xl text-blue-accent group-hover:scale-105 transition-transform">folder</span>
+<span class="text-xs text-text-dark text-center">Videos</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer p-2 rounded hover:bg-[#313244] transition-colors">
+<span class="material-icons-round text-4xl text-subtext-dark group-hover:scale-105 transition-transform">description</span>
+<span class="text-xs text-text-dark text-center">notes.txt</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer p-2 rounded hover:bg-[#313244] transition-colors">
+<span class="material-icons-round text-4xl text-green-accent group-hover:scale-105 transition-transform">terminal</span>
+<span class="text-xs text-text-dark text-center">install.sh</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer p-2 rounded hover:bg-[#313244] transition-colors">
+<span class="material-icons-round text-4xl text-red-accent group-hover:scale-105 transition-transform">picture_as_pdf</span>
+<span class="text-xs text-text-dark text-center">thesis.pdf</span>
+</div>
+</div>
+</div>
+</div>
+<div class="h-6 bg-[#11111b] border-t border-white/5 flex items-center px-3 justify-between text-[10px] text-subtext-dark font-mono">
+<span>9 items</span>
+<span>Free space: 42 GB</span>
+</div>
+</div>
+</div>
+</main>
+<div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 animate-[fadeInUp_0.8s_ease-out]">
+<div class="flex items-center gap-2 px-4 py-3 bg-surface-dark/90 glass border border-white/10 rounded-2xl shadow-2xl">
+<button class="p-2 rounded-xl hover:bg-white/10 hover:text-primary transition-all group relative">
+<span class="material-icons-round text-2xl">terminal</span>
+<span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#11111b] text-xs px-2 py-1 rounded border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Terminal</span>
+</button>
+<button class="p-2 rounded-xl hover:bg-white/10 hover:text-blue-accent transition-all group relative">
+<span class="material-icons-round text-2xl">folder_open</span>
+<span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#11111b] text-xs px-2 py-1 rounded border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Files</span>
+</button>
+<button class="p-2 rounded-xl hover:bg-white/10 hover:text-green-accent transition-all group relative">
+<span class="material-icons-round text-2xl">code</span>
+<span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#11111b] text-xs px-2 py-1 rounded border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Code</span>
+</button>
+<div class="w-px h-6 bg-white/10 mx-1"></div>
+<button class="p-2 rounded-xl bg-primary/20 text-primary hover:bg-primary/30 transition-all group relative">
+<span class="material-icons-round text-2xl">grid_view</span>
+<span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#11111b] text-xs px-2 py-1 rounded border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Apps</span>
+</button>
+</div>
+</div>
+<script>
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            const dateString = now.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }).replace(/\//g, '-');
+            document.getElementById('clock').innerHTML = `${timeString} &bull; ${dateString}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body></html>
