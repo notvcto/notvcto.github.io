@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { AppID, useSystemStore, IconState } from '@/store/system';
+import { useSystemStore, IconState } from '@/store/system';
 import clsx from 'clsx';
 
 interface DesktopIconProps {
@@ -10,50 +10,87 @@ interface DesktopIconProps {
 
 export const DesktopIcon = ({ iconData }: DesktopIconProps) => {
   const { id, appId, label, icon, x, y, color = 'primary', special = false } = iconData;
-  const { spawnWindow, updateIconPosition } = useSystemStore();
+  const {
+    spawnWindow,
+    selectedIconIds,
+    selectIcons,
+    toggleIconSelection,
+    moveIcons,
+    snapIconsToGrid,
+    updateIconPosition
+  } = useSystemStore();
 
+  const isSelected = selectedIconIds.includes(id);
   const [isDragging, setIsDragging] = useState(false);
-  const dragOffset = useRef({ x: 0, y: 0 });
+  const dragStart = useRef({ x: 0, y: 0 });
   const [hasDragged, setHasDragged] = useState(false);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    // Left click only
+    if (e.button !== 0) return;
+
     e.preventDefault();
     e.stopPropagation();
 
-    // Only start drag if left click
-    if (e.button !== 0) return;
+    // Selection Logic
+    if (e.metaKey || e.ctrlKey) {
+        toggleIconSelection(id);
+    } else if (!isSelected) {
+        // If clicking an unselected icon without modifier, select only this one
+        selectIcons([id]);
+    }
+    // If clicking a selected icon, keep selection as is to allow dragging group
 
     setIsDragging(true);
     setHasDragged(false);
-    dragOffset.current = {
-      x: e.clientX - x,
-      y: e.clientY - y,
-    };
+    dragStart.current = { x: e.clientX, y: e.clientY };
 
-    (e.target as Element).setPointerCapture(e.pointerId);
+    (e.currentTarget as Element).setPointerCapture(e.pointerId);
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isDragging) return;
 
     e.preventDefault();
-    setHasDragged(true);
 
-    const newX = e.clientX - dragOffset.current.x;
-    const newY = e.clientY - dragOffset.current.y;
+    const deltaX = e.clientX - dragStart.current.x;
+    const deltaY = e.clientY - dragStart.current.y;
 
-    // Grid snapping could happen here, but free drag for now
-    updateIconPosition(id, newX, newY);
+    // We can use a ref for immediate feedback or just allow a small jump
+    // Let's check against the threshold immediately
+    const thresholdExceeded = hasDragged || Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2;
+
+    if (thresholdExceeded) {
+       if (!hasDragged) setHasDragged(true);
+
+       moveIcons(deltaX, deltaY);
+       // Reset dragStart to current to calculate next delta
+       dragStart.current = { x: e.clientX, y: e.clientY };
+    }
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     if (isDragging) {
       setIsDragging(false);
-      (e.target as Element).releasePointerCapture(e.pointerId);
+      (e.currentTarget as Element).releasePointerCapture(e.pointerId);
 
-      // If we didn't drag significantly, treat as click
       if (!hasDragged) {
-        spawnWindow(appId);
+        // Click action
+        // If it was a simple click on a selection group, we might want to select just this one?
+        // Standard OS behavior: click on selected icon -> select only this one (unless mousedown already handled it)
+        // But we handle selection on mousedown.
+        // Double click to spawn? Or single? Requirement says "Click icons" -> launch.
+        // Let's assume single click launches if not modified.
+        // But if we are selecting, we shouldn't launch.
+        // Let's use Double Click for launch to allow selection manipulation?
+        // Or check if modifier keys were used.
+        if (!e.metaKey && !e.ctrlKey) {
+             spawnWindow(appId);
+             selectIcons([id]); // Ensure this is the only one selected
+        }
+      } else {
+        // Drag Interaction Ended -> Snap
+        snapIconsToGrid();
       }
     }
   };
@@ -70,21 +107,28 @@ export const DesktopIcon = ({ iconData }: DesktopIconProps) => {
 
   return (
     <div
-      className="pointer-events-auto absolute flex flex-col items-center gap-1 group w-20 cursor-pointer select-none"
+      className={clsx(
+        "pointer-events-auto absolute flex flex-col items-center gap-1 group w-20 cursor-pointer select-none transition-transform duration-75",
+        isSelected && "brightness-125"
+      )}
       style={{ transform: `translate(${x}px, ${y}px)` }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
     >
       <div className={clsx(
-        "w-12 h-12 flex items-center justify-center rounded-xl border transition-colors",
-        styles.container
+        "w-12 h-12 flex items-center justify-center rounded-xl border transition-colors relative",
+        styles.container,
+        isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-[#1e1e2e]"
       )}>
         <span className={clsx("material-icons-round text-3xl", styles.icon)}>
           {icon}
         </span>
       </div>
-      <span className="text-xs font-medium text-text-dark shadow-black drop-shadow-md text-center group-hover:bg-primary/20 group-hover:rounded px-1 bg-black/20 rounded">
+      <span className={clsx(
+          "text-xs font-medium text-text-dark shadow-black drop-shadow-md text-center group-hover:bg-primary/20 group-hover:rounded px-1 rounded",
+          isSelected ? "bg-primary/40" : "bg-black/20"
+      )}>
         {label}
       </span>
     </div>
