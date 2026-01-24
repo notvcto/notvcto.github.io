@@ -214,11 +214,16 @@ export class Desktop extends Component {
   };
 
   hideAllContextMenu = () => {
-    let menus = this.state.context_menus;
-    Object.keys(menus).forEach((key) => {
-      menus[key] = false;
+    const menus = this.state.context_menus;
+    // optimization: only update state if a menu is actually open
+    const hasOpenMenu = Object.values(menus).some((isOpen) => isOpen);
+    if (!hasOpenMenu) return;
+
+    let newMenus = { ...menus };
+    Object.keys(newMenus).forEach((key) => {
+      newMenus[key] = false;
     });
-    this.setState({ context_menus: menus });
+    this.setState({ context_menus: newMenus });
   };
 
   getMenuPosition = (e) => {
