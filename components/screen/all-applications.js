@@ -7,52 +7,56 @@ export class AllApplications extends React.Component {
     this.state = {
       query: "",
       apps: [],
+      frequentApps: [],
       category: 0, // 0 for all, 1 for frequent
     };
   }
 
   componentDidMount() {
+    let frequentApps = [];
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("frequentApps");
+      if (stored) {
+        try {
+          const frequentAppsInfo = JSON.parse(stored);
+          frequentAppsInfo.forEach((app_info) => {
+            let app = this.props.apps.find((app) => app.id === app_info.id);
+            if (app) {
+              frequentApps.push(app);
+            }
+          });
+        } catch (e) {
+          console.error("Failed to parse frequentApps", e);
+        }
+      }
+    }
+
     this.setState({
       apps: this.props.apps,
+      frequentApps: frequentApps,
     });
   }
 
   handleChange = (e) => {
+    const query = e.target.value;
+    const apps = query
+      ? this.props.apps.filter((app) =>
+          app.title.toLowerCase().includes(query.toLowerCase())
+        )
+      : this.props.apps;
+
     this.setState({
-      query: e.target.value,
-      apps:
-        e.target.value === "" || e.target.value === null
-          ? this.props.apps
-          : this.state.apps.filter((app) =>
-              app.title.toLowerCase().includes(e.target.value.toLowerCase())
-            ),
+      query,
+      apps,
     });
   };
 
   renderApps = () => {
     let appsJsx = [];
-    let frequentAppsInfo = null;
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("frequentApps");
-      if (stored) {
-        frequentAppsInfo = JSON.parse(stored);
-      }
-    }
-    let getFrequentApps = () => {
-      let frequentApps = [];
-      if (frequentAppsInfo) {
-        frequentAppsInfo.forEach((app_info) => {
-          let app = this.props.apps.find((app) => app.id === app_info.id);
-          if (app) {
-            frequentApps.push(app);
-          }
-        });
-      }
-      return frequentApps;
-    };
 
     let apps =
-      this.state.category === 0 ? [...this.state.apps] : getFrequentApps();
+      this.state.category === 0 ? [...this.state.apps] : [...this.state.frequentApps];
+
     apps.forEach((app, index) => {
       const props = {
         name: app.title,
