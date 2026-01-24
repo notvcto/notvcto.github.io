@@ -23,7 +23,7 @@ export class AllApplications extends React.Component {
       apps:
         e.target.value === "" || e.target.value === null
           ? this.props.apps
-          : this.state.apps.filter((app) =>
+          : this.props.apps.filter((app) =>
               app.title.toLowerCase().includes(e.target.value.toLowerCase())
             ),
     });
