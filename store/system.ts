@@ -59,13 +59,26 @@ interface SystemState {
   setWallpaper: (wallpaper: string) => void
 }
 
-const GRID_SIZE = 96;
+const GRID_SIZE = 100;
+
+// Align initial icons to new 100px grid + offsets (x:20, y:40)
+// Row 0: y=40. Row 1: y=140. Row 2: y=240.
+// Col Right (1280 screen): maxCols ~12.
+// Let's stick to left alignment for now as that's my current implementation,
+// unless I want to implement the right-side fill.
+// User didn't explicitly ask for right-side fill, just "copy behavior" (interaction).
+// I'll stick to Left fill but correct grid math.
+// Left fill: x = 20 + col*100. y = 40 + row*100.
+// Icon 1: x=20, y=40.
+// Icon 2: x=20, y=140.
+// Icon 3: x=20, y=240.
+// Icon 4 (Resume): x=120, y=40.
 
 const INITIAL_ICONS: IconState[] = [
-  { id: '1', appId: 'projects', label: 'Projects', icon: 'folder', x: 32, y: 32 + GRID_SIZE, color: 'blue-accent' },
-  { id: '2', appId: 'about', label: 'About Me', icon: 'person', x: 32, y: 32 + GRID_SIZE * 2, color: 'primary' },
-  { id: '3', appId: 'contact', label: 'Contact', icon: 'alternate_email', x: 32, y: 32 + GRID_SIZE * 3, color: 'green-accent' },
-  { id: '4', appId: 'resume', label: 'resume.pdf', icon: 'description', x: 32 + GRID_SIZE, y: 32 + GRID_SIZE, color: 'subtext-dark', special: true },
+  { id: '1', appId: 'projects', label: 'Projects', icon: 'folder', x: 20, y: 40, color: 'blue-accent' },
+  { id: '2', appId: 'about', label: 'About Me', icon: 'person', x: 20, y: 140, color: 'primary' },
+  { id: '3', appId: 'contact', label: 'Contact', icon: 'alternate_email', x: 20, y: 240, color: 'green-accent' },
+  { id: '4', appId: 'resume', label: 'resume.pdf', icon: 'description', x: 120, y: 40, color: 'subtext-dark', special: true },
 ]
 
 export const useSystemStore = create<SystemState>((set, get) => ({
@@ -85,25 +98,23 @@ export const useSystemStore = create<SystemState>((set, get) => ({
         return
     }
 
-    // Singleton check
-    if (manifest.singleton) {
-        const existingWindow = Object.values(state.windows).find(w => w.appId === appId)
-        if (existingWindow) {
-            // Focus existing
-            state.focusWindow(existingWindow.id)
-            // Switch desktop if needed
-            if (existingWindow.desktopId !== state.activeDesktop) {
-                set({ activeDesktop: existingWindow.desktopId })
-            }
-            return
+    // STRICT SINGLETON FOR ALL APPS (Per reference behavior)
+    // Check if any window exists with this appId
+    const existingWindow = Object.values(state.windows).find(w => w.appId === appId)
+    if (existingWindow) {
+        // Focus existing
+        state.focusWindow(existingWindow.id)
+        // Switch desktop if needed
+        if (existingWindow.desktopId !== state.activeDesktop) {
+            set({ activeDesktop: existingWindow.desktopId })
         }
+        return
     }
 
     const id = Math.random().toString(36).substring(7)
     const zIndex = state.maxZIndex + 1
     const desktopId = state.activeDesktop
 
-    // Default window sizing and positioning
     const offset = Object.keys(state.windows).length * 20
     const x = 100 + (offset % 200)
     const y = 100 + (offset % 200)
@@ -242,11 +253,18 @@ export const useSystemStore = create<SystemState>((set, get) => ({
   snapIconsToGrid: () => {
     set((state) => {
       const updatedIcons = state.icons.map(icon => {
-        // Only snap selected ones (those being dragged/dropped)
         if (state.selectedIconIds.includes(icon.id)) {
-          const snappedX = Math.round(icon.x / GRID_SIZE) * GRID_SIZE + 32 // +32 for offset/padding
-          const snappedY = Math.round(icon.y / GRID_SIZE) * GRID_SIZE
-          return { ...icon, x: snappedX, y: snappedY < 32 ? 32 : snappedY } // Avoid top bar
+          // Reference logic:
+          // x = Math.round((x - 20) / cellW) * cellW + 20
+          // y = Math.round((y - 40) / cellH) * cellH + 40
+
+          let snappedX = Math.round((icon.x - 20) / GRID_SIZE) * GRID_SIZE + 20;
+          let snappedY = Math.round((icon.y - 40) / GRID_SIZE) * GRID_SIZE + 40;
+
+          if (snappedX < 20) snappedX = 20;
+          if (snappedY < 40) snappedY = 40; // Approx top bar height
+
+          return { ...icon, x: snappedX, y: snappedY }
         }
         return icon
       })
