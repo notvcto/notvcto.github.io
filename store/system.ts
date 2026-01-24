@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { getAppManifest } from '@/components/apps/registry'
 
-export type AppID = 'terminal' | 'about' | 'projects' | 'contact' | 'blog' | 'resume'
+export type AppID = 'terminal' | 'about' | 'projects' | 'contact' | 'blog' | 'resume' | 'spotify' | 'vscode' | 'firefox' | 'settings' | 'trash'
 
 export interface WindowState {
   id: string
@@ -75,10 +75,13 @@ const GRID_SIZE = 100;
 // Icon 4 (Resume): x=120, y=40.
 
 const INITIAL_ICONS: IconState[] = [
+  // Col 1
   { id: '1', appId: 'projects', label: 'Projects', icon: 'folder', x: 20, y: 40, color: 'blue-accent' },
   { id: '2', appId: 'about', label: 'About Me', icon: 'person', x: 20, y: 140, color: 'primary' },
-  { id: '3', appId: 'contact', label: 'Contact', icon: 'alternate_email', x: 20, y: 240, color: 'green-accent' },
+  { id: '3', appId: 'contact', label: 'Contact', icon: 'email', x: 20, y: 240, color: 'green-accent' }, // Updated icon to match manifest
+  // Col 2
   { id: '4', appId: 'resume', label: 'resume.pdf', icon: 'description', x: 120, y: 40, color: 'subtext-dark', special: true },
+  { id: '5', appId: 'trash', label: 'Trash', icon: 'delete', x: 120, y: 140, color: 'text-red-accent' }, // Visual check needed for color
 ]
 
 export const useSystemStore = create<SystemState>((set, get) => ({
