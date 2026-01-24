@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { getAppManifest } from '@/components/apps/registry'
 
 export type AppID = 'terminal' | 'about' | 'projects' | 'contact' | 'blog' | 'resume'
 
@@ -58,14 +59,14 @@ interface SystemState {
   setWallpaper: (wallpaper: string) => void
 }
 
-const INITIAL_ICONS: IconState[] = [
-  { id: '1', appId: 'projects', label: 'Projects', icon: 'folder', x: 32, y: 96, color: 'blue-accent' },
-  { id: '2', appId: 'about', label: 'About Me', icon: 'person', x: 32, y: 192, color: 'primary' },
-  { id: '3', appId: 'contact', label: 'Contact', icon: 'alternate_email', x: 32, y: 288, color: 'green-accent' },
-  { id: '4', appId: 'resume', label: 'resume.pdf', icon: 'description', x: 128, y: 128, color: 'subtext-dark', special: true },
-]
-
 const GRID_SIZE = 96;
+
+const INITIAL_ICONS: IconState[] = [
+  { id: '1', appId: 'projects', label: 'Projects', icon: 'folder', x: 32, y: 32 + GRID_SIZE, color: 'blue-accent' },
+  { id: '2', appId: 'about', label: 'About Me', icon: 'person', x: 32, y: 32 + GRID_SIZE * 2, color: 'primary' },
+  { id: '3', appId: 'contact', label: 'Contact', icon: 'alternate_email', x: 32, y: 32 + GRID_SIZE * 3, color: 'green-accent' },
+  { id: '4', appId: 'resume', label: 'resume.pdf', icon: 'description', x: 32 + GRID_SIZE, y: 32 + GRID_SIZE, color: 'subtext-dark', special: true },
+]
 
 export const useSystemStore = create<SystemState>((set, get) => ({
   activeDesktop: 1,
@@ -77,10 +78,32 @@ export const useSystemStore = create<SystemState>((set, get) => ({
 
   spawnWindow: (appId) => {
     const state = get()
+    const manifest = getAppManifest(appId)
+
+    if (!manifest) {
+        console.error(`App manifest not found for ${appId}`)
+        return
+    }
+
+    // Singleton check
+    if (manifest.singleton) {
+        const existingWindow = Object.values(state.windows).find(w => w.appId === appId)
+        if (existingWindow) {
+            // Focus existing
+            state.focusWindow(existingWindow.id)
+            // Switch desktop if needed
+            if (existingWindow.desktopId !== state.activeDesktop) {
+                set({ activeDesktop: existingWindow.desktopId })
+            }
+            return
+        }
+    }
+
     const id = Math.random().toString(36).substring(7)
     const zIndex = state.maxZIndex + 1
     const desktopId = state.activeDesktop
 
+    // Default window sizing and positioning
     const offset = Object.keys(state.windows).length * 20
     const x = 100 + (offset % 200)
     const y = 100 + (offset % 200)
@@ -88,18 +111,19 @@ export const useSystemStore = create<SystemState>((set, get) => ({
     const newWindow: WindowState = {
       id,
       appId,
-      title: appId.charAt(0).toUpperCase() + appId.slice(1),
+      title: manifest.name,
       desktopId,
       x,
       y,
-      width: 600,
-      height: 400,
+      width: manifest.defaultSize.width,
+      height: manifest.defaultSize.height,
       zIndex,
       isFocused: true,
       isMinimized: false,
       isMaximized: false,
     }
 
+    // Unfocus all other windows
     const updatedWindows = { ...state.windows }
     Object.keys(updatedWindows).forEach((key) => {
       updatedWindows[key] = { ...updatedWindows[key], isFocused: false }
@@ -121,22 +145,24 @@ export const useSystemStore = create<SystemState>((set, get) => ({
   focusWindow: (id) => {
     set((state) => {
       if (state.windows[id].isFocused && state.windows[id].zIndex === state.maxZIndex) {
-        return {}
+        return {} // Already focused and on top
       }
 
       const newZIndex = state.maxZIndex + 1
       const updatedWindows = { ...state.windows }
 
+      // Unfocus others
       Object.keys(updatedWindows).forEach((key) => {
         updatedWindows[key] = { ...updatedWindows[key], isFocused: false }
       })
 
+      // Focus target
       if (updatedWindows[id]) {
         updatedWindows[id] = {
           ...updatedWindows[id],
           isFocused: true,
           zIndex: newZIndex,
-          isMinimized: false
+          isMinimized: false // Auto restore if minimized
         }
       }
 
