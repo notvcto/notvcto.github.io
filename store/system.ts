@@ -73,7 +73,7 @@ export const useSystemStore = create<SystemState>((set, get) => ({
   windows: {},
   icons: INITIAL_ICONS,
   selectedIconIds: [],
-  wallpaper: 'default',
+  wallpaper: 'bg-space',
   maxZIndex: 100,
 
   spawnWindow: (appId) => {

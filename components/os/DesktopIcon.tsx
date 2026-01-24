@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSystemStore, IconState } from '@/store/system';
 import clsx from 'clsx';
 
@@ -24,6 +24,19 @@ export const DesktopIcon = ({ iconData }: DesktopIconProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const dragStart = useRef({ x: 0, y: 0 });
   const [hasDragged, setHasDragged] = useState(false);
+
+  // Local ref for smooth dragging (optional, but since we batch move via store for multi-select,
+  // we might want to keep the current store-driven logic for multi-icon consistency OR optimize.
+  // Store-driven multi-icon drag updates state for ALL icons. This is heavy.
+  // Optimization:
+  // 1. If single icon drag, use local ref -> update store on up.
+  // 2. If multi drag, we kinda have to update store to move all of them?
+  //    Or we could have a "DragOverlay" layer?
+  //    For now, let's just make the threshold tiny and rely on React.
+  //    Actually, let's remove the "transition-transform" during drag to avoid lag.
+  //    See class logic below.
+
+  const iconRef = useRef<HTMLDivElement>(null);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     // Left click only
@@ -56,15 +69,14 @@ export const DesktopIcon = ({ iconData }: DesktopIconProps) => {
     const deltaX = e.clientX - dragStart.current.x;
     const deltaY = e.clientY - dragStart.current.y;
 
-    // We can use a ref for immediate feedback or just allow a small jump
-    // Let's check against the threshold immediately
+    // Immediate threshold check
     const thresholdExceeded = hasDragged || Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2;
 
     if (thresholdExceeded) {
        if (!hasDragged) setHasDragged(true);
 
+       // Update store immediately for multi-icon support
        moveIcons(deltaX, deltaY);
-       // Reset dragStart to current to calculate next delta
        dragStart.current = { x: e.clientX, y: e.clientY };
     }
   };
@@ -76,22 +88,12 @@ export const DesktopIcon = ({ iconData }: DesktopIconProps) => {
 
       if (!hasDragged) {
         // Click action
-        // If it was a simple click on a selection group, we might want to select just this one?
-        // Standard OS behavior: click on selected icon -> select only this one (unless mousedown already handled it)
-        // But we handle selection on mousedown.
-        // Double click to spawn? Or single? Requirement says "Click icons" -> launch.
-        // Let's assume single click launches if not modified.
-        // But if we are selecting, we shouldn't launch.
-        // Let's use Double Click for launch to allow selection manipulation?
-        // Or check if modifier keys were used.
         if (!e.metaKey && !e.ctrlKey) {
              spawnWindow(appId);
              selectIcons([id]); // Ensure this is the only one selected
         }
       } else {
         // Drag Interaction Ended -> Snap
-        // We delay slightly to ensure the final move frame has processed if needed,
-        // though standard react state update batching handles it.
         snapIconsToGrid();
       }
     }
@@ -109,8 +111,18 @@ export const DesktopIcon = ({ iconData }: DesktopIconProps) => {
 
   return (
     <div
+      ref={iconRef}
       className={clsx(
-        "pointer-events-auto absolute flex flex-col items-center gap-1 group w-20 cursor-pointer select-none transition-transform duration-75",
+        "pointer-events-auto absolute flex flex-col items-center gap-1 group w-20 cursor-pointer select-none",
+        // Remove transition during drag to prevent "following" effect/lag
+        // We use isDragging state to toggle transition class?
+        // Actually, if we update store every frame, transition makes it look floaty/laggy.
+        // We should DISABLE transition for position changes generally, or only enable for snapping?
+        // Let's rely on 'duration-75' only when NOT dragging?
+        // But we don't know if *this* icon is being dragged if it's part of a group but not the leader?
+        // Actually moveIcons updates ALL icons.
+        // Let's remove 'transition-transform' completely for now to feel raw/fast.
+        // Or make it very fast.
         isSelected && "brightness-125"
       )}
       style={{ transform: `translate(${x}px, ${y}px)` }}
