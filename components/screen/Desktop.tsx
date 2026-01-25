@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import BackgroundImage from "../util components/background-image";
 import Navbar from "./navbar";
 import SideBar from "./SideBar";
@@ -11,7 +11,7 @@ import DesktopMenu from "../context menus/desktop-menu";
 import DefaultMenu from "../context menus/default";
 import { useWMStore } from "@/lib/store/wm";
 import { useSettingsStore } from "@/lib/store/settings";
-import { useFileSystemStore, resolvePath } from "@/lib/store/filesystem";
+import { useFS } from "@/lib/fs";
 import { apps as appRegistry } from "@/components/apps/registry";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 
@@ -23,7 +23,8 @@ interface DesktopProps {
 export default function Desktop({ blogPosts, achievements }: DesktopProps) {
     const { windows, openWindow, focusedWindowId, isLocked, setLocked } = useWMStore();
     const { wallpaper } = useSettingsStore();
-    const { nodes, rootId, updateMetadata, init: initFS, createDir } = useFileSystemStore();
+    const fs = useFS();
+
     const [booting, setBooting] = useState(true);
     const [contextMenu, setContextMenu] = useState<{ show: boolean; x: number; y: number; type: 'desktop' | 'default' }>({ show: false, x: 0, y: 0, type: 'default' });
     const [selectedIconIds, setSelectedIconIds] = useState<string[]>([]);
@@ -31,8 +32,13 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
     const [dragPositions, setDragPositions] = useState<Record<string, {x: number, y: number}> | null>(null);
     const desktopRef = useRef<HTMLDivElement>(null);
 
+    const desktopPath = '/home/user/Desktop';
+    // Ensure desktop exists or init
     useEffect(() => {
-        initFS();
+        fs.init();
+        if (!fs.exists(desktopPath)) {
+            fs.mkdir(desktopPath); // Should be created by init, but safety
+        }
 
         // Boot logic
         if (typeof window !== "undefined") {
@@ -44,13 +50,32 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
                 setTimeout(() => setBooting(false), 2000);
             }
         }
-    }, [initFS]);
+    }, []);
 
-    const desktopNode = resolvePath('/home/user/Desktop', nodes, rootId);
-    const desktopIconIds = desktopNode && desktopNode.type === 'dir' ? desktopNode.children : [];
+    // Delete Key Listener
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Delete' && selectedIconIds.length > 0) {
+                selectedIconIds.forEach(id => {
+                    const path = fs.absolute(id);
+                    if (path) fs.trash(path);
+                });
+                setSelectedIconIds([]);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [selectedIconIds]); // fs is stable from hook (usually, or I can add it)
+
+    // Get desktop icons
+    const desktopIcons = fs.exists(desktopPath) ? fs.list(desktopPath) : [];
 
     const openApp = (nodeId: string) => {
-        const node = nodes[nodeId];
+        const path = fs.absolute(nodeId);
+        if (!path) return;
+
+        const node = fs.stat(path);
         if (!node) return;
 
         if (node.type === 'dir') {
@@ -83,27 +108,29 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
     }
 
     const addNewFolder = () => {
-        if (desktopNode) {
-            createDir(desktopNode.id, 'New Folder');
-        }
+        // fs.mkdir takes full path.
+        // We want 'New Folder'. If it exists?
+        // fs.mkdir implementation doesn't return ID or handle duplication gracefully (logs error).
+        // Phase 1: simple try.
+        fs.mkdir(`${desktopPath}/New Folder`);
     }
 
     // Drag Logic
     const handleDragStart = (id: string, e: DraggableEvent) => {
-        // If the item isn't selected, select it (and deselect others)
         let currentSelection = selectedIconIds;
         if (!selectedIconIds.includes(id)) {
-            // Check for ctrl/shift? Usually drag overrides modifier selection logic or assumes "new selection" if not already selected.
-            // For simplicity: dragging an unselected item selects it exclusively.
             currentSelection = [id];
             setSelectedIconIds(currentSelection);
         }
 
         const initialPositions: Record<string, {x: number, y: number}> = {};
         currentSelection.forEach(selId => {
-            const node = nodes[selId];
-            if (node) {
-                initialPositions[selId] = node.metadata?.position || { x: 20, y: 40 };
+            const path = fs.absolute(selId);
+            if (path) {
+                const node = fs.stat(path);
+                if (node) {
+                    initialPositions[selId] = node.metadata?.position || { x: 20, y: 40 };
+                }
             }
         });
         setDragPositions(initialPositions);
@@ -132,7 +159,11 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
         Object.entries(dragPositions).forEach(([key, pos]) => {
             const snappedX = Math.round(pos.x / 100) * 100;
             const snappedY = Math.round(pos.y / 100) * 100;
-            updateMetadata(key, { position: { x: snappedX, y: snappedY } });
+
+            const path = fs.absolute(key);
+            if (path) {
+                fs.updateMetadata(path, { position: { x: snappedX, y: snappedY } });
+            }
         });
 
         setDragPositions(null);
@@ -184,9 +215,7 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
 
         const newSelected: string[] = [];
 
-        desktopIconIds.forEach(id => {
-            const node = nodes[id];
-            if (!node) return;
+        desktopIcons.forEach(node => {
             const pos = node.metadata?.position || { x: 20, y: 40 };
             const iconW = 100;
             const iconH = 100;
@@ -197,7 +226,7 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
                 top < pos.y + iconH &&
                 bottom > pos.y
             ) {
-                newSelected.push(id);
+                newSelected.push(node.id);
             }
         });
 
@@ -269,10 +298,8 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
              )}
 
              <div className="absolute w-full h-full top-0 left-0 z-10 pointer-events-none">
-                 {desktopIconIds.map(nodeId => {
-                     const node = nodes[nodeId];
-                     if (!node) return null;
-
+                 {desktopIcons.map(node => {
+                     const nodeId = node.id;
                      // Determine position: Dragging state -> Metadata -> Default
                      const pos = dragPositions?.[nodeId] || node.metadata?.position || { x: 20, y: 40 };
 
