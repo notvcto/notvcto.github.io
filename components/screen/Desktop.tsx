@@ -109,6 +109,9 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
         // Only Left Click (0)
         if (e.button !== 0) return;
 
+        // Prevent selection box when clicking on interactive elements (Icons, Windows)
+        if ((e.target as HTMLElement).closest('.react-draggable')) return;
+
         // If clicking background, clear selection unless Shift/Ctrl
         if (!e.shiftKey && !e.ctrlKey) {
             setSelectedIconIds([]);
@@ -264,6 +267,9 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
                          >
                              <div
                                 className="absolute pointer-events-auto"
+                                onPointerDown={(e) => {
+                                    e.stopPropagation();
+                                }}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     if (e.ctrlKey || e.shiftKey) {
