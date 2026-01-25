@@ -1,99 +1,279 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useFS } from "@/lib/fs";
-import { useWMStore } from "@/lib/store/wm";
+
+// Icons
+const ICON_FOLDER = "./themes/Yaru/system/folder.png";
+const ICON_FILE = "./themes/Yaru/apps/gedit.png";
 
 export default function FileManager() {
     const fs = useFS();
-    const { openWindow } = useWMStore();
-    const [currentPath, setCurrentPath] = useState("/home/user");
 
-    // Init to home check
+    // State
+    const [cwd, setCwd] = useState<string>("/home/user");
+    const [selected, setSelected] = useState<string | null>(null);
+    const [renaming, setRenaming] = useState<string | null>(null);
+    const [contextMenu, setContextMenu] = useState<{ x: number, y: number, type: 'empty' | 'item', target?: string } | null>(null);
+
+    // Refs for rename input
+    const renameInputRef = useRef<HTMLInputElement>(null);
+
+    // Safety check: ensure CWD exists
     useEffect(() => {
-        if (!fs.exists(currentPath)) setCurrentPath('/');
+        if (!fs.exists(cwd)) {
+            // Fallback to home or root
+            if (fs.exists("/home/user")) setCwd("/home/user");
+            else setCwd("/");
+        }
+    }, [cwd, fs]);
+
+    // Close context menu on click
+    useEffect(() => {
+        const handleClick = () => setContextMenu(null);
+        window.addEventListener('click', handleClick);
+        return () => window.removeEventListener('click', handleClick);
     }, []);
 
-    // Get children
-    // fs.list is reactive because useFS hooks into the store
-    const children = fs.exists(currentPath) ? fs.list(currentPath) : [];
-
-    const handleNavigate = (name: string, type: 'file' | 'dir') => {
-        if (type === 'dir') {
-            const separator = currentPath === '/' ? '' : '/';
-            setCurrentPath(`${currentPath}${separator}${name}`);
-        } else {
-            // Open file?
+    // Focus rename input
+    useEffect(() => {
+        if (renaming && renameInputRef.current) {
+            renameInputRef.current.focus();
+            renameInputRef.current.select();
         }
-    }
+    }, [renaming]);
 
-    const shortcuts = [
-        { name: 'Home', path: '/home/user', icon: './themes/MoreWaita/system/user-home.svg' },
-        { name: 'Desktop', path: '/home/user/Desktop', icon: './themes/Yaru/system/user-desktop.png' },
-        { name: 'Documents', path: '/home/user/Documents', icon: './themes/Yaru/system/folder-documents.png' },
-        { name: 'Downloads', path: '/home/user/Downloads', icon: './themes/Yaru/system/folder-download.png' },
-        { name: 'Trash', path: '/trash', icon: './themes/MoreWaita/system/user-trash-full.svg' },
-    ];
+    // Derived state
+    const items = fs.list(cwd);
 
-    const goUp = () => {
-        if (currentPath === '/') return;
-        const parts = currentPath.split('/').filter(Boolean);
-        parts.pop();
-        const parent = '/' + parts.join('/');
-        setCurrentPath(parent);
+    // Helpers
+    const resolvePath = (name: string) => {
+        return cwd === '/' ? `/${name}` : `${cwd}/${name}`;
+    };
+
+    const handleContextMenu = (e: React.MouseEvent, type: 'empty' | 'item', target?: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // If right clicking an item that isn't selected, select it
+        if (type === 'item' && target) {
+            setSelected(target);
+        }
+
+        setContextMenu({
+            x: e.clientX,
+            y: e.clientY,
+            type,
+            target
+        });
+    };
+
+    const getUniqueName = (base: string, isDir: boolean) => {
+        let name = base;
+        let counter = 1;
+        while (true) {
+            const path = resolvePath(name);
+            if (!fs.exists(path)) return name;
+            name = `${base} ${counter}`;
+            counter++;
+        }
+    };
+
+    const handleCreate = (type: 'folder' | 'file') => {
+        const base = type === 'folder' ? 'New Folder' : 'New Text Document';
+        const name = getUniqueName(base, type === 'folder');
+        const path = resolvePath(name);
+
+        if (type === 'folder') {
+            fs.mkdir(path);
+        } else {
+            fs.write(path, "");
+        }
+
+        // Select and Start Renaming
+        setSelected(path);
+        setRenaming(path);
+    };
+
+    const handleRename = (newName: string) => {
+        if (!renaming) return;
+        if (!newName.trim()) {
+            setRenaming(null); // Cancel if empty
+            return;
+        }
+
+        const oldName = renaming.split('/').pop()!;
+        if (newName === oldName) {
+            setRenaming(null);
+            return;
+        }
+
+        const newPath = resolvePath(newName);
+        if (fs.exists(newPath)) {
+            alert(`Name "${newName}" already exists.`);
+            // Keep input open
+            if (renameInputRef.current) renameInputRef.current.focus();
+            return;
+        }
+
+        fs.rename(renaming, newName);
+        setRenaming(null);
+        setSelected(newPath); // Update selection to new path
+    };
+
+    const handleDelete = () => {
+        if (selected) {
+            fs.trash(selected);
+            setSelected(null);
+        }
+    };
+
+    // Drag and Drop
+    const handleDragStart = (e: React.DragEvent, path: string) => {
+        e.dataTransfer.setData("text/plain", path);
+        e.dataTransfer.effectAllowed = "move";
+    };
+
+    const handleDragOver = (e: React.DragEvent, item: any) => {
+        if (item.type === 'dir') {
+            e.preventDefault(); // Allow drop
+            e.dataTransfer.dropEffect = "move";
+        }
+    };
+
+    const handleDrop = (e: React.DragEvent, targetPath: string) => {
+        e.preventDefault();
+        const srcPath = e.dataTransfer.getData("text/plain");
+
+        if (!srcPath || srcPath === targetPath) return;
+
+        // Prevent moving into itself
+        if (targetPath === srcPath || targetPath.startsWith(srcPath + '/')) {
+             console.warn("Cannot move folder into itself");
+             return;
+        }
+
+        fs.move(srcPath, targetPath);
     };
 
     return (
-        <div className="flex h-full w-full bg-ub-cool-grey text-ubt-grey select-none">
-            {/* Sidebar */}
-            <div className="w-1/4 bg-ub-warm-grey bg-opacity-10 border-r border-black border-opacity-10 flex flex-col pt-2 min-w-[120px]">
-                {shortcuts.map(s => (
-                    <div
-                        key={s.name}
-                        className="px-2 py-1.5 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-2"
-                        onClick={() => {
-                            if (fs.exists(s.path)) setCurrentPath(s.path);
-                        }}
-                    >
-                        <img src={s.icon} className="w-5 h-5" alt="" />
-                        <span className="text-sm">{s.name}</span>
-                    </div>
-                ))}
-            </div>
-
-            {/* Main Content */}
-            <div className="flex-1 flex flex-col min-w-0">
-                {/* Navbar */}
-                <div className="h-10 border-b border-black border-opacity-10 flex items-center px-2 gap-2 bg-white bg-opacity-5">
-                    <button
-                        className="p-1 hover:bg-white hover:bg-opacity-10 rounded"
-                        onClick={goUp}
-                        disabled={currentPath === '/'}
-                    >
-                        ⬆️
-                    </button>
-                    <div className="text-sm opacity-70 px-2 py-1 bg-white bg-opacity-10 rounded flex-1 truncate font-mono">
-                        {currentPath}
-                    </div>
-                </div>
-
-                {/* Grid */}
-                <div className="flex-1 p-4 grid grid-cols-[repeat(auto-fill,minmax(80px,1fr))] gap-4 content-start overflow-y-auto">
-                    {children.map(node => (
-                        <div
-                            key={node.id}
-                            className="flex flex-col items-center hover:bg-ub-orange hover:bg-opacity-20 p-2 rounded cursor-pointer"
-                            onDoubleClick={() => handleNavigate(node.name, node.type)}
-                        >
-                            <img
-                                src={node.type === 'dir' ? "./themes/Yaru/system/folder.png" : "./themes/Yaru/mimetypes/text-x-generic.png"}
-                                className="w-10 h-10 mb-1"
-                                alt=""
-                            />
-                            <span className="text-xs text-center break-all line-clamp-2">{node.name}</span>
-                        </div>
-                    ))}
+        <div className="flex flex-col h-full w-full bg-ub-cool-grey text-ubt-grey select-none font-ubuntu relative"
+             onClick={() => setSelected(null)}
+             onContextMenu={(e) => handleContextMenu(e, 'empty')}
+        >
+            {/* Toolbar / Breadcrumbs */}
+            <div className="flex items-center h-10 px-2 bg-white bg-opacity-10 border-b border-black border-opacity-5">
+                <button
+                    onClick={() => {
+                        const parts = cwd.split('/').filter(Boolean);
+                        parts.pop();
+                        const parent = '/' + parts.join('/');
+                        if (fs.exists(parent)) setCwd(parent);
+                    }}
+                    disabled={cwd === '/'}
+                    className={`p-1 rounded hover:bg-white hover:bg-opacity-10 mr-2 ${cwd === '/' ? 'opacity-30 cursor-not-allowed' : ''}`}
+                >
+                    ⬆️
+                </button>
+                <div className="flex-1 font-mono text-sm opacity-80 truncate select-text">
+                    {cwd}
                 </div>
             </div>
+
+            {/* Main View */}
+            <div className="flex-1 p-4 overflow-y-auto">
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] gap-2">
+                    {items.map(item => {
+                        const itemPath = resolvePath(item.name);
+                        const isSelected = selected === itemPath;
+                        const isRenaming = renaming === itemPath;
+
+                        return (
+                            <div
+                                key={item.id}
+                                className={`flex flex-col items-center p-2 rounded cursor-default border border-transparent group
+                                    ${isSelected && !isRenaming ? 'bg-ub-orange bg-opacity-20 border-ub-orange border-opacity-40' : 'hover:bg-white hover:bg-opacity-5'}
+                                `}
+                                draggable={!isRenaming}
+                                onDragStart={(e) => handleDragStart(e, itemPath)}
+                                onDragOver={(e) => handleDragOver(e, item)}
+                                onDrop={(e) => handleDrop(e, itemPath)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelected(itemPath);
+                                }}
+                                onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    if (isRenaming) return;
+                                    if (item.type === 'dir') {
+                                        setCwd(itemPath);
+                                        setSelected(null);
+                                    }
+                                }}
+                                onContextMenu={(e) => handleContextMenu(e, 'item', itemPath)}
+                            >
+                                <img
+                                    src={item.type === 'dir' ? ICON_FOLDER : ICON_FILE}
+                                    className="w-12 h-12 mb-1 pointer-events-none"
+                                    alt={item.name}
+                                />
+                                {isRenaming ? (
+                                    <input
+                                        ref={renameInputRef}
+                                        defaultValue={item.name}
+                                        className="w-full text-center text-sm bg-white text-black border border-ub-orange rounded px-1 outline-none"
+                                        onClick={e => e.stopPropagation()}
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter') handleRename(e.currentTarget.value);
+                                            if (e.key === 'Escape') setRenaming(null);
+                                        }}
+                                        onBlur={e => handleRename(e.target.value)}
+                                    />
+                                ) : (
+                                    <span className={`text-sm text-center break-all line-clamp-2 leading-tight px-1 ${isSelected ? 'text-white' : ''}`}>
+                                        {item.name}
+                                    </span>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* Context Menu */}
+            {contextMenu && (
+                <div
+                    className="fixed bg-ub-grey text-white text-sm shadow-xl rounded py-1 z-50 border border-black border-opacity-20 min-w-[150px]"
+                    style={{ top: contextMenu.y, left: contextMenu.x }}
+                    onClick={e => e.stopPropagation()}
+                >
+                    {contextMenu.type === 'empty' && (
+                        <>
+                            <div className="px-4 py-2 hover:bg-ub-orange cursor-pointer" onClick={() => { handleCreate('folder'); setContextMenu(null); }}>New Folder</div>
+                            <div className="px-4 py-2 hover:bg-ub-orange cursor-pointer" onClick={() => { handleCreate('file'); setContextMenu(null); }}>New File</div>
+                        </>
+                    )}
+                    {contextMenu.type === 'item' && (
+                        <>
+                            {contextMenu.target && fs.stat(contextMenu.target)?.type === 'dir' && (
+                                <div className="px-4 py-2 hover:bg-ub-orange cursor-pointer" onClick={() => {
+                                    setCwd(contextMenu.target!);
+                                    setSelected(null);
+                                    setContextMenu(null);
+                                }}>Open</div>
+                            )}
+                            <div className="px-4 py-2 hover:bg-ub-orange cursor-pointer" onClick={() => {
+                                setRenaming(contextMenu.target!);
+                                setContextMenu(null);
+                            }}>Rename</div>
+                            <div className="px-4 py-2 hover:bg-ub-orange cursor-pointer" onClick={() => {
+                                handleDelete();
+                                setContextMenu(null);
+                            }}>Move to Trash</div>
+                        </>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
