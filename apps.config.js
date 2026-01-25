@@ -8,6 +8,7 @@ import { displayGedit } from "./components/apps/gedit";
 import { displayAboutVcto } from "./components/apps/vcto";
 import { displayTerminalCalc } from "./components/apps/calc";
 import { displayBlog } from "./components/apps/blog";
+import { displayAchievements } from "./components/apps/achievements";
 
 const apps = [
   {
@@ -18,6 +19,15 @@ const apps = [
     favourite: true,
     desktop_shortcut: true,
     screen: displayFirefox,
+  },
+  {
+    id: "achievements",
+    title: "Achievements",
+    icon: "./themes/MoreWaita/apps/achievements.svg",
+    disabled: false,
+    favourite: true,
+    desktop_shortcut: true,
+    screen: displayAchievements,
   },
   {
     id: "blog",
