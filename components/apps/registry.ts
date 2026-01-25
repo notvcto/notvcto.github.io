@@ -6,7 +6,7 @@ import { manifest as About } from './About/manifest';
 import { manifest as Achievements } from './Achievements/manifest';
 import { manifest as Blog } from './Blog/manifest';
 import { manifest as Calc } from './Calc/manifest';
-import { manifest as Gedit } from './Gedit/manifest';
+import { manifest as Contact } from './Contact/manifest';
 import { manifest as Spotify } from './Spotify/manifest';
 import { manifest as Trash } from './Trash/manifest';
 import { manifest as VSCode } from './VSCode/manifest';
@@ -31,7 +31,7 @@ export const apps: Record<string, AppManifest> = {
   achievements: Achievements,
   blog: Blog,
   calc: Calc,
-  gedit: Gedit,
+  contact: Contact,
   spotify: Spotify,
   trash: Trash,
   vscode: VSCode,

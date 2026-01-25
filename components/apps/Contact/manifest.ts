@@ -1,12 +1,12 @@
 // @ts-ignore
-import { displayGedit } from "@/components/apps/gedit";
+import { displayContact } from "@/components/apps/contact";
 
 export const manifest = {
-  id: "gedit",
+  id: "contact",
   name: "Contact Me",
   icon: "./themes/MoreWaita/apps/mail.svg",
   singleton: true,
-  entry: displayGedit,
+  entry: displayContact,
   desktopShortcut: true,
   favourite: false,
 };
