@@ -25,6 +25,7 @@ export class UbuntuApp extends Component {
           className="mb-1 w-10"
           src={this.props.icon}
           alt={"Ubuntu " + this.props.name}
+          draggable={false}
         />
         {this.props.name}
       </div>
