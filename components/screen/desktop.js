@@ -517,6 +517,9 @@ export class Desktop extends Component {
         if (app.id === "blog") {
           screen = (props) =>
             app.screen({ ...props, blogPosts: this.props.blogPosts });
+        } else if (app.id === "achievements") {
+          screen = (props) =>
+            app.screen({ ...props, achievements: this.props.achievements });
         }
 
         const props = {
