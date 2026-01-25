@@ -8,5 +8,5 @@ export const manifest = {
   singleton: true,
   entry: displaySettings,
   desktopShortcut: false,
-  favourite: true,
+  favourite: false,
 };

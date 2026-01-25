@@ -8,5 +8,5 @@ export const manifest = {
   singleton: true,
   entry: displayAboutVcto,
   desktopShortcut: true,
-  favourite: true,
+  favourite: false,
 };
