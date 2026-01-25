@@ -1,86 +1,140 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useWMStore } from "@/lib/store/wm";
 import { defaultApps } from "@/components/apps/registry";
 import SideBarApp from "@/components/base/SideBarApp";
 
 export default function SideBar() {
     const { windows, focusedWindowId, openWindow, minimizeWindow, focusWindow } = useWMStore();
+    const [orderedAppIds, setOrderedAppIds] = useState<string[]>([]);
+    const [draggingId, setDraggingId] = useState<string | null>(null);
 
-    const favourites = defaultApps.filter(app => app.favourite);
+    // Initialize ordered apps from defaultApps
+    useEffect(() => {
+        // Only init if empty (on mount), but we also want to respect running non-favs appearing.
+        // So we need to merge the persisted/default order with any new running apps.
+
+        const favourites = defaultApps.filter(app => app.favourite).map(app => app.id);
+        setOrderedAppIds(prev => {
+            if (prev.length === 0) return favourites;
+            return prev;
+        });
+    }, []);
+
+    // Merge running apps into the view
     const runningAppIds = Object.values(windows).map(w => w.appId);
+    const runningNonFavs = defaultApps.filter(app => !app.favourite && runningAppIds.includes(app.id)).map(a => a.id);
 
-    const runningNonFavs = defaultApps.filter(app => !app.favourite && runningAppIds.includes(app.id));
+    // Combine ordered known apps + new running apps
+    // We want to keep the user's custom order for the ones they have.
+    // And append any new running apps that aren't in the list yet.
+    const allAppsToRender = [...orderedAppIds];
+    runningNonFavs.forEach(id => {
+        if (!allAppsToRender.includes(id)) {
+            allAppsToRender.push(id);
+        }
+    });
 
-    const sideBarApps = [...favourites, ...runningNonFavs];
+    // Remove duplicates if any (though logic above tries to avoid)
+    const uniqueApps = Array.from(new Set(allAppsToRender));
 
-    const handleAppClick = (app: any) => {
-        const appWindows = Object.values(windows).filter(w => w.appId === app.id);
+    // We should filter out any IDs that shouldn't be there?
+    // E.g. if a non-fav app is closed, it should disappear from dock.
+    // orderedAppIds currently keeps favourites.
+
+    const finalDisplayList = uniqueApps.filter(id => {
+        const app = defaultApps.find(a => a.id === id);
+        if (!app) return false;
+        if (app.favourite) return true;
+        // If not favourite, only show if running
+        return runningAppIds.includes(id);
+    });
+
+    const handleAppClick = (appId: string) => {
+        const app = defaultApps.find(a => a.id === appId);
+        if (!app) return;
+
+        const appWindows = Object.values(windows).filter(w => w.appId === appId);
 
         if (appWindows.length > 0) {
             const focusedWin = appWindows.find(w => w.id === focusedWindowId);
             if (focusedWin) {
                 minimizeWindow(focusedWin.id);
             } else {
-                // Focus the most recently active one?
-                // For simplicity, focus the first one found (or last if we sorted).
                 focusWindow(appWindows[0].id);
             }
         } else {
-            // Launch
-            // For singletons, we use app.id as window ID to enforce uniqueness in store (if logic allows)
-            // But store.openWindow focuses if ID exists.
-            // So if we pass app.id, it works as singleton.
-            // If not singleton, we generate new ID.
-
-            // However, registry `singleton` property should dictate this.
-            // If app.singleton is true, use app.id.
-            // If false, use uuid.
-
-            // Actually, Terminal is false, so we want new terminals.
-            // But if I click Terminal icon while one is open, Dock behavior usually is "Show Windows" or "Focus".
-            // It doesn't spawn a new one unless I right click -> New Window.
-            // So default click behavior on Dock is ALWAYS Focus/Minimize.
-            // Spawning new instance via Dock usually requires middle click or context menu.
-
-            // So my logic above (if appWindows.length > 0 -> Focus/Min) handles this correctly for Dock.
-            // The "Spawn" only happens if length == 0.
-
-            // So when DO we spawn multiple terminals?
-            // From Desktop Icon? Or Terminal command?
-
-            // For now, let's assume Dock Launch spawns first instance.
-            // And use uuid for non-singletons just in case we support multiple later.
-            // But if I use uuid, the ID will be different each time.
-
             const windowId = app.singleton ? app.id : `${app.id}-${Date.now()}`;
             openWindow(windowId, app.id, app.name, app.icon);
         }
     }
 
-    return (
-        <>
-            <div
-                 className={"absolute transform duration-300 select-none z-40 left-0 top-1/2 -translate-y-1/2 ml-2 h-auto w-auto flex flex-col justify-start items-center rounded-xl bg-ub-cool-grey bg-opacity-40 backdrop-blur-3xl border-white border-opacity-10 shadow-2xl py-2"}
-            >
-                {sideBarApps.map(app => {
-                    const appWindows = Object.values(windows).filter(w => w.appId === app.id);
-                    const isOpen = appWindows.length > 0;
-                    const isFocused = appWindows.some(w => w.id === focusedWindowId);
+    // Drag Logic
+    const handleDragStart = (e: React.DragEvent, id: string) => {
+        setDraggingId(id);
+        e.dataTransfer.effectAllowed = "move";
+        // Ghost image usually handled by browser, but we can set it if needed.
+    };
 
-                    return (
+    const handleDragOver = (e: React.DragEvent, targetId: string) => {
+        e.preventDefault(); // Necessary to allow dropping
+        if (!draggingId || draggingId === targetId) return;
+
+        // Simple reorder: swap draggingId to the position of targetId
+        // But we want to reorder in `orderedAppIds`.
+        // Be careful not to cause too many re-renders.
+        // Maybe only do it on Drop? Or do it live? Live is better for UX.
+
+        const currentIndex = orderedAppIds.indexOf(draggingId);
+        const targetIndex = orderedAppIds.indexOf(targetId);
+
+        if (currentIndex !== -1 && targetIndex !== -1) {
+             const newOrder = [...orderedAppIds];
+             newOrder.splice(currentIndex, 1);
+             newOrder.splice(targetIndex, 0, draggingId);
+             setOrderedAppIds(newOrder);
+        }
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        setDraggingId(null);
+    };
+
+    return (
+        <div
+            className={"absolute transform duration-300 select-none z-50 left-0 top-1/2 -translate-y-1/2 ml-2 h-auto w-auto flex flex-col justify-start items-center rounded-xl bg-ub-cool-grey bg-opacity-40 backdrop-blur-3xl border-white border-opacity-10 shadow-2xl py-2"}
+            onPointerDown={(e) => e.stopPropagation()} // Stop clickthrough to Desktop
+            onMouseDown={(e) => e.stopPropagation()} // Stop clickthrough to Desktop
+        >
+            {finalDisplayList.map(id => {
+                const app = defaultApps.find(a => a.id === id);
+                if (!app) return null;
+
+                const appWindows = Object.values(windows).filter(w => w.appId === app.id);
+                const isOpen = appWindows.length > 0;
+                const isFocused = appWindows.some(w => w.id === focusedWindowId);
+
+                return (
+                    <div
+                        key={app.id}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, app.id)}
+                        onDragOver={(e) => handleDragOver(e, app.id)}
+                        onDrop={handleDrop}
+                        className="transition-transform duration-200"
+                    >
                         <SideBarApp
-                            key={app.id}
                             id={app.id}
                             title={app.name}
                             icon={app.icon}
                             isOpen={isOpen}
                             isFocused={isFocused}
-                            openApp={() => handleAppClick(app)}
+                            openApp={() => handleAppClick(app.id)}
                         />
-                    )
-                })}
-            </div>
-        </>
+                    </div>
+                )
+            })}
+        </div>
     )
 }
