@@ -10,8 +10,8 @@ export const Gedit = () => {
   });
   const [sending, setSending] = useState(false);
   const [placeholders, setPlaceholders] = useState({
-    name: "Your Email / Name :",
-    subject: "subject (may be a feedback for this website!)",
+    name: "Your Email / Name",
+    subject: "Subject (may be a feedback for this website!)",
     message: "Message",
   });
 
@@ -98,23 +98,14 @@ export const Gedit = () => {
 
   return (
     <div className="w-full h-full relative flex flex-col bg-ub-cool-grey text-white select-none">
-      <div className="flex items-center justify-between w-full bg-ub-gedit-light bg-opacity-60 border-b border-t border-blue-400 text-sm">
-        <span className="font-bold ml-2">Send a Message to Me</span>
-        <div className="flex">
-          <div
-            onClick={sendMessage}
-            className="border border-black bg-black bg-opacity-50 px-3 py-0.5 my-1 mx-1 rounded hover:bg-opacity-80 cursor-pointer"
-          >
-            Send
-          </div>
-        </div>
-      </div>
-      <div className="relative flex-grow flex flex-col bg-ub-gedit-dark font-normal windowMainScreen">
-        <div className="absolute left-0 top-0 h-full px-2 bg-ub-gedit-darker"></div>
-        <div className="relative">
+      <div className="flex-grow flex flex-col p-4 gap-4 overflow-y-auto windowMainScreen">
+        <div className="flex flex-col gap-1">
+          <label htmlFor="sender-name" className="text-sm font-medium text-gray-300">
+            Name / Email
+          </label>
           <input
             id="sender-name"
-            className=" w-full text-ubt-gedit-orange focus:bg-ub-gedit-light outline-none font-medium text-sm pl-6 py-0.5 bg-transparent"
+            className="w-full p-2 rounded bg-ub-grey border border-gray-600 focus:border-ub-orange focus:outline-none text-white text-sm"
             placeholder={placeholders.name}
             spellCheck="false"
             autoComplete="off"
@@ -122,14 +113,14 @@ export const Gedit = () => {
             value={formData.name}
             onChange={handleChange}
           />
-          <span className="absolute left-1 top-1/2 transform -translate-y-1/2 font-bold light text-sm text-ubt-gedit-blue">
-            1
-          </span>
         </div>
-        <div className="relative">
+        <div className="flex flex-col gap-1">
+          <label htmlFor="sender-subject" className="text-sm font-medium text-gray-300">
+            Subject
+          </label>
           <input
             id="sender-subject"
-            className=" w-full my-1 text-ubt-gedit-blue focus:bg-ub-gedit-light gedit-subject outline-none text-sm font-normal pl-6 py-0.5 bg-transparent"
+            className="w-full p-2 rounded bg-ub-grey border border-gray-600 focus:border-ub-orange focus:outline-none text-white text-sm"
             placeholder={placeholders.subject}
             spellCheck="false"
             autoComplete="off"
@@ -137,14 +128,14 @@ export const Gedit = () => {
             value={formData.subject}
             onChange={handleChange}
           />
-          <span className="absolute left-1 top-1/2 transform -translate-y-1/2 font-bold  text-sm text-ubt-gedit-blue">
-            2
-          </span>
         </div>
-        <div className="relative flex-grow">
+        <div className="flex flex-col gap-1 flex-grow">
+          <label htmlFor="sender-message" className="text-sm font-medium text-gray-300">
+            Message
+          </label>
           <textarea
             id="sender-message"
-            className=" w-full gedit-message font-light text-sm resize-none h-full windowMainScreen outline-none tracking-wider pl-6 py-1 bg-transparent"
+            className="w-full p-2 rounded bg-ub-grey border border-gray-600 focus:border-ub-orange focus:outline-none text-white text-sm flex-grow resize-none"
             placeholder={placeholders.message}
             spellCheck="false"
             autoComplete="none"
@@ -152,9 +143,14 @@ export const Gedit = () => {
             value={formData.message}
             onChange={handleChange}
           />
-          <span className="absolute left-1 top-1 font-bold  text-sm text-ubt-gedit-blue">
-            3
-          </span>
+        </div>
+        <div className="w-full flex justify-end">
+          <button
+            onClick={sendMessage}
+            className="bg-ub-orange text-white px-4 py-2 rounded font-bold hover:bg-red-600 transition-colors text-sm"
+          >
+            Send Message
+          </button>
         </div>
       </div>
       {sending ? (
