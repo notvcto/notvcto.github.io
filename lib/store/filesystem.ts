@@ -104,12 +104,12 @@ const createDefaultState = (): { rootId: string; nodes: Record<string, FSNode> }
 
   // Desktop Apps
   // In a real scenario, the content might be a pointer or empty for system apps
-  touch(desktop, 'About.app', '', { executable: true });
-  touch(desktop, 'Projects.app', '', { executable: true });
-  touch(desktop, 'Terminal.app', '', { executable: true });
-
-  // Documents
-  touch(documents, 'readme.txt', 'Welcome to Ubuntu 22.04 web simulation!');
+  touch(desktop, 'firefox.app', '', { executable: true, metadata: { position: { x: 20, y: 40 } } });
+  touch(desktop, 'gedit.app', '', { executable: true, metadata: { position: { x: 20, y: 140 } } }); // Contact Me
+  touch(desktop, 'about-vcto.app', '', { executable: true, metadata: { position: { x: 20, y: 240 } } });
+  touch(desktop, 'achievements.app', '', { executable: true, metadata: { position: { x: 20, y: 340 } } });
+  touch(desktop, 'blog.app', '', { executable: true, metadata: { position: { x: 120, y: 40 } } });
+  touch(desktop, 'trash.app', '', { executable: true, metadata: { position: { x: 120, y: 140 } } });
 
   // /bin
   const bin = mkdir(INITIAL_ROOT_ID, 'bin');
