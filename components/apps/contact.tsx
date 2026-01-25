@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import ReactGA from "react-ga4";
 import emailjs from "@emailjs/browser";
 
-export const Gedit = () => {
+export const Contact = () => {
   const [formData, setFormData] = useState({
     name: "",
     subject: "",
@@ -19,7 +19,7 @@ export const Gedit = () => {
     emailjs.init("OrfJgp8SK9eKhq6oo");
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     // Map IDs to state keys
     const key =
@@ -36,9 +36,9 @@ export const Gedit = () => {
   };
 
   const closeWindow = () => {
-    // Functional replacement for $("#close-gedit").trigger("click");
+    // Functional replacement for $("#close-contact").trigger("click");
     if (typeof document !== "undefined") {
-      const closeBtn = document.getElementById("close-gedit");
+      const closeBtn = document.getElementById("close-contact");
       if (closeBtn) closeBtn.click();
     }
   };
@@ -139,7 +139,6 @@ export const Gedit = () => {
             placeholder={placeholders.message}
             spellCheck="false"
             autoComplete="none"
-            type="text"
             value={formData.message}
             onChange={handleChange}
           />
@@ -166,8 +165,8 @@ export const Gedit = () => {
   );
 };
 
-export const displayGedit = () => {
-  return <Gedit> </Gedit>;
+export const displayContact = () => {
+  return <Contact />;
 };
 
-export default Gedit;
+export default Contact;

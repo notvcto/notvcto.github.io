@@ -105,7 +105,7 @@ const createDefaultState = (): { rootId: string; nodes: Record<string, FSNode> }
   // Desktop Apps
   // In a real scenario, the content might be a pointer or empty for system apps
   touch(desktop, 'firefox.app', '', { executable: true, metadata: { position: { x: 20, y: 40 } } });
-  touch(desktop, 'gedit.app', '', { executable: true, metadata: { position: { x: 20, y: 140 } } }); // Contact Me
+  touch(desktop, 'contact.app', '', { executable: true, metadata: { position: { x: 20, y: 140 } } }); // Contact Me
   touch(desktop, 'about-vcto.app', '', { executable: true, metadata: { position: { x: 20, y: 240 } } });
   touch(desktop, 'achievements.app', '', { executable: true, metadata: { position: { x: 20, y: 340 } } });
   touch(desktop, 'blog.app', '', { executable: true, metadata: { position: { x: 120, y: 40 } } });
