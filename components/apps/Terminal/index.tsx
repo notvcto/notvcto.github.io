@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useFileSystemStore, resolvePath, getAbsolutePath } from "@/lib/store/filesystem";
+import { useFS, resolveRelativePath } from "@/lib/fs";
 import { useWMStore } from "@/lib/store/wm";
 
 interface TerminalRow {
@@ -12,23 +12,27 @@ interface TerminalRow {
 }
 
 export default function TerminalApp() {
-    const { nodes, rootId, createDir, createFile, deleteNode, renameNode } = useFileSystemStore();
+    const fs = useFS();
     const { closeWindow, openWindow } = useWMStore();
 
     const [history, setHistory] = useState<TerminalRow[]>([]);
     const [inputVal, setInputVal] = useState("");
-    const [currentDirId, setCurrentDirId] = useState<string>(rootId); // Will init to /home/user
+    // We store currentDirId to track CWD, but we should use path strings with new API.
+    // However, unique IDs are still useful for tracking state if paths change (rename).
+    // But standard shells track PWD as string.
+    // Let's switch to tracking path string to align with canonical API.
+    const [currentPath, setCurrentPath] = useState<string>("/home/user");
+
     const [historyPointer, setHistoryPointer] = useState(0);
     const [commandHistory, setCommandHistory] = useState<string[]>([]);
 
     const inputRef = useRef<HTMLInputElement>(null);
     const bottomRef = useRef<HTMLDivElement>(null);
 
-    // Init to /home/user
+    // Init check
     useEffect(() => {
-        const homeUser = resolvePath('/home/user', nodes, rootId);
-        if (homeUser) {
-            setCurrentDirId(homeUser.id);
+        if (!fs.exists(currentPath)) {
+            setCurrentPath("/");
         }
 
         // Welcome message
@@ -46,8 +50,7 @@ export default function TerminalApp() {
         inputRef.current?.focus();
     };
 
-    const getPathString = (dirId: string) => {
-        const path = getAbsolutePath(dirId, nodes, rootId);
+    const getDisplayPath = (path: string) => {
         if (path.startsWith('/home/user')) {
             return path.replace('/home/user', '~');
         }
@@ -65,14 +68,14 @@ export default function TerminalApp() {
         const cmd = parts[0];
         const args = parts.slice(1);
 
-        const currentPath = getPathString(currentDirId);
+        const displayPath = getDisplayPath(currentPath);
         const inputRow: TerminalRow = {
             id: Date.now(),
             text: (
                 <div className="flex">
                     <span className="text-ubt-green">vcto@ubuntu</span>
                     <span className="text-white mx-px">:</span>
-                    <span className="text-ubt-blue">{currentPath}</span>
+                    <span className="text-ubt-blue">{displayPath}</span>
                     <span className="text-white mx-px mr-1">$</span>
                     <span>{trimmed}</span>
                 </div>
@@ -95,56 +98,67 @@ export default function TerminalApp() {
                 return; // Don't add inputRow
 
             case 'ls': {
-                const targetId = currentDirId; // Handle args later for other dirs
-                const node = nodes[targetId];
-                if (node && node.type === 'dir') {
-                     const children = node.children.map(id => nodes[id]).filter(Boolean);
-                     // Filter hidden?
-                     const showHidden = args.includes('-a') || args.includes('-la');
-                     const visible = children.filter(c => showHidden || !c.name.startsWith('.'));
+                // Handle args for path?
+                // ls [path]
+                let targetPath = currentPath;
+                let showHidden = false;
 
-                     output = (
-                         <div className="flex flex-wrap gap-4">
-                             {visible.map(c => (
-                                 <span key={c.id} className={c.type === 'dir' ? 'text-ubt-blue font-bold' : (c.executable || c.name.endsWith('.app') ? 'text-green-400 font-bold' : 'text-white')}>
-                                     {c.name}
-                                 </span>
-                             ))}
-                         </div>
-                     );
+                // Simple arg parsing
+                args.forEach(arg => {
+                    if (arg.startsWith('-')) {
+                        if (arg.includes('a')) showHidden = true;
+                    } else {
+                        targetPath = resolveRelativePath(currentPath, arg);
+                    }
+                });
+
+                if (fs.exists(targetPath)) {
+                     const stat = fs.stat(targetPath);
+                     if (stat && stat.type === 'dir') {
+                         const children = fs.list(targetPath);
+                         const visible = children.filter(c => showHidden || !c.name.startsWith('.'));
+
+                         output = (
+                             <div className="flex flex-wrap gap-4">
+                                 {visible.map(c => (
+                                     <span key={c.id} className={c.type === 'dir' ? 'text-ubt-blue font-bold' : (c.executable || c.name.endsWith('.app') ? 'text-green-400 font-bold' : 'text-white')}>
+                                         {c.name}
+                                     </span>
+                                 ))}
+                             </div>
+                         );
+                     } else {
+                         output = `ls: ${targetPath}: Not a directory`; // Or print file
+                     }
+                } else {
+                     output = `ls: cannot access '${targetPath}': No such file or directory`;
                 }
                 break;
             }
 
             case 'pwd':
-                output = getAbsolutePath(currentDirId, nodes, rootId);
+                output = currentPath;
                 break;
 
             case 'cd': {
                 const target = args[0];
-                if (!target || target === '~') {
-                    const home = resolvePath('/home/user', nodes, rootId);
-                    if (home) setCurrentDirId(home.id);
-                } else if (target === '..') {
-                    const curr = nodes[currentDirId];
-                    if (curr && curr.parent) setCurrentDirId(curr.parent);
+                let newPath = currentPath;
+
+                if (!target) {
+                    newPath = '/home/user';
                 } else {
-                    // Resolve path relative
-                    // Needs better resolution logic for relative paths
-                    // For now, check children
-                    const curr = nodes[currentDirId];
-                    if (curr && curr.type === 'dir') {
-                        const childId = curr.children.find(id => nodes[id].name === target);
-                        if (childId) {
-                            if (nodes[childId].type === 'dir') {
-                                setCurrentDirId(childId);
-                            } else {
-                                output = `cd: ${target}: Not a directory`;
-                            }
-                        } else {
-                             output = `cd: ${target}: No such file or directory`;
-                        }
+                    newPath = resolveRelativePath(currentPath, target);
+                }
+
+                if (fs.exists(newPath)) {
+                    const stat = fs.stat(newPath);
+                    if (stat && stat.type === 'dir') {
+                        setCurrentPath(newPath);
+                    } else {
+                        output = `cd: ${target}: Not a directory`;
                     }
+                } else {
+                     output = `cd: ${target}: No such file or directory`;
                 }
                 break;
             }
@@ -152,7 +166,8 @@ export default function TerminalApp() {
             case 'mkdir': {
                 const name = args[0];
                 if (name) {
-                    createDir(currentDirId, name);
+                    const target = resolveRelativePath(currentPath, name);
+                    fs.mkdir(target);
                 } else {
                     output = "mkdir: missing operand";
                 }
@@ -162,7 +177,8 @@ export default function TerminalApp() {
             case 'touch': {
                 const name = args[0];
                 if (name) {
-                    createFile(currentDirId, name, "");
+                    const target = resolveRelativePath(currentPath, name);
+                    fs.write(target, "");
                 } else {
                     output = "touch: missing operand";
                 }
@@ -172,16 +188,12 @@ export default function TerminalApp() {
             case 'rm': {
                  const name = args[0];
                  if (name) {
-                     // Check children
-                    const curr = nodes[currentDirId];
-                    if (curr && curr.type === 'dir') {
-                         const childId = curr.children.find(id => nodes[id].name === name);
-                         if (childId) {
-                             deleteNode(childId);
-                         } else {
-                             output = `rm: ${name}: No such file or directory`;
-                         }
-                    }
+                     const target = resolveRelativePath(currentPath, name);
+                     if (fs.exists(target)) {
+                         fs.trash(target);
+                     } else {
+                         output = `rm: cannot remove '${name}': No such file or directory`;
+                     }
                  }
                  break;
             }
@@ -189,15 +201,17 @@ export default function TerminalApp() {
             case 'cat': {
                  const name = args[0];
                  if (name) {
-                     const curr = nodes[currentDirId];
-                    if (curr && curr.type === 'dir') {
-                         const childId = curr.children.find(id => nodes[id].name === name);
-                         if (childId && nodes[childId].type === 'file') {
-                             output = (nodes[childId] as any).content || "";
+                     const target = resolveRelativePath(currentPath, name);
+                     if (fs.exists(target)) {
+                         const content = fs.read(target);
+                         if (content !== null) {
+                             output = content;
                          } else {
-                             output = `cat: ${name}: No such file or directory`;
+                             output = `cat: ${name}: Is a directory`;
                          }
-                    }
+                     } else {
+                         output = `cat: ${name}: No such file or directory`;
+                     }
                  }
                  break;
             }
@@ -207,12 +221,6 @@ export default function TerminalApp() {
                 break;
 
             case 'exit':
-                // Close window.
-                // We need window ID. TerminalApp doesn't know its window ID unless passed as prop.
-                // But wait, the `Window` component doesn't pass `windowId` to `Screen` props by default in `Desktop.tsx`.
-                // I passed `componentProps`. I should pass `windowId` too? Or `closeWindow` callback?
-                // I'll update `Desktop.tsx` to pass `onClose` or `id`.
-                // For now, I can't close it easily. I'll just clear.
                 setHistory([]);
                 break;
 
@@ -245,7 +253,7 @@ export default function TerminalApp() {
         }
     };
 
-    const currentPath = getPathString(currentDirId);
+    const displayPath = getDisplayPath(currentPath);
 
     return (
         <div className="h-full w-full bg-ub-drk-abrgn text-white text-sm font-mono p-2 overflow-y-auto" onClick={focusInput}>
@@ -258,7 +266,7 @@ export default function TerminalApp() {
             <div className="flex">
                  <span className="text-ubt-green">vcto@ubuntu</span>
                  <span className="text-white mx-px">:</span>
-                 <span className="text-ubt-blue">{currentPath}</span>
+                 <span className="text-ubt-blue">{displayPath}</span>
                  <span className="text-white mx-px mr-1">$</span>
                  <div className="relative flex-grow">
                      <input
@@ -272,7 +280,6 @@ export default function TerminalApp() {
                         spellCheck={false}
                         autoComplete="off"
                     />
-                    {/* Fake cursor or just use input caret. Input caret is fine. */}
                     <span className="invisible whitespace-pre">{inputVal}</span>
                  </div>
             </div>
