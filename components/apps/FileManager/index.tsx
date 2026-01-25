@@ -1,27 +1,26 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useFileSystemStore, resolvePath, getAbsolutePath } from "@/lib/store/filesystem";
+import { useFS } from "@/lib/fs";
 import { useWMStore } from "@/lib/store/wm";
 
 export default function FileManager() {
-    const { nodes, rootId } = useFileSystemStore();
+    const fs = useFS();
     const { openWindow } = useWMStore();
-    const [currentDirId, setCurrentDirId] = useState(rootId);
+    const [currentPath, setCurrentPath] = useState("/home/user");
 
-    // Init to home
+    // Init to home check
     useEffect(() => {
-        const home = resolvePath('/home/user', nodes, rootId);
-        if (home) setCurrentDirId(home.id);
-    }, [nodes, rootId]); // deps? nodes changes often.
+        if (!fs.exists(currentPath)) setCurrentPath('/');
+    }, []);
 
-    // Safety check
-    const currentNode = nodes[currentDirId] || nodes[rootId];
-    const children = currentNode && currentNode.type === 'dir' ? currentNode.children.map(id => nodes[id]).filter(Boolean) : [];
+    // Get children
+    // fs.list is reactive because useFS hooks into the store
+    const children = fs.exists(currentPath) ? fs.list(currentPath) : [];
 
-    const handleNavigate = (id: string) => {
-        const node = nodes[id];
-        if (node.type === 'dir') {
-            setCurrentDirId(id);
+    const handleNavigate = (name: string, type: 'file' | 'dir') => {
+        if (type === 'dir') {
+            const separator = currentPath === '/' ? '' : '/';
+            setCurrentPath(`${currentPath}${separator}${name}`);
         } else {
             // Open file?
         }
@@ -35,6 +34,14 @@ export default function FileManager() {
         { name: 'Trash', path: '/trash', icon: './themes/MoreWaita/system/user-trash-full.svg' },
     ];
 
+    const goUp = () => {
+        if (currentPath === '/') return;
+        const parts = currentPath.split('/').filter(Boolean);
+        parts.pop();
+        const parent = '/' + parts.join('/');
+        setCurrentPath(parent);
+    };
+
     return (
         <div className="flex h-full w-full bg-ub-cool-grey text-ubt-grey select-none">
             {/* Sidebar */}
@@ -44,8 +51,7 @@ export default function FileManager() {
                         key={s.name}
                         className="px-2 py-1.5 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-2"
                         onClick={() => {
-                            const node = resolvePath(s.path, nodes, rootId);
-                            if (node) setCurrentDirId(node.id);
+                            if (fs.exists(s.path)) setCurrentPath(s.path);
                         }}
                     >
                         <img src={s.icon} className="w-5 h-5" alt="" />
@@ -60,15 +66,13 @@ export default function FileManager() {
                 <div className="h-10 border-b border-black border-opacity-10 flex items-center px-2 gap-2 bg-white bg-opacity-5">
                     <button
                         className="p-1 hover:bg-white hover:bg-opacity-10 rounded"
-                        onClick={() => {
-                            if (currentNode.parent) setCurrentDirId(currentNode.parent);
-                        }}
-                        disabled={!currentNode.parent}
+                        onClick={goUp}
+                        disabled={currentPath === '/'}
                     >
                         ⬆️
                     </button>
                     <div className="text-sm opacity-70 px-2 py-1 bg-white bg-opacity-10 rounded flex-1 truncate font-mono">
-                        {getAbsolutePath(currentDirId, nodes, rootId)}
+                        {currentPath}
                     </div>
                 </div>
 
@@ -78,7 +82,7 @@ export default function FileManager() {
                         <div
                             key={node.id}
                             className="flex flex-col items-center hover:bg-ub-orange hover:bg-opacity-20 p-2 rounded cursor-pointer"
-                            onDoubleClick={() => handleNavigate(node.id)}
+                            onDoubleClick={() => handleNavigate(node.name, node.type)}
                         >
                             <img
                                 src={node.type === 'dir' ? "./themes/Yaru/system/folder.png" : "./themes/Yaru/mimetypes/text-x-generic.png"}
