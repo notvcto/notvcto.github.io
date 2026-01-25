@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import BackgroundImage from "../util components/background-image";
 import Navbar from "./navbar";
 import SideBar from "./SideBar";
@@ -14,6 +14,7 @@ import { useSettingsStore } from "@/lib/store/settings";
 import { useFS } from "@/lib/fs";
 import { apps as appRegistry } from "@/components/apps/registry";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
+import { calculateLayout, GRID_SIZE } from "@/lib/utils/desktop";
 
 interface DesktopProps {
     blogPosts?: any[];
@@ -31,6 +32,7 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
     const [selectionBox, setSelectionBox] = useState<{ start: { x: number, y: number }, current: { x: number, y: number } } | null>(null);
     const [dragPositions, setDragPositions] = useState<Record<string, {x: number, y: number}> | null>(null);
     const desktopRef = useRef<HTMLDivElement>(null);
+    const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
     const desktopPath = '/home/user/Desktop';
     // Ensure desktop exists or init
@@ -52,6 +54,18 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
         }
     }, []);
 
+    useEffect(() => {
+        // Handle resize
+        const updateSize = () => {
+            setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+        };
+        // Initial
+        updateSize();
+
+        window.addEventListener('resize', updateSize);
+        return () => window.removeEventListener('resize', updateSize);
+    }, []);
+
     // Delete Key Listener
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -70,6 +84,12 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
 
     // Get desktop icons
     const desktopIcons = fs.exists(desktopPath) ? fs.list(desktopPath) : [];
+
+    // Calculate Layout
+    const layout = useMemo(() => {
+        if (windowSize.width === 0) return {};
+        return calculateLayout(windowSize.width, windowSize.height, desktopIcons);
+    }, [windowSize, desktopIcons]);
 
     const openApp = (nodeId: string) => {
         const path = fs.absolute(nodeId);
@@ -125,12 +145,10 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
 
         const initialPositions: Record<string, {x: number, y: number}> = {};
         currentSelection.forEach(selId => {
-            const path = fs.absolute(selId);
-            if (path) {
-                const node = fs.stat(path);
-                if (node) {
-                    initialPositions[selId] = node.metadata?.position || { x: 20, y: 40 };
-                }
+            // Use layout position as visual start
+            const pos = layout[selId];
+            if (pos) {
+                initialPositions[selId] = pos;
             }
         });
         setDragPositions(initialPositions);
@@ -143,10 +161,24 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
         const newPositions = { ...dragPositions };
 
         Object.keys(newPositions).forEach(key => {
-            newPositions[key] = {
-                x: newPositions[key].x + deltaX,
-                y: newPositions[key].y + deltaY
-            };
+            // Clamp during drag?
+            // The spec says "Clamp positions to ... during drag and on window resize".
+            // If we clamp here, dragging against the wall stops.
+
+            let newX = newPositions[key].x + deltaX;
+            let newY = newPositions[key].y + deltaY;
+
+            // Note: If multiple items selected, we might want to clamp them as a group or individually.
+            // Individually is safer to prevent loss.
+            // But we don't want to break relative positions if one hits the wall.
+            // For now, individual clamping (like Windows) or free drag but clamp on stop.
+            // "Dragging must: Clamp positions to..."
+            // Let's clamp individually for safety.
+
+            newX = Math.max(0, Math.min(newX, windowSize.width - GRID_SIZE));
+            newY = Math.max(0, Math.min(newY, windowSize.height - GRID_SIZE));
+
+            newPositions[key] = { x: newX, y: newY };
         });
 
         setDragPositions(newPositions);
@@ -157,12 +189,16 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
 
         // Snap and commit
         Object.entries(dragPositions).forEach(([key, pos]) => {
-            const snappedX = Math.round(pos.x / 100) * 100;
-            const snappedY = Math.round(pos.y / 100) * 100;
+            const snappedX = Math.round(pos.x / GRID_SIZE) * GRID_SIZE;
+            const snappedY = Math.round(pos.y / GRID_SIZE) * GRID_SIZE;
+
+            // Clamp on stop (Critical)
+            const clampedX = Math.max(0, Math.min(snappedX, windowSize.width - GRID_SIZE));
+            const clampedY = Math.max(0, Math.min(snappedY, windowSize.height - GRID_SIZE));
 
             const path = fs.absolute(key);
             if (path) {
-                fs.updateMetadata(path, { position: { x: snappedX, y: snappedY } });
+                fs.updateMetadata(path, { position: { x: clampedX, y: clampedY } });
             }
         });
 
@@ -185,6 +221,8 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
 
         // Prevent selection box when clicking on interactive elements
         if ((e.target as HTMLElement).closest('.react-draggable')) return;
+        if ((e.target as HTMLElement).closest('#desktop-menu')) return;
+        if ((e.target as HTMLElement).closest('#default-menu')) return;
 
         if (!e.shiftKey && !e.ctrlKey) {
             setSelectedIconIds([]);
@@ -216,9 +254,9 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
         const newSelected: string[] = [];
 
         desktopIcons.forEach(node => {
-            const pos = node.metadata?.position || { x: 20, y: 40 };
-            const iconW = 100;
-            const iconH = 100;
+            const pos = layout[node.id] || { x: 0, y: 0 };
+            const iconW = GRID_SIZE;
+            const iconH = GRID_SIZE;
 
             if (
                 left < pos.x + iconW &&
@@ -300,8 +338,11 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
              <div className="absolute w-full h-full top-0 left-0 z-10 pointer-events-none">
                  {desktopIcons.map(node => {
                      const nodeId = node.id;
-                     // Determine position: Dragging state -> Metadata -> Default
-                     const pos = dragPositions?.[nodeId] || node.metadata?.position || { x: 20, y: 40 };
+                     // Determine position: Dragging state -> Layout -> Default (0,0)
+                     const pos = dragPositions?.[nodeId] || layout[nodeId] || { x: 0, y: 0 };
+
+                     // Debug log for first render of icon (or when pos changes)
+                     // console.log(`Icon ${nodeId} at`, pos);
 
                      let icon = "./themes/Yaru/system/unknown.png";
                      let displayName = node.name;
