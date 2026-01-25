@@ -191,6 +191,7 @@ export default class Ubuntu extends Component {
           bg_image_name={this.state.bg_image_name}
           changeBackgroundImage={this.changeBackgroundImage}
           blogPosts={this.props.blogPosts}
+          achievements={this.props.achievements}
           changeAccentColor={this.changeAccentColor}
           accentColor={this.state.accent_color}
         />
