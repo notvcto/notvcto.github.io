@@ -1,13 +1,10 @@
-import React, { useEffect } from 'react';
-import { useNotificationStore, Notification } from '../../lib/store/notifications';
+import React from 'react';
+import { useNotificationStore } from '../../lib/store/notifications';
 import CalendarWidget from '../util components/calendar_widget';
+import { getIconPath } from '../../lib/utils/icons';
 
 export default function NotificationPanel() {
-  const { notifications, clearAll, markAsRead, markAllAsRead } = useNotificationStore();
-
-  useEffect(() => {
-    markAllAsRead();
-  }, [markAllAsRead]);
+  const { notifications, clearAll, markAsRead } = useNotificationStore();
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -48,23 +45,44 @@ export default function NotificationPanel() {
             </div>
           ) : (
             <div className="space-y-3">
-              {notifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  onClick={() => handleNotificationClick(notification.id)}
-                  className={`p-3 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-white/10
-                    ${notification.read ? 'opacity-60 bg-white/5' : 'bg-white/10 hover:bg-white/15'}
-                  `}
-                >
-                  <div className="flex justify-between items-start mb-1">
-                    <span className="font-semibold text-sm">{notification.title}</span>
-                    <span className="text-xs text-gray-400">
-                      {new Date(notification.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
+              {notifications.map((notification) => {
+                 const iconPath = notification.appId ? getIconPath(notification.appId) : getIconPath('dialog-information');
+                 return (
+                  <div
+                    key={notification.id}
+                    onClick={() => handleNotificationClick(notification.id)}
+                    className={`p-3 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-white/10 flex gap-3
+                      ${notification.read ? 'opacity-60 bg-white/5' : 'bg-white/10 hover:bg-white/15'}
+                    `}
+                  >
+                    <div className="relative w-8 h-8 flex-shrink-0 mt-1">
+                        <img
+                            src={iconPath}
+                            alt="app icon"
+                            className="w-full h-full object-contain"
+                        />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start mb-1">
+                        <span className={`text-sm truncate pr-2 ${notification.read ? 'font-normal' : 'font-bold'}`}>
+                            {notification.title}
+                        </span>
+                        <span className="text-xs text-gray-400 whitespace-nowrap">
+                          {new Date(notification.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      {notification.body && (
+                        <p className="text-xs text-gray-300 line-clamp-2 leading-tight">{notification.body}</p>
+                      )}
+                      {notification.action && (
+                        <div className="mt-2 text-xs text-ubt-blue font-medium">
+                            {notification.action.label}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-300 line-clamp-2">{notification.body}</p>
-                </div>
-              ))}
+                 );
+              })}
             </div>
           )}
         </div>

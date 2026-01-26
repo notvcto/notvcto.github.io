@@ -8,6 +8,7 @@ import Window from "@/components/base/Window";
 import UbuntuApp from "@/components/base/UbuntuApp";
 import LockScreen from "./lock_screen";
 import BootingScreen from "./booting_screen";
+import NotificationToast from "./notification_toast";
 import DesktopMenu from "../context menus/desktop-menu";
 import DefaultMenu from "../context menus/default";
 import { useWMStore } from "@/lib/store/wm";
@@ -291,6 +292,7 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
 
              <BackgroundImage img={wallpaper} />
              <Navbar />
+             <NotificationToast />
              <SideBar toggleShowApps={() => setShowApps(!showApps)} showAppsActive={showApps} />
 
              {showApps && (
