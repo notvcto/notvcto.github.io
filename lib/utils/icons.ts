@@ -1,5 +1,6 @@
 export const icons = {
   // Apps
+  "ubuntu-logo": "/themes/Yaru/status/ubuntu-logo-symbolic.svg",
   firefox: "/themes/Yaru/apps/web-browser.png",
   "org.gnome.Nautilus": "/themes/Yaru/apps/org.gnome.Nautilus.png",
   "utilities-terminal": "/themes/Yaru/apps/utilities-terminal.png",
@@ -18,6 +19,7 @@ export const icons = {
   "user-home": "/themes/Yaru/places/user-home.png",
   "user-trash": "/themes/Yaru/places/user-trash.png",
   folder: "/themes/Yaru/places/folder.png",
+  cdrom: "/themes/Yaru/devices/media-optical.png",
 
   // Status
   "dialog-information": "/themes/Yaru/status/dialog-information.png",
