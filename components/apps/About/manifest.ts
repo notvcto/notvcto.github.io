@@ -1,12 +1,11 @@
-// @ts-ignore
-import { displayAboutVcto } from "@/components/apps/vcto";
+import AboutVcto from "../vcto";
 
 export const manifest = {
   id: "about-vcto",
-  name: "about vcto",
+  name: "About",
   icon: "user-home",
   singleton: true,
-  entry: displayAboutVcto,
+  entry: AboutVcto,
   desktopShortcut: true,
-  favourite: false,
+  favourite: true,
 };
