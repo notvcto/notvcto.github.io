@@ -123,7 +123,7 @@ export default function SideBar({ toggleShowApps, showAppsActive }: SideBarProps
                 <SideBarApp
                     id="cdrom"
                     title="CD-ROM"
-                    icon={getIconPath("folder")}
+                    icon={getIconPath("cdrom")}
                     isOpen={false}
                     isFocused={false}
                     openApp={() => {
@@ -153,7 +153,7 @@ export default function SideBar({ toggleShowApps, showAppsActive }: SideBarProps
                 <SideBarApp
                     id="show-apps"
                     title="Show Applications"
-                    icon="/themes/Yaru/status/view-app-grid-symbolic.svg"
+                    icon={getIconPath("ubuntu-logo")}
                     isOpen={showAppsActive}
                     isFocused={false}
                     openApp={toggleShowApps}
