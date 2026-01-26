@@ -103,7 +103,7 @@ export default function SideBar() {
 
     return (
         <div
-            className={"absolute transform duration-300 select-none z-50 left-0 top-1/2 -translate-y-1/2 ml-2 h-auto w-auto flex flex-col justify-start items-center rounded-xl bg-ub-cool-grey bg-opacity-40 backdrop-blur-3xl border-white border-opacity-10 shadow-2xl py-2"}
+            className={"absolute transform duration-300 select-none z-50 left-0 top-[30px] h-[calc(100%-30px)] w-auto flex flex-col justify-start items-center bg-ub-grey bg-opacity-90 border-r border-white border-opacity-10 py-2"}
             onPointerDown={(e) => e.stopPropagation()} // Stop clickthrough to Desktop
             onMouseDown={(e) => e.stopPropagation()} // Stop clickthrough to Desktop
         >
