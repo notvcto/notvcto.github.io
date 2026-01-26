@@ -1,28 +1,31 @@
 export const icons = {
   // Apps
-  firefox: "/themes/Yaru/apps/firefox.svg",
-  "org.gnome.Nautilus": "/themes/Yaru/apps/org.gnome.Nautilus.svg",
-  "utilities-terminal": "/themes/Yaru/apps/utilities-terminal.svg",
-  "mail-message-new": "/themes/Yaru/apps/mail-message-new.svg",
-  "accessories-calculator": "/themes/Yaru/apps/accessories-calculator.svg",
-  spotify: "/themes/Yaru/apps/spotify.svg",
-  vscode: "/themes/Yaru/apps/vscode.svg",
-  "gnome-control-center": "/themes/Yaru/apps/gnome-control-center.svg",
+  firefox: "/themes/Yaru/apps/web-browser.png",
+  "org.gnome.Nautilus": "/themes/Yaru/apps/org.gnome.Nautilus.png",
+  "utilities-terminal": "/themes/Yaru/apps/utilities-terminal.png",
+  "mail-message-new": "/themes/Yaru/actions/mail-message-new.png",
+  "accessories-calculator": "/themes/Yaru/apps/accessories-calculator.png",
+  "accessories-text-editor": "/themes/Yaru/apps/accessories-text-editor.png",
+  spotify: "/themes/Yaru/apps/applications-other.png",
+  vscode: "/themes/Yaru/apps/accessories-text-editor.png",
+  discord: "/themes/Yaru/apps/applications-other.png",
+  hackerone: "/themes/Yaru/apps/applications-other.png",
+  "gnome-control-center": "/themes/Yaru/apps/gnome-control-center.png",
 
   // Places
   "user-home": "/themes/Yaru/places/user-home.png",
-  "user-trash": "/themes/Yaru/places/user-trash.svg",
-  folder: "/themes/Yaru/places/folder.svg",
+  "user-trash": "/themes/Yaru/places/user-trash.png",
+  folder: "/themes/Yaru/places/folder.png",
 
   // Status
-  "dialog-information": "/themes/Yaru/status/dialog-information.svg",
+  "dialog-information": "/themes/Yaru/status/dialog-information.png",
   "user-trash-full": "/themes/Yaru/status/user-trash-full.png",
 
   // Mimetypes
-  "text-x-generic": "/themes/Yaru/mimetypes/text-x-generic.svg",
-  "application-x-generic": "/themes/Yaru/mimetypes/application-x-generic.svg",
+  "text-x-generic": "/themes/Yaru/mimetypes/text-x-generic.png",
+  "application-x-generic": "/themes/Yaru/mimetypes/application-x-executable.png",
 
-  // Window Controls
+  // Window Controls - Keeping existing SVGs for now (Symbolic)
   "window-minimize": "/themes/Yaru/window/window-minimize-symbolic.svg",
   "window-maximize": "/themes/Yaru/window/window-maximize-symbolic.svg",
   "window-restore": "/themes/Yaru/window/window-restore-symbolic.svg",
@@ -39,7 +42,7 @@ export const getIconPath = (name: string): string => {
   if (name.startsWith("/") || name.startsWith("./")) {
     return name;
   }
-  // Default fallback (generic file?)
+  // Default fallback
   console.warn(`Icon not found: ${name}`);
-  return icons["text-x-generic"];
+  return icons["application-x-generic"];
 };
