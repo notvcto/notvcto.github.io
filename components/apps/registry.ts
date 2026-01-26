@@ -12,6 +12,7 @@ import { manifest as Trash } from './Trash/manifest';
 import { manifest as VSCode } from './VSCode/manifest';
 import { manifest as FileManager } from './FileManager/manifest';
 import { manifest as TextEditor } from './TextEditor/manifest';
+import { manifest as Clock } from './Clock/manifest';
 
 export interface AppManifest {
   id: string;
@@ -34,6 +35,7 @@ export const apps: Record<string, AppManifest> = {
   blog: Blog,
   calc: Calc,
   contact: Contact,
+  clock: Clock,
   spotify: Spotify,
   trash: Trash,
   vscode: VSCode,
