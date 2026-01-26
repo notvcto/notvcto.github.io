@@ -4,18 +4,31 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useFS } from "@/lib/fs";
 import { getIconPath } from "@/lib/utils/icons";
 import { apps as appRegistry } from "@/components/apps/registry";
+import { useLauncher } from "@/lib/hooks/use-launcher";
 
-export default function FileManager() {
+interface FileManagerProps {
+    initialCwd?: string;
+}
+
+export default function FileManager({ initialCwd }: FileManagerProps) {
     const fs = useFS();
+    const { open } = useLauncher();
 
     // State
-    const [cwd, setCwd] = useState<string>("/home/user");
+    const [cwd, setCwd] = useState<string>(initialCwd || "/home/user");
     const [selected, setSelected] = useState<string | null>(null);
     const [renaming, setRenaming] = useState<string | null>(null);
     const [contextMenu, setContextMenu] = useState<{ x: number, y: number, type: 'empty' | 'item', target?: string } | null>(null);
 
     // Refs for rename input
     const renameInputRef = useRef<HTMLInputElement>(null);
+
+    // Update CWD if prop changes (e.g. opened from outside while already open in a way that updates props)
+    useEffect(() => {
+        if (initialCwd && fs.exists(initialCwd)) {
+            setCwd(initialCwd);
+        }
+    }, [initialCwd, fs]);
 
     // Safety check: ensure CWD exists
     useEffect(() => {
@@ -206,6 +219,8 @@ export default function FileManager() {
                                     if (item.type === 'dir') {
                                         setCwd(itemPath);
                                         setSelected(null);
+                                    } else {
+                                        open(itemPath);
                                     }
                                 }}
                                 onContextMenu={(e) => handleContextMenu(e, 'item', itemPath)}
