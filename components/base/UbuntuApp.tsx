@@ -14,7 +14,7 @@ const UbuntuApp = forwardRef<HTMLDivElement, UbuntuAppProps & React.HTMLAttribut
     return (
        <div
             ref={ref}
-            className={`flex flex-col items-center justify-start p-1 z-10 bg-white bg-opacity-0 hover:bg-opacity-20 focus:bg-ub-orange focus:bg-opacity-50 focus:border-opacity-100 border border-transparent outline-none rounded-md cursor-pointer text-center duration-100 absolute ${className || ''} ${selected ? "bg-ub-orange bg-opacity-50 border-white border-opacity-100" : ""}`}
+            className={`flex flex-col items-center justify-start p-1 z-10 bg-white bg-opacity-0 hover:bg-opacity-20 focus:bg-ub-orange focus:bg-opacity-50 focus:border-opacity-100 border border-transparent outline-none rounded-md cursor-pointer text-center duration-100 ${className || ''} ${selected ? "bg-ub-orange bg-opacity-50 border-white border-opacity-100" : ""}`}
             style={{ width: '100px', height: '100px', ...style }}
             id={"app-" + id}
             onDoubleClick={() => openApp(id)}
