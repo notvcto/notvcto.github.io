@@ -382,3 +382,71 @@ input[type="range"].ubuntu-slider::-webkit-slider-thumb {
 .animate-blink {
   animation: blink 700ms step-end infinite;
 }
+
+/* UI Polish Animations */
+
+/* Toast Animations */
+@keyframes toastIn {
+  0% {
+    transform: translate(-50%, -20px); /* Keep centered horizontally (-50%) and move up */
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastOut {
+  0% {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -20px);
+    opacity: 0;
+  }
+}
+
+.animate-toast-in {
+  animation: toastIn 200ms ease-out forwards;
+}
+
+.animate-toast-out {
+  animation: toastOut 180ms ease-in forwards;
+}
+
+/* Panel Animations */
+@keyframes panelIn {
+  0% {
+    transform: translate(-50%, -10px) scale(0.98);
+    opacity: 0;
+    transform-origin: top center;
+  }
+  100% {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1;
+    transform-origin: top center;
+  }
+}
+
+@keyframes panelOut {
+  0% {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1;
+    transform-origin: top center;
+  }
+  100% {
+    transform: translate(-50%, -10px) scale(0.98);
+    opacity: 0;
+    transform-origin: top center;
+  }
+}
+
+.animate-panel-in {
+  animation: panelIn 200ms cubic-bezier(0.2, 0, 0, 1) forwards; /* GNOME-ish ease */
+}
+
+.animate-panel-out {
+  animation: panelOut 150ms cubic-bezier(0.2, 0, 0, 1) forwards;
+}
