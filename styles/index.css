@@ -133,12 +133,12 @@ input[type="range"].ubuntu-slider::-webkit-slider-thumb {
 }
 
 .opened-window {
-  animation: openWindow 200ms 1 forwards;
+  animation: openWindow 150ms 1 forwards;
 }
 
 @keyframes openWindow {
   0% {
-    transform: translate(var(--window-transform-x), var(--window-transform-y)) scale(0.9);
+    transform: translate(var(--window-transform-x), var(--window-transform-y)) scale(0.96);
     opacity: 0;
   }
   100% {
@@ -148,7 +148,7 @@ input[type="range"].ubuntu-slider::-webkit-slider-thumb {
 }
 
 .closed-window {
-  animation: closeWindow 200ms 1 forwards;
+  animation: closeWindow 150ms 1 forwards;
 }
 
 @keyframes closeWindow {
@@ -162,7 +162,7 @@ input[type="range"].ubuntu-slider::-webkit-slider-thumb {
   100% {
     opacity: 0;
     transform: translate(var(--window-transform-x), var(--window-transform-y))
-      scale(0.85);
+      scale(0.96);
     visibility: hidden;
   }
 }
@@ -377,6 +377,6 @@ input[type="range"].ubuntu-slider::-webkit-slider-thumb {
   }
 }
 
-.input-box:focus-within .blinking-cursor {
-  animation: blink 1s step-end infinite;
+.animate-blink {
+  animation: blink 700ms step-end infinite;
 }
