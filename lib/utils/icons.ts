@@ -6,10 +6,12 @@ export const icons = {
   "mail-message-new": "/themes/Yaru/actions/mail-message-new.png",
   "accessories-calculator": "/themes/Yaru/apps/accessories-calculator.png",
   "accessories-text-editor": "/themes/Yaru/apps/accessories-text-editor.png",
-  spotify: "/themes/Yaru/apps/applications-other.png",
-  vscode: "/themes/Yaru/apps/accessories-text-editor.png",
+  spotify: "/themes/MoreWaita/apps/spotify.svg",
+  vscode: "/themes/MoreWaita/apps/vscode.svg",
+  achievements: "/themes/MoreWaita/apps/achievements.svg",
+  blog: "/themes/MoreWaita/apps/gedit.svg",
   discord: "/themes/Yaru/apps/applications-other.png",
-  hackerone: "/themes/Yaru/apps/applications-other.png",
+  hackerone: "/themes/MoreWaita/apps/hackerone.svg",
   "gnome-control-center": "/themes/Yaru/apps/gnome-control-center.png",
 
   // Places
