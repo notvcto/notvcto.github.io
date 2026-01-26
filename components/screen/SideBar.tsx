@@ -112,40 +112,48 @@ export default function SideBar({ toggleShowApps, showAppsActive }: SideBarProps
             {/* Favorites */}
             {orderedFavIds.map(id => renderAppItem(id, true))}
 
-            {/* Separator if running non-favs exist */}
-            {runningNonFavs.length > 0 && (
-                <div className="w-5 h-[1px] bg-white bg-opacity-20 my-2 rounded-full" />
-            )}
-
             {/* Running Non-Favorites */}
             {runningNonFavs.map(id => renderAppItem(id, false))}
 
-            {/* Spacer to push volumes/show apps to bottom */}
-            <div className="flex-grow" />
+            {/* Separator between Apps and Volumes */}
+            <div className="w-5 h-[1px] bg-white bg-opacity-20 my-2 rounded-full" />
 
-            {/* Volumes (CDROM) */}
+            {/* Volumes (CDROM & Trash) */}
              <div className="transition-transform duration-200">
                 <SideBarApp
                     id="cdrom"
                     title="CD-ROM"
-                    icon={getIconPath("folder")} // Using folder as placeholder for CD
+                    icon={getIconPath("folder")}
                     isOpen={false}
                     isFocused={false}
                     openApp={() => {
-                        // TODO: Open file manager at CDROM location
                         console.log("Open CDROM");
                     }}
                 />
             </div>
 
-            <div className="h-2" />
+             <div className="transition-transform duration-200">
+                <SideBarApp
+                    id="trash"
+                    title="Trash"
+                    icon={getIconPath("user-trash")}
+                    isOpen={false}
+                    isFocused={false}
+                    openApp={() => {
+                         // TODO: Open trash
+                    }}
+                />
+            </div>
+
+            {/* Spacer to push Show Apps to bottom */}
+            <div className="flex-grow" />
 
             {/* Show Apps Button */}
             <div className="transition-transform duration-200 mb-1">
                 <SideBarApp
                     id="show-apps"
                     title="Show Applications"
-                    icon="/images/logos/logo.png" // Ubuntu logo
+                    icon="/themes/Yaru/status/view-app-grid-symbolic.svg"
                     isOpen={showAppsActive}
                     isFocused={false}
                     openApp={toggleShowApps}
