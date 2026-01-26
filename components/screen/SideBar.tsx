@@ -26,7 +26,7 @@ export default function SideBar({ toggleShowApps, showAppsActive }: SideBarProps
 
     // Identify running non-favorites
     const runningAppIds = Object.values(windows).map(w => w.appId);
-    const runningNonFavs = [...new Set(runningAppIds.filter(id => !orderedFavIds.includes(id)))];
+    const runningNonFavs = Array.from(new Set(runningAppIds.filter(id => !orderedFavIds.includes(id))));
 
     const handleAppClick = (appId: string) => {
         const app = defaultApps.find(a => a.id === appId);
