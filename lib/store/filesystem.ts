@@ -104,11 +104,7 @@ const createDefaultState = (): { rootId: string; nodes: Record<string, FSNode> }
 
   // Desktop Apps
   // In a real scenario, the content might be a pointer or empty for system apps
-  touch(desktop, 'firefox.app', '', { executable: true });
-  touch(desktop, 'contact.app', '', { executable: true }); // Contact Me
   touch(desktop, 'about-vcto.app', '', { executable: true });
-  touch(desktop, 'achievements.app', '', { executable: true });
-  touch(desktop, 'blog.app', '', { executable: true });
   touch(desktop, 'trash.app', '', { executable: true });
 
   // /bin
