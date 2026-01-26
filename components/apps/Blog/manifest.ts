@@ -4,7 +4,7 @@ import { displayBlog } from "@/components/apps/blog";
 export const manifest = {
   id: "blog",
   name: "Blog",
-  icon: "text-x-generic",
+  icon: "blog",
   singleton: true,
   entry: displayBlog,
   desktopShortcut: true,
