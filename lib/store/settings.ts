@@ -18,7 +18,7 @@ interface SettingsState {
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
-      wallpaper: "wall-2",
+      wallpaper: "questing-quokka",
       accentColor: "#E95420",
       darkMode: true,
       volume: 75,
