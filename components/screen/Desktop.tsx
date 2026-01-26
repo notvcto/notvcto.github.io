@@ -22,7 +22,7 @@ interface DesktopProps {
 }
 
 export default function Desktop({ blogPosts, achievements }: DesktopProps) {
-    const { windows, openWindow, focusedWindowId, isLocked, setLocked } = useWMStore();
+    const { windows, openWindow, focusedWindowId, isLocked, setLocked, updateViewportSize } = useWMStore();
     const { wallpaper } = useSettingsStore();
     const fs = useFS();
 
@@ -58,6 +58,7 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
         // Handle resize
         const updateSize = () => {
             setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+            updateViewportSize(window.innerWidth, window.innerHeight);
         };
         // Initial
         updateSize();
@@ -416,6 +417,8 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
                         focused={win.id === focusedWindowId}
                         screen={app.entry}
                         componentProps={{ ...win.componentProps, ...extraProps }}
+                        x={win.x}
+                        y={win.y}
                     />
                 )
              })}
