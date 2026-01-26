@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef, useMemo } from "react";
 import BackgroundImage from "../util components/background-image";
 import Navbar from "./navbar";
 import SideBar from "./SideBar";
+import AllApplications from "./AllApplications";
 import Window from "@/components/base/Window";
 import UbuntuApp from "@/components/base/UbuntuApp";
 import LockScreen from "./lock_screen";
@@ -12,7 +13,7 @@ import DefaultMenu from "../context menus/default";
 import { useWMStore } from "@/lib/store/wm";
 import { useSettingsStore } from "@/lib/store/settings";
 import { useFS } from "@/lib/fs";
-import { apps as appRegistry } from "@/components/apps/registry";
+import { apps as appRegistry, defaultApps } from "@/components/apps/registry";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { calculateLayout, GRID_SIZE, TOP_OFFSET } from "@/lib/utils/desktop";
 import { getIconPath } from "@/lib/utils/icons";
@@ -28,6 +29,7 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
     const fs = useFS();
 
     const [booting, setBooting] = useState(true);
+    const [showApps, setShowApps] = useState(false);
     const [contextMenu, setContextMenu] = useState<{ show: boolean; x: number; y: number; type: 'desktop' | 'default' }>({ show: false, x: 0, y: 0, type: 'default' });
     const [selectedIconIds, setSelectedIconIds] = useState<string[]>([]);
     const [selectionBox, setSelectionBox] = useState<{ start: { x: number, y: number }, current: { x: number, y: number } } | null>(null);
@@ -126,6 +128,7 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
         if (app) {
             const windowId = app.singleton ? app.id : `${app.id}-${Date.now()}`;
             openWindow(windowId, app.id, app.name, app.icon);
+            setShowApps(false);
         }
     }
 
@@ -306,7 +309,14 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
 
              <BackgroundImage img={wallpaper} />
              <Navbar />
-             <SideBar />
+             <SideBar toggleShowApps={() => setShowApps(!showApps)} showAppsActive={showApps} />
+
+             {showApps && (
+                 <AllApplications
+                    apps={defaultApps}
+                    openApp={openAppById}
+                 />
+             )}
 
              {selectionBox && (
                 <div
