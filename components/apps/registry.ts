@@ -11,6 +11,7 @@ import { manifest as Spotify } from './Spotify/manifest';
 import { manifest as Trash } from './Trash/manifest';
 import { manifest as VSCode } from './VSCode/manifest';
 import { manifest as FileManager } from './FileManager/manifest';
+import { manifest as TextEditor } from './TextEditor/manifest';
 
 export interface AppManifest {
   id: string;
@@ -24,6 +25,7 @@ export interface AppManifest {
 
 export const apps: Record<string, AppManifest> = {
   "file-manager": FileManager,
+  "text-editor": TextEditor,
   terminal: Terminal,
   settings: Settings,
   firefox: Firefox,
