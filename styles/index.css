@@ -132,17 +132,21 @@ input[type="range"].ubuntu-slider::-webkit-slider-thumb {
   -moz-box-shadow: 1px 4px 12px 4px rgba(0, 0, 0, 0.2);
 }
 
+.window-no-outline {
+  outline: none !important;
+}
+
 .opened-window {
   animation: openWindow 150ms 1 forwards;
 }
 
 @keyframes openWindow {
   0% {
-    transform: translate(var(--window-transform-x), var(--window-transform-y)) scale(0.96);
+    transform: scale(0.96);
     opacity: 0;
   }
   100% {
-    transform: translate(var(--window-transform-x), var(--window-transform-y)) scale(1);
+    transform: scale(1);
     opacity: 1;
   }
 }

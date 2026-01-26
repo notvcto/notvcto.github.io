@@ -405,7 +405,7 @@ export default function TerminalApp() {
   return (
     <div
         ref={containerRef}
-        className="h-full w-full bg-ub-drk-abrgn text-white text-sm font-mono p-2 overflow-y-auto"
+        className="h-full w-full bg-ub-drk-abrgn text-white text-sm font-mono p-2 overflow-y-auto outline-none"
         onClick={handleContainerClick}
     >
       <div className="flex flex-col gap-0.5">
