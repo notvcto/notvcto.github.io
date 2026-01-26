@@ -36,14 +36,14 @@ export default function TextEditor({ filePath }: TextEditorProps) {
     }, [filePath, fs]); // dependency on fs is safe as it's stable from hook
 
     return (
-        <div className="flex flex-col h-full w-full bg-white text-black font-mono text-sm overflow-auto p-1">
+        <div className="flex flex-col h-full w-full bg-ub-cool-grey text-white font-mono text-sm overflow-auto p-1 select-text">
             {error ? (
-                <div className="text-red-600 font-bold p-4 select-text">
+                <div className="text-red-400 font-bold p-4">
                     {error}
                 </div>
             ) : (
                 <textarea
-                    className="w-full h-full resize-none outline-none border-none p-2 font-mono text-sm"
+                    className="w-full h-full resize-none outline-none border-none bg-transparent text-white p-2 font-mono text-sm"
                     value={content}
                     readOnly
                     spellCheck={false}
