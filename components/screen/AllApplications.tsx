@@ -46,6 +46,7 @@ export default function AllApplications({ apps, openApp }: AllApplicationsProps)
         <div
             className="absolute top-[37px] left-[56px] w-[calc(100%-56px)] h-[calc(100%-37px)] z-40 bg-black bg-opacity-80 backdrop-blur-md flex flex-col items-center justify-start pt-20"
             onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
         >
             {/* Search Bar */}
             <div className="w-1/3 min-w-[300px] mb-10">
@@ -70,7 +71,9 @@ export default function AllApplications({ apps, openApp }: AllApplicationsProps)
                         name={app.name}
                         icon={getIconPath(app.icon)}
                         openApp={() => openApp(app.id)}
+                        onClick={() => openApp(app.id)} // Single click for app grid
                         selected={false} // Apps in menu are not selected
+                        display="grid"
                     />
                 ))}
             </div>
