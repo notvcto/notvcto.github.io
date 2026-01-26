@@ -77,7 +77,7 @@ export default function Navbar({ shutDown, lockScreen }: NavbarProps) {
 
       {/* Notification Panel - Centered under the clock */}
       {showNotifications && (
-        <div ref={notificationWrapperRef} className="absolute top-8 left-1/2 transform -translate-x-1/2 z-50">
+        <div ref={notificationWrapperRef} className="absolute top-10 left-1/2 transform -translate-x-1/2 z-50">
           <NotificationPanel />
         </div>
       )}
