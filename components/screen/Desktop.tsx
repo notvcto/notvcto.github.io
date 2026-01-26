@@ -17,6 +17,7 @@ import { apps as appRegistry, defaultApps } from "@/components/apps/registry";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { calculateLayout, GRID_SIZE, TOP_OFFSET } from "@/lib/utils/desktop";
 import { getIconPath } from "@/lib/utils/icons";
+import { useLauncher } from "@/lib/hooks/use-launcher";
 
 interface DesktopProps {
     blogPosts?: any[];
@@ -27,6 +28,7 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
     const { windows, openWindow, focusedWindowId, isLocked, setLocked, updateViewportSize } = useWMStore();
     const { wallpaper } = useSettingsStore();
     const fs = useFS();
+    const { open } = useLauncher();
 
     const [booting, setBooting] = useState(true);
     const [showApps, setShowApps] = useState(false);
@@ -100,31 +102,7 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
     }, [windowSize, desktopIcons]);
 
     const openApp = (nodeId: string) => {
-        const path = fs.absolute(nodeId);
-        if (!path) return;
-
-        const node = fs.stat(path);
-        if (!node) return;
-
-        if (node.type === 'dir') {
-             const fmApp = appRegistry['file-manager'];
-             if (fmApp) {
-                 openWindow('file-manager', 'file-manager', fmApp.name, fmApp.icon);
-             }
-             return;
-        }
-
-        if (node.name.endsWith('.app')) {
-             const appName = node.name.replace('.app', '');
-             const foundApp = Object.values(appRegistry).find(app => app.id === appName || app.name === appName);
-
-             if (foundApp) {
-                 const windowId = foundApp.singleton ? foundApp.id : `${foundApp.id}-${Date.now()}`;
-                 openWindow(windowId, foundApp.id, foundApp.name, foundApp.icon);
-             } else {
-                 console.warn(`App ${appName} not found`);
-             }
-        }
+        open(nodeId);
     }
 
     const openAppById = (appId: string) => {
