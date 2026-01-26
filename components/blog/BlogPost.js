@@ -1,28 +1,10 @@
 import React from 'react';
+import { getPostIcon } from './utils';
 
 const BlogPost = ({ post, onBack }) => {
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
-  const getTagColor = (tag) => {
-    const colors = {
-      'welcome': 'bg-green-500',
-      'introduction': 'bg-blue-500',
-      'programming': 'bg-purple-500',
-      'portfolio': 'bg-orange-500',
-      'react': 'bg-cyan-500',
-      'nextjs': 'bg-gray-700',
-      'ubuntu': 'bg-orange-600',
-      'web-development': 'bg-indigo-500',
-      'terminal': 'bg-gray-800',
-      'productivity': 'bg-yellow-500',
-      'linux': 'bg-black',
-      'macos': 'bg-gray-600',
-      'tips': 'bg-green-600',
-    };
-    return colors[tag] || 'bg-gray-500';
   };
 
   return (
@@ -37,39 +19,43 @@ const BlogPost = ({ post, onBack }) => {
           Back to Blog
         </button>
 
-        {/* Post header */}
+        {/* Header */}
         <header className="mb-8 pb-6 border-b border-gray-700">
-          <h1 className="text-3xl font-bold text-white mb-4">{post.title}</h1>
-
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 mb-4">
-            <div className="flex items-center">
-              <span className="mr-2">📅</span>
-              <time>{formatDate(post.date)}</time>
-            </div>
-            <div className="flex items-center">
-              <span className="mr-2">✍️</span>
-              <span>by {post.author}</span>
+          <div className="flex items-start justify-between">
+            <h1 className="text-3xl font-bold text-white mb-4">{post.title}</h1>
+            <div className="bg-gray-700 p-2 rounded-lg border border-gray-600">
+                <img
+                    src={`./themes/MoreWaita/apps/${getPostIcon(post.tags)}.svg`}
+                    alt="icon"
+                    className="w-10 h-10"
+                />
             </div>
           </div>
 
-          {post.tags && (
-            <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className={`px-3 py-1 text-xs rounded-full text-white ${getTagColor(tag)}`}
-                >
-                  {tag}
-                </span>
-              ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300 mb-4 bg-gray-800 p-4 rounded-lg bg-opacity-40 border border-gray-700">
+            <div className="flex items-center">
+              <span className="text-gray-400 w-24">Author:</span>
+              <span className="font-medium text-white">{post.author}</span>
             </div>
-          )}
+            <div className="flex items-center">
+              <span className="text-gray-400 w-24">Date:</span>
+              <span className="font-medium text-white">{formatDate(post.date)}</span>
+            </div>
+            <div className="flex items-center col-span-1 md:col-span-2">
+              <span className="text-gray-400 w-24 shrink-0">Tags:</span>
+              <div className="flex flex-wrap gap-2">
+                  {post.tags && post.tags.map(tag => (
+                      <span key={tag} className="bg-ub-orange bg-opacity-80 text-white px-2 py-0.5 rounded text-xs">{tag}</span>
+                  ))}
+              </div>
+            </div>
+          </div>
         </header>
 
-        {/* Post content */}
+        {/* Content */}
         <article
           className="markdown-content text-gray-300 leading-relaxed"
-          style={{
+           style={{
             '--heading-color': '#ffffff',
             '--text-color': '#d1d5db',
             '--link-color': '#3465A4',
@@ -80,7 +66,7 @@ const BlogPost = ({ post, onBack }) => {
           dangerouslySetInnerHTML={{ __html: post.contentHtml }}
         />
 
-        {/* Post footer */}
+        {/* Footer */}
         <footer className="mt-12 pt-6 border-t border-gray-700">
           <div className="flex justify-between items-center">
             <button
