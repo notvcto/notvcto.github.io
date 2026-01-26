@@ -16,6 +16,10 @@ export default function Navbar({ shutDown, lockScreen }: NavbarProps) {
   const [showStatusCard, setShowStatusCard] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
+  // Animation state
+  const [renderNotifications, setRenderNotifications] = useState(false);
+  const [isClosingNotifications, setIsClosingNotifications] = useState(false);
+
   // Refs for click outside detection
   const notificationWrapperRef = useRef<HTMLDivElement>(null);
   const clockRef = useRef<HTMLDivElement>(null);
@@ -45,6 +49,23 @@ export default function Navbar({ shutDown, lockScreen }: NavbarProps) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showNotifications]);
+
+  // Handle animation logic
+  useEffect(() => {
+      if (showNotifications) {
+          setRenderNotifications(true);
+          setIsClosingNotifications(false);
+      } else if (renderNotifications) {
+          setIsClosingNotifications(true);
+      }
+  }, [showNotifications, renderNotifications]);
+
+  const handleAnimationEnd = () => {
+      if (isClosingNotifications) {
+          setRenderNotifications(false);
+          setIsClosingNotifications(false);
+      }
+  };
 
   const toggleNotifications = () => {
     // If status card is open, close it?
@@ -76,8 +97,12 @@ export default function Navbar({ shutDown, lockScreen }: NavbarProps) {
       </div>
 
       {/* Notification Panel - Centered under the clock */}
-      {showNotifications && (
-        <div ref={notificationWrapperRef} className="absolute top-10 left-1/2 transform -translate-x-1/2 z-50">
+      {renderNotifications && (
+        <div
+            ref={notificationWrapperRef}
+            className={`absolute top-10 left-1/2 z-50 ${isClosingNotifications ? 'animate-panel-out' : 'animate-panel-in'}`}
+            onAnimationEnd={handleAnimationEnd}
+        >
           <NotificationPanel />
         </div>
       )}
