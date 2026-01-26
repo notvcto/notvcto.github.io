@@ -9,7 +9,7 @@ def run(playwright):
     page.on("console", lambda msg: print(f"CONSOLE: {msg.text}"))
 
     # Go to local host
-    page.goto("http://localhost:3000")
+    page.goto("http://localhost:3002")
 
     # Wait for loading
     page.wait_for_selector('text=Activities', timeout=10000)
@@ -25,9 +25,9 @@ def run(playwright):
     clock_el = navbar.locator("> div:nth-child(2)")
     print(f"Targeting: {clock_el.inner_text()}")
 
-    # Force click via JS
-    print("Triggering click via JS...")
-    clock_el.evaluate("element => element.click()")
+    # Force mousedown via JS (updated for onMouseDown handler)
+    print("Triggering mousedown via JS...")
+    clock_el.evaluate("element => element.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))")
 
     # Wait for panel
     try:
