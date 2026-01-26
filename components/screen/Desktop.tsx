@@ -15,6 +15,7 @@ import { useFS } from "@/lib/fs";
 import { apps as appRegistry } from "@/components/apps/registry";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { calculateLayout, GRID_SIZE, TOP_OFFSET } from "@/lib/utils/desktop";
+import { getIconPath } from "@/lib/utils/icons";
 
 interface DesktopProps {
     blogPosts?: any[];
@@ -345,20 +346,20 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
                      // Debug log for first render of icon (or when pos changes)
                      // console.log(`Icon ${nodeId} at`, pos);
 
-                     let icon = "./themes/Yaru/system/unknown.png";
+                     let icon = getIconPath("text-x-generic");
                      let displayName = node.name;
 
                      if (node.type === 'dir') {
-                         icon = "./themes/Yaru/system/folder.png";
+                         icon = getIconPath("folder");
                      } else if (node.name.endsWith('.app')) {
                          const appName = node.name.replace('.app', '');
                          const foundApp = Object.values(appRegistry).find(app => app.id === appName || app.name === appName);
                          if (foundApp) {
-                             icon = foundApp.icon;
+                             icon = getIconPath(foundApp.icon);
                              displayName = foundApp.name;
                          }
                      } else if (node.name.endsWith('.txt')) {
-                         icon = "./themes/Yaru/mimetypes/text-x-generic.png";
+                         icon = getIconPath("text-x-generic");
                      }
 
                      const isSelected = selectedIconIds.includes(nodeId);

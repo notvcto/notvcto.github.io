@@ -2,10 +2,8 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useFS } from "@/lib/fs";
-
-// Icons
-const ICON_FOLDER = "./themes/Yaru/system/folder.png";
-const ICON_FILE = "./themes/Yaru/apps/gedit.png";
+import { getIconPath } from "@/lib/utils/icons";
+import { apps as appRegistry } from "@/components/apps/registry";
 
 export default function FileManager() {
     const fs = useFS();
@@ -213,7 +211,19 @@ export default function FileManager() {
                                 onContextMenu={(e) => handleContextMenu(e, 'item', itemPath)}
                             >
                                 <img
-                                    src={item.type === 'dir' ? ICON_FOLDER : ICON_FILE}
+                                    src={(() => {
+                                        if (item.name.endsWith('.app')) {
+                                            const appName = item.name.replace('.app', '');
+                                            const foundApp = Object.values(appRegistry).find(app => app.id === appName || app.name === appName);
+                                            if (foundApp) return getIconPath(foundApp.icon);
+                                        }
+                                        if (item.type === 'dir') return getIconPath("folder");
+                                        const ext = item.name.split('.').pop()?.toLowerCase();
+                                        if (ext === 'txt' || ext === 'md') {
+                                            return getIconPath("text-x-generic");
+                                        }
+                                        return getIconPath("application-x-generic");
+                                    })()}
                                     className="w-12 h-12 mb-1 pointer-events-none"
                                     alt={item.name}
                                 />
