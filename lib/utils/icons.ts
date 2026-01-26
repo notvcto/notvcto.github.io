@@ -14,6 +14,7 @@ export const icons = {
   discord: "/themes/Yaru/apps/applications-other.png",
   hackerone: "/themes/MoreWaita/apps/hackerone.svg",
   "gnome-control-center": "/themes/Yaru/apps/gnome-control-center.png",
+  clock: "/themes/Yaru/apps/gnome-clocks.png",
 
   // Places
   "user-home": "/themes/Yaru/places/user-home.png",
