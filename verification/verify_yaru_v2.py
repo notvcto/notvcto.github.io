@@ -6,9 +6,9 @@ def run():
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": 1280, "height": 720})
 
-        print("Navigating to localhost:3001...")
+        print("Navigating to localhost:3000...")
         try:
-            page.goto("http://localhost:3001", wait_until="networkidle")
+            page.goto("http://localhost:3000", wait_until="networkidle")
 
             # Wait for boot
             time.sleep(5)
