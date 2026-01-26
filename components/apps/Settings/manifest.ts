@@ -1,12 +1,11 @@
-// @ts-ignore
-import { displaySettings } from "@/components/apps/settings";
+import SettingsApp from "./index";
 
 export const manifest = {
   id: "settings",
   name: "Settings",
   icon: "./themes/MoreWaita/apps/settings.svg",
   singleton: true,
-  entry: displaySettings,
+  entry: SettingsApp,
   desktopShortcut: false,
   favourite: false,
 };
