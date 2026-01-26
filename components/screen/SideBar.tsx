@@ -12,9 +12,6 @@ export default function SideBar() {
 
     // Initialize ordered apps from defaultApps
     useEffect(() => {
-        // Only init if empty (on mount), but we also want to respect running non-favs appearing.
-        // So we need to merge the persisted/default order with any new running apps.
-
         const favourites = defaultApps.filter(app => app.favourite).map(app => app.id);
         setOrderedAppIds(prev => {
             if (prev.length === 0) return favourites;
@@ -26,9 +23,6 @@ export default function SideBar() {
     const runningAppIds = Object.values(windows).map(w => w.appId);
     const runningNonFavs = defaultApps.filter(app => !app.favourite && runningAppIds.includes(app.id)).map(a => a.id);
 
-    // Combine ordered known apps + new running apps
-    // We want to keep the user's custom order for the ones they have.
-    // And append any new running apps that aren't in the list yet.
     const allAppsToRender = [...orderedAppIds];
     runningNonFavs.forEach(id => {
         if (!allAppsToRender.includes(id)) {
@@ -36,18 +30,12 @@ export default function SideBar() {
         }
     });
 
-    // Remove duplicates if any (though logic above tries to avoid)
     const uniqueApps = Array.from(new Set(allAppsToRender));
-
-    // We should filter out any IDs that shouldn't be there?
-    // E.g. if a non-fav app is closed, it should disappear from dock.
-    // orderedAppIds currently keeps favourites.
 
     const finalDisplayList = uniqueApps.filter(id => {
         const app = defaultApps.find(a => a.id === id);
         if (!app) return false;
         if (app.favourite) return true;
-        // If not favourite, only show if running
         return runningAppIds.includes(id);
     });
 
@@ -74,17 +62,11 @@ export default function SideBar() {
     const handleDragStart = (e: React.DragEvent, id: string) => {
         setDraggingId(id);
         e.dataTransfer.effectAllowed = "move";
-        // Ghost image usually handled by browser, but we can set it if needed.
     };
 
     const handleDragOver = (e: React.DragEvent, targetId: string) => {
-        e.preventDefault(); // Necessary to allow dropping
+        e.preventDefault();
         if (!draggingId || draggingId === targetId) return;
-
-        // Simple reorder: swap draggingId to the position of targetId
-        // But we want to reorder in `orderedAppIds`.
-        // Be careful not to cause too many re-renders.
-        // Maybe only do it on Drop? Or do it live? Live is better for UX.
 
         const currentIndex = orderedAppIds.indexOf(draggingId);
         const targetIndex = orderedAppIds.indexOf(targetId);
@@ -104,9 +86,9 @@ export default function SideBar() {
 
     return (
         <div
-            className={"absolute transform duration-300 select-none z-50 left-0 top-[30px] h-[calc(100%-30px)] w-auto flex flex-col justify-start items-center bg-ub-grey bg-opacity-90 border-r border-white border-opacity-10 py-2"}
-            onPointerDown={(e) => e.stopPropagation()} // Stop clickthrough to Desktop
-            onMouseDown={(e) => e.stopPropagation()} // Stop clickthrough to Desktop
+            className={"absolute transform duration-300 select-none z-50 left-0 top-8 h-[calc(100%-2rem)] w-auto flex flex-col justify-start items-center bg-black bg-opacity-95 border-r border-white border-opacity-5 py-2"}
+            onPointerDown={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
         >
             {finalDisplayList.map(id => {
                 const app = defaultApps.find(a => a.id === id);
