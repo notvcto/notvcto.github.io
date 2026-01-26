@@ -105,7 +105,7 @@ export default function SideBar({ toggleShowApps, showAppsActive }: SideBarProps
 
     return (
         <div
-            className={"absolute transform duration-300 select-none z-50 left-0 top-8 h-[calc(100%-2rem)] w-auto flex flex-col justify-start items-center bg-black bg-opacity-80 backdrop-blur-3xl border-r border-white border-opacity-10 py-2"}
+            className={"absolute transform duration-300 select-none z-50 left-0 top-8 h-[calc(100%-2rem)] w-auto flex flex-col justify-start items-center bg-black bg-opacity-65 backdrop-blur-3xl border-r border-white border-opacity-10 py-2"}
             onPointerDown={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
         >
