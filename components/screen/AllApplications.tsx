@@ -44,7 +44,7 @@ export default function AllApplications({ apps, openApp }: AllApplicationsProps)
 
     return (
         <div
-            className="absolute top-0 left-0 w-full h-full z-40 bg-black bg-opacity-80 backdrop-blur-md flex flex-col items-center justify-start pt-20"
+            className="absolute top-[37px] left-[56px] w-[calc(100%-56px)] h-[calc(100%-37px)] z-40 bg-black bg-opacity-80 backdrop-blur-md flex flex-col items-center justify-start pt-20"
             onClick={(e) => e.stopPropagation()}
         >
             {/* Search Bar */}
