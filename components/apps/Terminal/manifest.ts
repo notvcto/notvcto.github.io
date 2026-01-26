@@ -4,7 +4,7 @@ import { displayTerminal } from "@/components/apps/terminal";
 export const manifest = {
   id: "terminal",
   name: "Terminal",
-  icon: "./themes/MoreWaita/apps/terminal.svg",
+  icon: "utilities-terminal",
   singleton: false,
   entry: displayTerminal,
   desktopShortcut: false,

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useWMStore } from "@/lib/store/wm";
 import { defaultApps } from "@/components/apps/registry";
 import SideBarApp from "@/components/base/SideBarApp";
+import { getIconPath } from "@/lib/utils/icons";
 
 export default function SideBar() {
     const { windows, focusedWindowId, openWindow, minimizeWindow, focusWindow } = useWMStore();
@@ -127,7 +128,7 @@ export default function SideBar() {
                         <SideBarApp
                             id={app.id}
                             title={app.name}
-                            icon={app.icon}
+                            icon={getIconPath(app.icon)}
                             isOpen={isOpen}
                             isFocused={isFocused}
                             openApp={() => handleAppClick(app.id)}
