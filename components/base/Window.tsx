@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { useWMStore } from "@/lib/store/wm";
+import { getIconPath } from "@/lib/utils/icons";
 
 interface WindowProps {
   id: string;
@@ -153,7 +154,7 @@ function WindowEditButtons({ minimize, maximize, isMaximised, close, id }: any) 
                 onClick={(e) => { e.stopPropagation(); minimize(); }}
             >
                 <img
-                src="./themes/Yaru/window/window-minimize-symbolic.svg"
+                src={getIconPath("window-minimize")}
                 alt="minimize"
                 className="h-5 w-5 inline"
                 />
@@ -164,7 +165,7 @@ function WindowEditButtons({ minimize, maximize, isMaximised, close, id }: any) 
                 onClick={(e) => { e.stopPropagation(); maximize(); }}
                 >
                 <img
-                    src="./themes/Yaru/window/window-restore-symbolic.svg"
+                    src={getIconPath("window-restore")}
                     alt="restore"
                     className="h-5 w-5 inline"
                 />
@@ -175,7 +176,7 @@ function WindowEditButtons({ minimize, maximize, isMaximised, close, id }: any) 
                 onClick={(e) => { e.stopPropagation(); maximize(); }}
                 >
                 <img
-                    src="./themes/Yaru/window/window-maximize-symbolic.svg"
+                    src={getIconPath("window-maximize")}
                     alt="maximize"
                     className="h-5 w-5 inline"
                 />
@@ -188,7 +189,7 @@ function WindowEditButtons({ minimize, maximize, isMaximised, close, id }: any) 
                 onClick={(e) => { e.stopPropagation(); close(); }}
             >
                 <img
-                src="./themes/Yaru/window/window-close-symbolic.svg"
+                src={getIconPath("window-close")}
                 alt="close"
                 className="h-5 w-5 inline"
                 />

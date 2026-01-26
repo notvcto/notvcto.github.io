@@ -4,7 +4,7 @@ import displayFirefox from "@/components/apps/firefox";
 export const manifest = {
   id: "firefox",
   name: "Mozilla Firefox",
-  icon: "./themes/MoreWaita/apps/firefox.svg",
+  icon: "firefox",
   singleton: true,
   entry: displayFirefox,
   desktopShortcut: true,

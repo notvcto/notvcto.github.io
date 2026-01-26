@@ -4,7 +4,7 @@ import displayVsCode from "@/components/apps/vscode";
 export const manifest = {
   id: "vscode",
   name: "Visual Studio Code",
-  icon: "./themes/MoreWaita/apps/vscode.svg",
+  icon: "vscode",
   singleton: true,
   entry: displayVsCode,
   desktopShortcut: false,
