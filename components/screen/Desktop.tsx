@@ -14,7 +14,7 @@ import { useSettingsStore } from "@/lib/store/settings";
 import { useFS } from "@/lib/fs";
 import { apps as appRegistry } from "@/components/apps/registry";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
-import { calculateLayout, GRID_SIZE } from "@/lib/utils/desktop";
+import { calculateLayout, GRID_SIZE, TOP_OFFSET } from "@/lib/utils/desktop";
 
 interface DesktopProps {
     blogPosts?: any[];
@@ -176,7 +176,7 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
             // Let's clamp individually for safety.
 
             newX = Math.max(0, Math.min(newX, windowSize.width - GRID_SIZE));
-            newY = Math.max(0, Math.min(newY, windowSize.height - GRID_SIZE));
+            newY = Math.max(TOP_OFFSET, Math.min(newY, windowSize.height - GRID_SIZE));
 
             newPositions[key] = { x: newX, y: newY };
         });
@@ -190,11 +190,11 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
         // Snap and commit
         Object.entries(dragPositions).forEach(([key, pos]) => {
             const snappedX = Math.round(pos.x / GRID_SIZE) * GRID_SIZE;
-            const snappedY = Math.round(pos.y / GRID_SIZE) * GRID_SIZE;
+            const snappedY = Math.round((pos.y - TOP_OFFSET) / GRID_SIZE) * GRID_SIZE + TOP_OFFSET;
 
             // Clamp on stop (Critical)
             const clampedX = Math.max(0, Math.min(snappedX, windowSize.width - GRID_SIZE));
-            const clampedY = Math.max(0, Math.min(snappedY, windowSize.height - GRID_SIZE));
+            const clampedY = Math.max(TOP_OFFSET, Math.min(snappedY, windowSize.height - GRID_SIZE));
 
             const path = fs.absolute(key);
             if (path) {
