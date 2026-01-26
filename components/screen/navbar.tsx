@@ -67,8 +67,8 @@ export default function Navbar({ shutDown, lockScreen }: NavbarProps) {
       <div
         ref={clockRef}
         tabIndex={0}
-        onClick={toggleNotifications}
-        className={`pl-3 pr-3 text-xs md:text-sm outline-none transition duration-100 ease-in-out rounded-full hover:bg-white hover:bg-opacity-10 focus:bg-white focus:bg-opacity-10 active:bg-opacity-20 flex items-center h-6 my-1 mx-1 cursor-default font-medium ${
+        onMouseDown={toggleNotifications}
+        className={`relative z-50 pl-3 pr-3 text-xs md:text-sm outline-none transition duration-100 ease-in-out rounded-full hover:bg-white hover:bg-opacity-10 focus:bg-white focus:bg-opacity-10 active:bg-opacity-20 flex items-center h-6 my-1 mx-1 cursor-pointer font-medium ${
           showNotifications ? 'bg-white bg-opacity-10' : ''
         }`}
       >
