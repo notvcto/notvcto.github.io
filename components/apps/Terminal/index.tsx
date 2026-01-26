@@ -74,14 +74,16 @@ export default function TerminalApp() {
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
   const [inputVal, setInputVal] = useState("");
+  const [cursorPos, setCursorPos] = useState(0);
+  const [isFocused, setIsFocused] = useState(false);
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  // We use textarea for input to handle multiline if needed, or just to match custom cursor easier
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Focus input on click anywhere
   const handleContainerClick = () => {
-      // Don't focus if user is selecting text
       const selection = window.getSelection();
       if (!selection || selection.toString().length === 0) {
         inputRef.current?.focus();
@@ -223,8 +225,6 @@ export default function TerminalApp() {
                         fs.write(target, "");
                     }
                 }
-                // If exists, strictly touch should update timestamp, but our FS might not support that explicitly yet.
-                // We'll treat 'exists' as success.
                 break;
             }
 
@@ -311,7 +311,6 @@ export default function TerminalApp() {
                     break;
                 }
 
-                // Parent exists.
                 const srcParentPath = getParentDir(srcPath);
 
                 if (srcParentPath === destParentPath) {
@@ -319,33 +318,15 @@ export default function TerminalApp() {
                     fs.rename(srcPath, destName);
                 } else {
                     // Move + Rename
-                    // 1. Move to new parent
                     fs.move(srcPath, destParentPath);
-
-                    // 2. Rename
-                    // After move, the file is at destParentPath + / + srcName
                     const srcName = getFileName(srcPath);
-                    // We need to reconstruct the intermediate path
                     const intermediatePath = resolvePath(destParentPath, srcName);
-
-                    // We need to be careful with async/state updates?
-                    // useFS is synchronous-ish (state updates).
-                    // Rename expects the path to the node.
-
-                    // Since zustand updates might be batched or immediate, let's assume immediate for these simple actions.
-                    // However, we might need to resolve the node again if we didn't have the ID.
-                    // fs.rename uses resolve() internally.
-
                     fs.rename(intermediatePath, destName);
                 }
                 break;
             }
 
             case "exit":
-                // In a real OS this closes the window.
-                // We can't easily close window from here without WM store access.
-                // But requirements said "Terminal owns shell state".
-                // I'll leave it blank or clear.
                 setHistory([]);
                 break;
 
@@ -362,17 +343,21 @@ export default function TerminalApp() {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter") {
+          e.preventDefault(); // Prevent newline in textarea
           executeCommand(inputVal);
           setInputVal("");
+          setCursorPos(0);
       } else if (e.key === "ArrowUp") {
           e.preventDefault();
           if (commandHistory.length === 0) return;
 
           const newIndex = historyIndex === -1 ? commandHistory.length - 1 : Math.max(0, historyIndex - 1);
           setHistoryIndex(newIndex);
-          setInputVal(commandHistory[newIndex]);
+          const cmd = commandHistory[newIndex];
+          setInputVal(cmd);
+          setCursorPos(cmd.length);
       } else if (e.key === "ArrowDown") {
           e.preventDefault();
           if (commandHistory.length === 0 || historyIndex === -1) return;
@@ -381,9 +366,12 @@ export default function TerminalApp() {
           if (newIndex >= commandHistory.length) {
               setHistoryIndex(-1);
               setInputVal("");
+              setCursorPos(0);
           } else {
               setHistoryIndex(newIndex);
-              setInputVal(commandHistory[newIndex]);
+              const cmd = commandHistory[newIndex];
+              setInputVal(cmd);
+              setCursorPos(cmd.length);
           }
       }
   };
@@ -424,25 +412,41 @@ export default function TerminalApp() {
           {history.map(renderLine)}
       </div>
 
-      <div className="flex mt-0.5">
-            <span className="text-ubt-green font-bold">vcto@ubuntu</span>
-            <span className="text-white mx-px">:</span>
-            <span className="text-ubt-blue font-bold">{currentDisplayPath}</span>
-            <span className="text-white mx-px mr-2">$</span>
+      <div className="flex mt-0.5 relative">
+            <div className="flex-shrink-0">
+                <span className="text-ubt-green font-bold">vcto@ubuntu</span>
+                <span className="text-white mx-px">:</span>
+                <span className="text-ubt-blue font-bold">{currentDisplayPath}</span>
+                <span className="text-white mx-px mr-2">$</span>
+            </div>
+
             <div className="relative flex-grow">
-                <input
+                 {/* Custom Cursor Display Layer */}
+                 <div className="w-full h-full break-all whitespace-pre-wrap font-mono text-white pointer-events-none min-h-[1.25rem]">
+                    <span>{inputVal.slice(0, cursorPos)}</span>
+                    <span className={`inline-block align-bottom ${isFocused ? "animate-blink bg-gray-400 text-black" : "border border-gray-500 text-white"}`}>
+                         {inputVal[cursorPos] || '\u00A0'}
+                    </span>
+                    <span>{inputVal.slice(cursorPos + 1)}</span>
+                 </div>
+
+                {/* Hidden Input Layer */}
+                <textarea
                     ref={inputRef}
-                    type="text"
-                    className="bg-transparent outline-none border-none text-white w-full absolute top-0 left-0 p-0 m-0 font-mono"
+                    className="absolute top-0 left-0 w-full h-full opacity-0 resize-none overflow-hidden bg-transparent border-none outline-none p-0 m-0 font-mono"
                     value={inputVal}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputVal(e.target.value)}
+                    onChange={(e) => {
+                        setInputVal(e.target.value);
+                        setCursorPos(e.target.selectionStart);
+                    }}
+                    onSelect={(e) => setCursorPos(e.currentTarget.selectionStart)}
                     onKeyDown={handleKeyDown}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
                     autoFocus
                     autoComplete="off"
                     spellCheck="false"
                 />
-                {/* Invisible span to maintain height/width flow if needed, but absolute works for overlay */}
-                <span className="opacity-0 whitespace-pre-wrap break-all pointer-events-none">{inputVal}</span>
             </div>
       </div>
       <div ref={bottomRef} className="h-4" />

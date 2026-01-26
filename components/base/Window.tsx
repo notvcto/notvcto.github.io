@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import Draggable from "react-draggable";
+import React, { useState, useEffect, useRef } from "react";
+import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { useWMStore } from "@/lib/store/wm";
 
 interface WindowProps {
@@ -11,6 +11,8 @@ interface WindowProps {
   focused: boolean;
   screen: React.ComponentType<any>;
   componentProps?: any;
+  x?: number;
+  y?: number;
 }
 
 export default function Window({
@@ -20,7 +22,9 @@ export default function Window({
   maximized,
   focused,
   screen: Screen,
-  componentProps
+  componentProps,
+  x = 0,
+  y = 0
 }: WindowProps) {
   const {
     focusWindow,
@@ -32,8 +36,10 @@ export default function Window({
 
   const [cursorType, setCursorType] = useState("cursor-default");
   const [size, setSize] = useState({ width: 60, height: 85 }); // % based
-  const [position, setPosition] = useState({ x: 60, y: 40 }); // Default
   const [closed, setClosed] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const windowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
      if (typeof window !== "undefined") {
@@ -43,21 +49,37 @@ export default function Window({
      }
   }, []);
 
+  const updateCSSVars = (posX: number, posY: number) => {
+      if (windowRef.current) {
+          windowRef.current.style.setProperty('--window-transform-x', `${posX}px`);
+          windowRef.current.style.setProperty('--window-transform-y', `${posY}px`);
+      }
+  };
+
+  // Initialize CSS variables on mount
+  useEffect(() => {
+      updateCSSVars(x, y);
+  }, []);
+
   const handleClose = () => {
       setClosed(true);
-      setTimeout(() => closeWindow(id), 300);
+      setTimeout(() => closeWindow(id), 200);
   };
 
   const handleDragStart = () => {
       focusWindow(id);
+      setIsDragging(true);
       setCursorType("cursor-move");
   }
 
-  const handleDragStop = (e: any, data: any) => {
+  const handleDrag = (e: DraggableEvent, data: DraggableData) => {
+      updateCSSVars(data.x, data.y);
+  }
+
+  const handleDragStop = (e: DraggableEvent, data: DraggableData) => {
+      setIsDragging(false);
       setCursorType("cursor-default");
-      // Only update if not maximized
       if (!maximized) {
-          setPosition({ x: data.x, y: data.y });
           updateWindowPosition(id, data.x, data.y);
       }
   }
@@ -67,8 +89,9 @@ export default function Window({
     ${closed ? "closed-window" : ""}
     ${maximized ? "duration-300 rounded-none w-full h-full top-0 left-0" : "rounded-xl"}
     ${minimized ? "opacity-0 invisible duration-200" : ""}
-    ${focused ? "z-30" : "z-20 notFocused"}
-    overflow-hidden min-w-1/4 min-h-1/4 main-window absolute window-shadow border-black border-opacity-40 border border-t-0 flex flex-col
+    ${focused ? "z-30 shadow-2xl" : "z-20 notFocused window-shadow"}
+    overflow-hidden min-w-1/4 min-h-1/4 main-window absolute border-black border-opacity-40 border border-t-0 flex flex-col
+    ${isDragging ? "transition-none" : ""}
   `;
 
   const style: React.CSSProperties = maximized ? {
@@ -89,12 +112,13 @@ export default function Window({
         grid={[1, 1]}
         scale={1}
         onStart={handleDragStart}
+        onDrag={handleDrag}
         onStop={handleDragStop}
         disabled={maximized}
-        defaultPosition={position}
+        defaultPosition={{ x, y }}
         position={maximized ? { x: 0, y: 0 } : undefined}
       >
-        <div className={windowClass} style={style} id={id} onClick={() => focusWindow(id)}>
+        <div ref={windowRef} className={windowClass} style={style} id={id} onClick={() => focusWindow(id)}>
             <div className="relative w-full h-full overflow-hidden flex flex-col opened-window">
                 <WindowTopBar title={title} />
                 <WindowEditButtons
