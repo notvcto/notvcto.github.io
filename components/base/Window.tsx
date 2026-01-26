@@ -90,7 +90,7 @@ export default function Window({
     ${maximized ? "duration-300 rounded-none w-full h-full top-0 left-0" : "rounded-xl"}
     ${minimized ? "opacity-0 invisible duration-200" : ""}
     ${focused ? "z-30 shadow-2xl" : "z-20 notFocused window-shadow"}
-    overflow-hidden min-w-1/4 min-h-1/4 main-window absolute border-black border-opacity-40 border border-t-0 flex flex-col
+    overflow-hidden min-w-1/4 min-h-1/4 main-window absolute border-black border-opacity-40 border border-t-0 flex flex-col window-no-outline focus:outline-none
     ${isDragging ? "transition-none" : ""}
   `;
 
