@@ -7,6 +7,21 @@
       "The page you're seeing right now!"
     ],
     "languages": [
+      "typescript",
+      "javascript",
+      "html",
+      "css"
+    ],
+    "topics": []
+  },
+  {
+    "name": "GardenBot",
+    "date": "May 2025",
+    "link": "https://github.com/notvcto/GardenBot",
+    "description": [
+      "Discord bot for Grow a Garden stock notifying."
+    ],
+    "languages": [
       "javascript"
     ],
     "topics": []
@@ -21,18 +36,6 @@
     "languages": [
       "javascript",
       "scss"
-    ],
-    "topics": []
-  },
-  {
-    "name": "GardenBot",
-    "date": "May 2025",
-    "link": "https://github.com/notvcto/GardenBot",
-    "description": [
-      "Discord bot for Grow a Garden stock notifying."
-    ],
-    "languages": [
-      "javascript"
     ],
     "topics": []
   },
