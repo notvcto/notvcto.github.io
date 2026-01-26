@@ -14,7 +14,7 @@ const BlogList = ({ posts, onPostSelect }) => {
     return posts
       .filter(post => {
         const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                              post.author?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              (post.author || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                               (post.description && post.description.toLowerCase().includes(searchQuery.toLowerCase()));
         const matchesTag = selectedTag === 'All' || post.tags?.includes(selectedTag);
         return matchesSearch && matchesTag;
