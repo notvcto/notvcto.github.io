@@ -51,8 +51,12 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
             if (hasBooted === 'false') {
                 setBooting(false);
             } else {
-                localStorage.setItem('booting_screen', 'false');
-                setTimeout(() => setBooting(false), 2000);
+                // Do not set localStorage here immediately to prevent double-render issues in dev
+                // Wait for the timeout
+                setTimeout(() => {
+                    setBooting(false);
+                    localStorage.setItem('booting_screen', 'false');
+                }, 2000);
             }
         }
     }, []);
