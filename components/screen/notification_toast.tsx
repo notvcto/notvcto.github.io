@@ -7,7 +7,8 @@ export default function NotificationToast() {
   const markAsRead = useNotificationStore((state) => state.markAsRead);
 
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [visible, setVisible] = useState(false);
+  const [render, setRender] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
   const latest = notifications[0];
 
@@ -16,19 +17,20 @@ export default function NotificationToast() {
     // If there is a new latest notification that is unread and different from the last one we showed
     if (latest && !latest.read && latest.id !== activeId) {
        setActiveId(latest.id);
-       setVisible(true);
+       setRender(true);
+       setIsClosing(false);
     }
   }, [latest, activeId]);
 
   // Handle auto-dismiss
   useEffect(() => {
-    if (!activeId || !visible) return;
+    if (!activeId || !render || isClosing) return;
 
     const notification = notifications.find(n => n.id === activeId);
 
     // If notification was removed from store, hide toast
     if (!notification) {
-        setVisible(false);
+        dismiss();
         return;
     }
 
@@ -36,25 +38,34 @@ export default function NotificationToast() {
     if (notification.persistent) return;
 
     const timer = setTimeout(() => {
-      setVisible(false);
-      // We do not clear activeId here, to prevent the effect above from re-triggering
-      // for the same notification ID immediately.
+      dismiss();
     }, 4000);
 
     return () => clearTimeout(timer);
-  }, [activeId, visible, notifications]);
+  }, [activeId, render, isClosing, notifications]);
+
+  const dismiss = () => {
+      setIsClosing(true);
+  }
+
+  const handleAnimationEnd = () => {
+      if (isClosing) {
+          setRender(false);
+          setIsClosing(false);
+      }
+  }
 
   const currentNotification = notifications.find(n => n.id === activeId);
 
   // If hidden or data missing, don't render
-  if (!visible || !currentNotification) return null;
+  if (!render || !currentNotification) return null;
 
   const handleClick = () => {
     if (currentNotification.action) {
         currentNotification.action.callback();
     }
     markAsRead(currentNotification.id);
-    setVisible(false);
+    dismiss();
   };
 
   const iconPath = currentNotification.appId
@@ -63,10 +74,12 @@ export default function NotificationToast() {
 
   return (
     <div
-        className="fixed top-12 left-1/2 transform -translate-x-1/2 z-[60] w-72 md:w-96 bg-ub-grey border border-ub-orange border-opacity-50 rounded-lg shadow-xl cursor-pointer text-ubt-grey hover:bg-opacity-95 transition-all duration-200"
+        className={`fixed top-12 left-1/2 z-[60] w-80 md:w-[26rem] bg-ub-cool-grey rounded-lg shadow-xl cursor-pointer text-ubt-grey hover:bg-opacity-95
+        ${isClosing ? 'animate-toast-out' : 'animate-toast-in'}`}
         onClick={handleClick}
+        onAnimationEnd={handleAnimationEnd}
     >
-       <div className="flex items-center p-3">
+       <div className="flex items-center p-4">
           <div className="relative w-8 h-8 flex-shrink-0 mr-3">
             <img
                 src={iconPath}
@@ -75,9 +88,9 @@ export default function NotificationToast() {
             />
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-bold truncate">{currentNotification.title}</h4>
+            <h4 className="text-base font-bold truncate">{currentNotification.title}</h4>
             {currentNotification.body && (
-                <p className="text-xs truncate opacity-80">{currentNotification.body}</p>
+                <p className="text-sm truncate opacity-80">{currentNotification.body}</p>
             )}
           </div>
           {currentNotification.action && (
