@@ -14,6 +14,7 @@ export default function BackgroundImage(props) {
     "wall-10": "./images/wallpapers/wall-10.webp",
     "minimal": "./images/wallpapers/minimal.png",
     "questing-quokka": "./images/wallpapers/questing-quokka.webp",
+    "questing-quokka-d": "./images/wallpapers/questing-quokka-d.webp",
   };
   return (
     <div
