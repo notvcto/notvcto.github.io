@@ -85,7 +85,7 @@ export default function FileManager({ initialCwd }: FileManagerProps) {
              } else {
                  // Try to mount
                  // We MUST provide a mountpoint because logic requires it for FileManager auto-mount
-                 const result = mount('/dev/sr0', '/mnt/cdrom');
+                 const result = mount('/dev/sr0', '/mnt/cdrom', 'ui');
                  if (result.success) {
                      navigate('/mnt/cdrom');
                  }
