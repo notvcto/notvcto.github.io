@@ -14,6 +14,10 @@ export interface CommandResult {
   output: string;
   exitCode: number;
   clear?: boolean;
+  interactive?: {
+    mode: 'nano';
+    args: string[];
+  };
 }
 
 export type Command = (

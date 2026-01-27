@@ -15,35 +15,58 @@ export const useTerminalEngine = () => {
         setCwd: (p: string) => void
     ): Promise<CommandResult> => {
 
+        // Refresh devices state (though hook updates cause re-render, explicit fetch here ensures consistency inside async)
+        const currentDevices = useBlockDeviceStore.getState().devices;
+
         const context: TerminalContext = {
             cwd,
             setCwd,
             fs,
             blockDevices: blockDevicesHook,
-            devices
+            devices: currentDevices
         };
 
-        const segments = input.split('|');
+        const trimmed = input.trim();
+        if (!trimmed) return { output: '', exitCode: 0 };
+
+        const segments = trimmed.split('|');
+
+        // Requirement: Single pipe only. No chaining (length > 2 implies 2 pipes).
+        if (segments.length > 2) {
+             return { output: 'bash: syntax error: multiple pipes not supported', exitCode: 2 };
+        }
+
         let currentStdin = '';
         let lastExitCode = 0;
 
         for (let i = 0; i < segments.length; i++) {
             const segment = segments[i].trim();
             if (!segment) {
-                // Handle trailing pipe or empty segment?
-                // "a | b" -> split -> ["a ", " b"]. Trim -> "a", "b".
-                // "a |" -> split -> ["a ", ""].
-                // If empty segment is found in middle/end, implies syntax error or just ignore?
-                // Standard bash: syntax error near unexpected token `|'
-                // We'll ignore empty segments for simplicity unless it's strictly required.
-                continue;
+                 return { output: 'bash: syntax error near unexpected token `|\'', exitCode: 2 };
             }
 
-            const parts = segment.split(/\s+/);
+            // Simple whitespace split. No quoting support per "no variables, no globbing" scope,
+            // but arguably users expect 'echo "hello world"' to work.
+            // For now, simple split as per "Rewrite command parsing... from zero".
+            // If we want quotes, we need a better parser.
+            // The prompt says "no variables, no globbing". It doesn't explicitly say "no quotes".
+            // But implementing quote parsing "from zero" is robust.
+            // Let's stick to simple split for now to match the "UNIX-like" error feel if they try complex stuff,
+            // or maybe a regex split that respects quotes if easy.
+            // Regex for splitting by space respecting quotes: / +(?=(?:(?:[^"]*"){2})*[^"]*$)/
+            // Let's try simple split first. If user wants `echo "hello world"`, it will be `echo`, `"hello`, `world"`.
+            // `echo` command can join them.
+            // `grep "pattern"` -> `grep`, `"pattern"`. `grep` can strip quotes.
+            const parts = segment.match(/[^\s"']+|"([^"]*)"|'([^']*)'/g)?.map(p => {
+                if (p.startsWith('"') && p.endsWith('"')) return p.slice(1, -1);
+                if (p.startsWith("'") && p.endsWith("'")) return p.slice(1, -1);
+                return p;
+            }) || [];
+
+            if (parts.length === 0) continue;
+
             const cmdName = parts[0];
             const args = parts.slice(1);
-
-            if (!cmdName) continue;
 
             const commandFn = commands[cmdName];
 
@@ -54,14 +77,18 @@ export const useTerminalEngine = () => {
             try {
                 const result = await commandFn(args, currentStdin, context);
 
-                // If exit code is not 0, standard pipes usually continue?
-                // "set -o pipefail" determines if pipeline fails.
-                // Standard: output of failed cmd goes to input of next?
-                // Requirement: "Stop pipe chain on error"?
-                // "Fails in a controlled ... way".
-                // If `dmesg` fails, `grep` shouldn't run?
-                // Let's adopt strict behavior: if cmd fails, stop.
+                // Stop pipe chain on error
                 if (result.exitCode !== 0) {
+                    return result;
+                }
+
+                // If interactive, return immediately (cannot pipe out of interactive in this sim)
+                if (result.interactive) {
+                    return result;
+                }
+
+                // If clear, return immediately
+                if (result.clear) {
                     return result;
                 }
 
