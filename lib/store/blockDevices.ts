@@ -2,17 +2,23 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export interface BlockDevice {
-  id: string;               // e.g. "sr0"
-  type: "disk" | "partition" | "cdrom";
-  removable: boolean;
+  name: string;        // sda, sda1, sr0
+  majMin: string;     // e.g. "8:0", "11:0"
+  removable: boolean; // RM
+  size: string;       // e.g. "238G", "4.3G"
+  readOnly: boolean;  // RO
+  type: "disk" | "part" | "rom";
   mounted: boolean;
   mountPoint?: string;
-  state: "idle" | "probe_failed" | "curiosity_detected" | "fail_mount" | "post_fail" | "armed";
+
+  // Puzzle State
+  state: "idle" | "probe_failed" | "readme_injected" | "armed";
+  mountAttempts: number;
 }
 
 interface BlockDeviceState {
   devices: Record<string, BlockDevice>;
-  updateDevice: (id: string, partial: Partial<BlockDevice>) => void;
+  updateDevice: (name: string, partial: Partial<BlockDevice>) => void;
 }
 
 export const useBlockDeviceStore = create<BlockDeviceState>()(
@@ -20,39 +26,51 @@ export const useBlockDeviceStore = create<BlockDeviceState>()(
     (set) => ({
       devices: {
         sda: {
-          id: "sda",
+          name: "sda",
+          majMin: "8:0",
+          removable: false,
+          size: "256G",
+          readOnly: false,
           type: "disk",
-          removable: false,
-          mounted: true,
-          mountPoint: "/", // logical root
-          state: "idle",
-        },
-        sda1: {
-          id: "sda1",
-          type: "partition",
-          removable: false,
           mounted: true,
           mountPoint: "/",
           state: "idle",
+          mountAttempts: 0,
+        },
+        sda1: {
+          name: "sda1",
+          majMin: "8:1",
+          removable: false,
+          size: "255G",
+          readOnly: false,
+          type: "part",
+          mounted: true,
+          mountPoint: "/",
+          state: "idle",
+          mountAttempts: 0,
         },
         sr0: {
-          id: "sr0",
-          type: "cdrom",
+          name: "sr0",
+          majMin: "11:0",
           removable: true,
+          size: "1024M",
+          readOnly: true,
+          type: "rom",
           mounted: false,
           state: "idle",
+          mountAttempts: 0,
         },
       },
-      updateDevice: (id, partial) =>
+      updateDevice: (name, partial) =>
         set((state) => ({
           devices: {
             ...state.devices,
-            [id]: { ...state.devices[id], ...partial },
+            [name]: { ...state.devices[name], ...partial },
           },
         })),
     }),
     {
-      name: "os:blockdevices:v1",
+      name: "os:blockdevices:v2",
     }
   )
 );
