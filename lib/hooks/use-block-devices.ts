@@ -28,6 +28,16 @@ export const useBlockDevices = () => {
     // Track the window ID we opened for the ephemeral README
     const [readmeWindowId, setReadmeWindowId] = useState<string | null>(null);
 
+    // Watcher for Window Open (User manually opens README)
+    useEffect(() => {
+        if (devices.sr0.state === 'post_fail' && !readmeWindowId) {
+             const foundWin = Object.values(windows).find(w => w.title === 'README.txt');
+             if (foundWin) {
+                 setReadmeWindowId(foundWin.id);
+             }
+        }
+    }, [windows, devices.sr0.state, readmeWindowId]);
+
     // Watcher for Window Close
     useEffect(() => {
         if (readmeWindowId) {
@@ -95,13 +105,13 @@ export const useBlockDevices = () => {
                 fsState.createFile(desktopNode.id, 'README.txt', README_CONTENT);
             }
 
-            const winId = `readme-ephemeral-${Date.now()}`;
-            openWindow(winId, 'text-editor', 'README.txt', 'accessories-text-editor', { filePath: EPHEMERAL_README_PATH });
+            // We NO LONGER open the window automatically.
+            // The user must find the file on the desktop and open it.
+            // setReadmeWindowId(winId); // Waited for user to open
 
-            setReadmeWindowId(winId);
             updateDevice('sr0', { state: 'post_fail' });
         }
-    }, [openWindow, updateDevice]);
+    }, [updateDevice]);
 
 
     const mount = (devPath: string, mountPoint?: string): { success: boolean; error?: string } => {
