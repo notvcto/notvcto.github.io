@@ -21,8 +21,8 @@ Hint:
 
 export const useBlockDevices = () => {
     const { devices, updateDevice } = useBlockDeviceStore();
-    const { createFile, createDir, deleteNode, nodes, rootId, init: initFS } = useFileSystemStore();
-    const { openWindow, windows } = useWMStore();
+    const { deleteNode, nodes, rootId } = useFileSystemStore();
+    const { windows } = useWMStore();
     const { addNotification } = useNotificationStore();
 
     // Track the window ID we opened for the ephemeral README
@@ -30,7 +30,8 @@ export const useBlockDevices = () => {
 
     // Watcher for Window Open (User manually opens README)
     useEffect(() => {
-        if (devices.sr0.state === 'post_fail' && !readmeWindowId) {
+        // If we are in the injected state, wait for user to open README
+        if (devices.sr0.state === 'readme_injected' && !readmeWindowId) {
              const foundWin = Object.values(windows).find(w => w.title === 'README.txt');
              if (foundWin) {
                  setReadmeWindowId(foundWin.id);
@@ -46,8 +47,6 @@ export const useBlockDevices = () => {
                 // Window is gone, clean up
 
                 // 1. Delete file
-                // We need to find the node ID.
-                // We resolve the parent (Desktop) first.
                 const desktopPath = '/home/user/Desktop';
                 const desktopNode = resolvePath(desktopPath, nodes, rootId);
 
@@ -67,32 +66,36 @@ export const useBlockDevices = () => {
         }
     }, [windows, readmeWindowId, nodes, rootId, deleteNode, updateDevice]);
 
-    const checkCuriosity = useCallback(async () => {
+    const injectReadme = useCallback(async () => {
         const sr0 = useBlockDeviceStore.getState().devices.sr0;
 
-        if (sr0.state === 'probe_failed') {
-            // Transition immediately to prevent double trigger
-            updateDevice('sr0', { state: 'curiosity_detected' });
-
-            // Wait for dramatic pause
-            await new Promise(resolve => setTimeout(resolve, 800));
-
-            // Create README and Open Window
-            // Use fresh state to ensure we find Desktop correctly
+        // Only inject if we haven't already
+        if (sr0.state !== 'readme_injected' && sr0.state !== 'armed') {
+             // Use fresh state
             const fsState = useFileSystemStore.getState();
             const desktopNode = resolvePath('/home/user/Desktop', fsState.nodes, fsState.rootId);
 
             if (desktopNode && desktopNode.type === 'dir') {
-                fsState.createFile(desktopNode.id, 'README.txt', README_CONTENT);
+                // Check if exists first to avoid dupes/errors
+                const existing = desktopNode.children.find(id => fsState.nodes[id]?.name === 'README.txt');
+                if (!existing) {
+                    fsState.createFile(desktopNode.id, 'README.txt', README_CONTENT);
+                }
             }
 
-            // We NO LONGER open the window automatically.
-            // The user must find the file on the desktop and open it.
-            // setReadmeWindowId(winId); // Waited for user to open
-
-            updateDevice('sr0', { state: 'post_fail' });
+            updateDevice('sr0', { state: 'readme_injected' });
         }
     }, [updateDevice]);
+
+    const checkCuriosity = useCallback(() => {
+        const sr0 = useBlockDeviceStore.getState().devices.sr0;
+
+        // If we have failed at least once (attempts >= 1)
+        // trigger the injection.
+        if (sr0.mountAttempts >= 1 && sr0.state === 'probe_failed') {
+            injectReadme();
+        }
+    }, [injectReadme]);
 
 
     const mount = (devPath: string, mountPoint?: string): { success: boolean; error?: string } => {
@@ -108,39 +111,15 @@ export const useBlockDevices = () => {
         }
 
         if (devName === 'sr0') {
-            if (device.state === 'idle') {
-                // --- Phase 1: Silent Failure ---
-                updateDevice('sr0', { state: 'probe_failed' });
-
-                addNotification({
-                    title: 'Mount failed: /dev/sr0',
-                    appId: 'system',
-                    persistent: false,
-                });
-
-                // NO README here. It happens later via checkCuriosity.
-                return { success: false, error: `mount: ${devPath}: access denied` };
-            }
-
-            if (device.state === 'probe_failed') {
-                // If they try to mount AGAIN, that counts as curiosity.
-                // We return failure, but trigger the flow.
-                checkCuriosity();
-                return { success: false, error: `mount: ${devPath}: access denied` };
-            }
-
-            if (device.state === 'curiosity_detected' || device.state === 'fail_mount' || device.state === 'post_fail') {
-                 return { success: false, error: `mount: ${devPath}: access denied` };
-            }
+            if (device.mounted) return { success: true };
 
             if (device.state === 'armed') {
+                // If armed, proceed to mount
                 if (!mountPoint) {
-                     // Auto-mount attempt (no mountpoint)
-                     return { success: false, error: `mount: missing operand` };
+                    return { success: false, error: `mount: missing operand` };
                 }
 
                 // Ensure mountPoint exists or create it
-                // We use fresh state here to avoid stale closures during recursive creation
                 const fsState = useFileSystemStore.getState();
                 const exists = resolvePath(mountPoint, fsState.nodes, fsState.rootId);
 
@@ -150,7 +129,6 @@ export const useBlockDevices = () => {
                      let currentId = fsState.rootId;
 
                      for (const part of parts) {
-                         // Get fresh state in each iteration
                          const currentFS = useFileSystemStore.getState();
                          const parentNode = currentFS.nodes[currentId];
 
@@ -159,7 +137,6 @@ export const useBlockDevices = () => {
                              if (childId) {
                                  currentId = childId;
                              } else {
-                                 // Create directory
                                  const newId = currentFS.createDir(currentId, part);
                                  currentId = newId;
                              }
@@ -173,13 +150,30 @@ export const useBlockDevices = () => {
                      }
                 }
 
-                // Valid manual mount
                 updateDevice('sr0', { mounted: true, mountPoint });
                 return { success: true };
             }
 
-            // Fallback for fail_mount or other transient states
-             return { success: false, error: `mount: ${devPath}: access denied` };
+            // Not Armed -> Logic
+            // Increment attempts
+            const newAttempts = (device.mountAttempts || 0) + 1;
+            updateDevice('sr0', { mountAttempts: newAttempts });
+
+            addNotification({
+                title: 'Failed to mount CD-ROM',
+                body: 'mount: /dev/sr0: access denied',
+                appId: 'system',
+                persistent: false,
+            });
+
+            if (newAttempts === 1) {
+                 updateDevice('sr0', { state: 'probe_failed' });
+            } else if (newAttempts >= 2) {
+                 // Trigger Injection
+                 injectReadme();
+            }
+
+            return { success: false, error: `mount: ${devPath}: access denied` };
         }
 
         return { success: false, error: 'Unknown error' };
