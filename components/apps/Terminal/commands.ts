@@ -211,7 +211,7 @@ export const commands: Record<string, Command> = {
         const devPath = args[0];
         const mountPoint = args[1];
 
-        const result = await ctx.blockDevices.mount(devPath, mountPoint);
+        const result = await ctx.blockDevices.mount(devPath, mountPoint, 'terminal');
 
         if (result.success) {
             return formatSuccess();
