@@ -129,7 +129,7 @@ export default function SideBar({ toggleShowApps, showAppsActive }: SideBarProps
                     isOpen={false}
                     isFocused={false}
                     openApp={() => {
-                        mount('/dev/sr0');
+                        mount('/dev/sr0', undefined, 'ui');
                     }}
                 />
             </div>

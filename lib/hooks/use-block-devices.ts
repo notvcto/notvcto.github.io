@@ -53,7 +53,7 @@ export const useBlockDevices = () => {
     }, [injectReadme]);
 
 
-    const mount = (devPath: string, mountPoint?: string): { success: boolean; error?: string } => {
+    const mount = (devPath: string, mountPoint?: string, source: 'ui' | 'terminal' = 'terminal'): { success: boolean; error?: string } => {
         const devName = devPath.replace('/dev/', '');
         const device = devices[devName];
 
@@ -69,7 +69,18 @@ export const useBlockDevices = () => {
             if (device.mounted) return { success: true };
 
             if (device.state === 'armed') {
-                // If armed, proceed to mount
+                // Logic change: If triggered from UI, deny and hint
+                if (source === 'ui') {
+                     addNotification({
+                        title: 'Device Ready',
+                        body: 'Please mount via terminal: mount /dev/sr0 /mnt/cdrom',
+                        appId: 'system',
+                        persistent: false,
+                    });
+                    return { success: false, error: 'Device ready. Use terminal to mount.' };
+                }
+
+                // If armed and terminal, proceed to mount
                 if (!mountPoint) {
                     return { success: false, error: `mount: missing operand` };
                 }
