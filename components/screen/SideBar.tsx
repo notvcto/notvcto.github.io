@@ -5,6 +5,7 @@ import { defaultApps } from "@/components/apps/registry";
 import SideBarApp from "@/components/base/SideBarApp";
 import { getIconPath } from "@/lib/utils/icons";
 import { useBlockDevices } from "@/lib/hooks/use-block-devices";
+import { useBlockDeviceStore } from "@/lib/store/blockDevices";
 
 interface SideBarProps {
     toggleShowApps: () => void;
@@ -14,6 +15,7 @@ interface SideBarProps {
 export default function SideBar({ toggleShowApps, showAppsActive }: SideBarProps) {
     const { windows, focusedWindowId, openWindow, minimizeWindow, focusWindow } = useWMStore();
     const { mount } = useBlockDevices();
+    const { devices } = useBlockDeviceStore();
     const [orderedFavIds, setOrderedFavIds] = useState<string[]>([]);
     const [draggingId, setDraggingId] = useState<string | null>(null);
 
@@ -126,10 +128,15 @@ export default function SideBar({ toggleShowApps, showAppsActive }: SideBarProps
                     id="cdrom"
                     title="CD-ROM"
                     icon={getIconPath("cdrom")}
-                    isOpen={false}
+                    isOpen={devices.sr0.mounted}
                     isFocused={false}
                     openApp={() => {
-                        mount('/dev/sr0', undefined, 'ui');
+                        const sr0 = devices.sr0;
+                        if (sr0.mounted && sr0.mountPoint) {
+                            openWindow('file-manager-cdrom', 'file-manager', 'Files', 'system-file-manager', { initialCwd: sr0.mountPoint });
+                        } else {
+                            mount('/dev/sr0', undefined, 'ui');
+                        }
                     }}
                 />
             </div>
@@ -142,7 +149,7 @@ export default function SideBar({ toggleShowApps, showAppsActive }: SideBarProps
                     isOpen={false}
                     isFocused={false}
                     openApp={() => {
-                         // TODO: Open trash
+                         openWindow('file-manager-trash', 'file-manager', 'Trash', 'user-trash', { initialCwd: '/trash' });
                     }}
                 />
             </div>
