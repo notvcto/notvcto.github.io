@@ -4,6 +4,7 @@ import BackgroundImage from "../util components/background-image";
 import Navbar from "./navbar";
 import SideBar from "./SideBar";
 import AllApplications from "./AllApplications";
+import { DeviceWatcher } from "./device_watcher";
 import Window from "@/components/base/Window";
 import UbuntuApp from "@/components/base/UbuntuApp";
 import LockScreen from "./lock_screen";
@@ -293,6 +294,7 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
              <BackgroundImage img={wallpaper} />
              <Navbar />
              <NotificationToast />
+             <DeviceWatcher />
              <SideBar toggleShowApps={() => setShowApps(!showApps)} showAppsActive={showApps} />
 
              {showApps && (
