@@ -181,6 +181,9 @@ export const commands: Record<string, Command> = {
     // --- System / Puzzle ---
 
     lsblk: async (args, stdin, ctx) => {
+        // Trigger curiosity if applicable
+        ctx.blockDevices.checkCuriosity();
+
         const header = "NAME   TYPE     MOUNTPOINT";
         const lines = [header];
 
@@ -200,6 +203,9 @@ export const commands: Record<string, Command> = {
     },
 
     mount: async (args, stdin, ctx) => {
+        // Trigger curiosity if applicable (usage of mount command counts)
+        ctx.blockDevices.checkCuriosity();
+
         if (args.length === 0) return formatError('mount', 'missing operand');
 
         const devPath = args[0];
@@ -218,8 +224,14 @@ export const commands: Record<string, Command> = {
     },
 
     dmesg: async (args, stdin, ctx) => {
+        // Trigger curiosity if applicable
+        ctx.blockDevices.checkCuriosity();
+
         const sr0 = ctx.devices.sr0;
-        if (sr0.state === 'fail_mount' || sr0.state === 'post_fail' || sr0.state === 'armed') {
+        // In probe_failed, we also want to show the dmesg log to reward the curiosity immediately?
+        // Or wait? The prompt says: "Phase 1... dmesg buffer quietly updated".
+        // So yes, if probe_failed (or later), show the log.
+        if (sr0.state === 'probe_failed' || sr0.state === 'curiosity_detected' || sr0.state === 'fail_mount' || sr0.state === 'post_fail' || sr0.state === 'armed') {
              return formatSuccess(`[    0.000000] Linux version 5.15.0-76-generic (buildd@lcy02-amd64-046) (gcc (Ubuntu 11.3.0-1ubuntu1~22.04.1) 11.3.0, GNU ld (GNU Binutils for Ubuntu) 2.38) #83-Ubuntu SMP Thu Jun 15 19:16:32 UTC 2023
 [    0.342111] sr0: CD-ROM detected, media present`);
         }
