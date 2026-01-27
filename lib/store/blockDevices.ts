@@ -7,7 +7,7 @@ export interface BlockDevice {
   removable: boolean;
   mounted: boolean;
   mountPoint?: string;
-  state: "idle" | "probe" | "fail_mount" | "post_fail" | "armed";
+  state: "idle" | "probe_failed" | "curiosity_detected" | "fail_mount" | "post_fail" | "armed";
 }
 
 interface BlockDeviceState {
