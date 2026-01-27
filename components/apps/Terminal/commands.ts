@@ -192,8 +192,8 @@ export const commands: Record<string, Command> = {
         order.forEach(id => {
             const dev = ctx.devices[id];
             if (dev) {
-                const name = dev.id.padEnd(7);
-                const type = (dev.type === 'cdrom' ? 'rom' : (dev.type === 'partition' ? 'part' : 'disk')).padEnd(9);
+                const name = dev.name.padEnd(7);
+                const type = dev.type.padEnd(9);
                 const mp = dev.mounted ? (dev.mountPoint || '') : '';
                 lines.push(`${name}${type}${mp}`);
             }
@@ -228,10 +228,8 @@ export const commands: Record<string, Command> = {
         ctx.blockDevices.checkCuriosity();
 
         const sr0 = ctx.devices.sr0;
-        // In probe_failed, we also want to show the dmesg log to reward the curiosity immediately?
-        // Or wait? The prompt says: "Phase 1... dmesg buffer quietly updated".
-        // So yes, if probe_failed (or later), show the log.
-        if (sr0.state === 'probe_failed' || sr0.state === 'curiosity_detected' || sr0.state === 'fail_mount' || sr0.state === 'post_fail' || sr0.state === 'armed') {
+
+        if (sr0.state !== 'idle') {
              return formatSuccess(`[    0.000000] Linux version 5.15.0-76-generic (buildd@lcy02-amd64-046) (gcc (Ubuntu 11.3.0-1ubuntu1~22.04.1) 11.3.0, GNU ld (GNU Binutils for Ubuntu) 2.38) #83-Ubuntu SMP Thu Jun 15 19:16:32 UTC 2023
 [    0.342111] sr0: CD-ROM detected, media present`);
         }
