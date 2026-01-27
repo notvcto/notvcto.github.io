@@ -67,25 +67,6 @@ export const useBlockDevices = () => {
         }
     }, [windows, readmeWindowId, nodes, rootId, deleteNode, updateDevice]);
 
-    // Recovery on Load: If we are in 'post_fail' but no window is tracked (reload happened), clean up.
-    useEffect(() => {
-        // We defer this slightly to ensure stores are hydrated/initialized
-        const timer = setTimeout(() => {
-             if (devices.sr0.state === 'post_fail' && !readmeWindowId) {
-                // Ensure file is gone
-                const desktopNode = resolvePath('/home/user/Desktop', nodes, rootId);
-                if (desktopNode && desktopNode.type === 'dir') {
-                    const readmeId = desktopNode.children.find(childId => nodes[childId]?.name === 'README.txt');
-                    if (readmeId) {
-                        deleteNode(readmeId);
-                    }
-                }
-                updateDevice('sr0', { state: 'armed' });
-            }
-        }, 100);
-        return () => clearTimeout(timer);
-    }, [devices.sr0.state, readmeWindowId, nodes, rootId, deleteNode, updateDevice]);
-
     const checkCuriosity = useCallback(async () => {
         const sr0 = useBlockDeviceStore.getState().devices.sr0;
 
