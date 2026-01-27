@@ -5,7 +5,7 @@ import { useWMStore } from '@/lib/store/wm';
 
 export const DeviceWatcher = () => {
     const { devices, updateDevice } = useBlockDeviceStore();
-    const { deleteNode, nodes, rootId } = useFileSystemStore();
+    const { deleteNode } = useFileSystemStore();
     const { windows } = useWMStore();
 
     // Track the window ID we opened for the ephemeral README
@@ -15,8 +15,9 @@ export const DeviceWatcher = () => {
     useEffect(() => {
         // If we are in the injected state, wait for user to open README
         if (devices.sr0.state === 'readme_injected' && !readmeWindowId) {
-             const foundWin = Object.values(windows).find(w => w.title === 'README.txt');
+             const foundWin = Object.values(windows).find(w => w.title.includes('README.txt'));
              if (foundWin) {
+                 // console.log("[DeviceWatcher] Found README window:", foundWin.id);
                  setReadmeWindowId(foundWin.id);
              }
         }
@@ -27,6 +28,7 @@ export const DeviceWatcher = () => {
         if (readmeWindowId) {
             // Check if the window is still open
             if (!windows[readmeWindowId]) {
+                // console.log("[DeviceWatcher] README window closed. Cleaning up.");
                 // Window is gone, clean up
 
                 // 1. Delete file
