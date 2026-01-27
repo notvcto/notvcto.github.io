@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useFS } from "@/lib/fs";
 import { useTerminalEngine } from "./useTerminalEngine";
+import Nano from "./Nano";
 
 type TerminalLineType = "input" | "output" | "error";
 
@@ -27,6 +28,7 @@ export default function TerminalApp() {
   const [inputVal, setInputVal] = useState("");
   const [cursorPos, setCursorPos] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
+  const [interactiveMode, setInteractiveMode] = useState<{ mode: string; args: string[] } | null>(null);
 
   // We use textarea for input to handle multiline if needed, or just to match custom cursor easier
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -58,8 +60,10 @@ export default function TerminalApp() {
   }, []); // Run once
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [history]);
+    if (!interactiveMode) {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [history, interactiveMode]);
 
   const addToHistory = (lines: TerminalLine | TerminalLine[]) => {
       setHistory((prev: TerminalLine[]) => [...prev, ...(Array.isArray(lines) ? lines : [lines])]);
@@ -81,6 +85,11 @@ export default function TerminalApp() {
 
     // Execute via Engine
     const result = await execute(trimmed, cwd, setCwd);
+
+    if (result.interactive) {
+        setInteractiveMode({ mode: result.interactive.mode, args: result.interactive.args });
+        return;
+    }
 
     if (result.clear) {
         setHistory([]);
@@ -153,6 +162,18 @@ export default function TerminalApp() {
       // Output
       return <div key={line.id} className="text-white whitespace-pre-wrap break-all">{line.text}</div>;
   };
+
+  if (interactiveMode?.mode === 'nano') {
+       return (
+           <Nano
+               filePath={interactiveMode.args[0]}
+               onExit={() => {
+                   setInteractiveMode(null);
+                   setTimeout(() => inputRef.current?.focus(), 50);
+               }}
+           />
+       );
+  }
 
   const currentDisplayPath = cwd.startsWith("/home/user") ? cwd.replace("/home/user", "~") : cwd;
 
