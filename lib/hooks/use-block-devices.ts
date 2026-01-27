@@ -1,10 +1,8 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useBlockDeviceStore } from '@/lib/store/blockDevices';
 import { useFileSystemStore, resolvePath } from '@/lib/store/filesystem';
-import { useWMStore } from '@/lib/store/wm';
 import { useNotificationStore } from '@/lib/store/notifications';
 
-const EPHEMERAL_README_PATH = '/home/user/Desktop/README.txt';
 const README_CONTENT = `Welcome.
 
 Something tried to mount.
@@ -21,50 +19,7 @@ Hint:
 
 export const useBlockDevices = () => {
     const { devices, updateDevice } = useBlockDeviceStore();
-    const { deleteNode, nodes, rootId } = useFileSystemStore();
-    const { windows } = useWMStore();
     const { addNotification } = useNotificationStore();
-
-    // Track the window ID we opened for the ephemeral README
-    const [readmeWindowId, setReadmeWindowId] = useState<string | null>(null);
-
-    // Watcher for Window Open (User manually opens README)
-    useEffect(() => {
-        // If we are in the injected state, wait for user to open README
-        if (devices.sr0.state === 'readme_injected' && !readmeWindowId) {
-             const foundWin = Object.values(windows).find(w => w.title === 'README.txt');
-             if (foundWin) {
-                 setReadmeWindowId(foundWin.id);
-             }
-        }
-    }, [windows, devices.sr0.state, readmeWindowId]);
-
-    // Watcher for Window Close
-    useEffect(() => {
-        if (readmeWindowId) {
-            // Check if the window is still open
-            if (!windows[readmeWindowId]) {
-                // Window is gone, clean up
-
-                // 1. Delete file
-                const desktopPath = '/home/user/Desktop';
-                const desktopNode = resolvePath(desktopPath, nodes, rootId);
-
-                if (desktopNode && desktopNode.type === 'dir') {
-                    const readmeId = desktopNode.children.find(childId => nodes[childId]?.name === 'README.txt');
-                    if (readmeId) {
-                        deleteNode(readmeId);
-                    }
-                }
-
-                // 2. Update state to armed
-                updateDevice('sr0', { state: 'armed' });
-
-                // 3. Stop watching
-                setReadmeWindowId(null);
-            }
-        }
-    }, [windows, readmeWindowId, nodes, rootId, deleteNode, updateDevice]);
 
     const injectReadme = useCallback(async () => {
         const sr0 = useBlockDeviceStore.getState().devices.sr0;
