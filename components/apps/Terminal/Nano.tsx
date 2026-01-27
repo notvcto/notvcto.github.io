@@ -32,18 +32,26 @@ export default function Nano({ filePath, onExit }: NanoProps) {
     }, [filePath, fs]);
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
+        const key = e.key.toLowerCase();
+
         if (mode === 'edit') {
-            if (e.ctrlKey && e.key.toLowerCase() === 'x') {
-                e.preventDefault();
-                if (content !== initialContent) {
-                    setMode('save_confirm');
-                } else {
-                    onExit();
+            if (e.ctrlKey) {
+                if (key === 'x') {
+                    e.preventDefault();
+                    if (content !== initialContent) {
+                        setMode('save_confirm');
+                    } else {
+                        onExit();
+                    }
+                } else if (key === 'o') {
+                    e.preventDefault();
+                    fs.write(filePath, content);
+                    setInitialContent(content); // Update initial so ^X won't prompt if no further changes
+                    setMessage(`Wrote ${content.split('\n').length} lines`);
                 }
             }
         } else if (mode === 'save_confirm') {
             e.preventDefault();
-            const key = e.key.toLowerCase();
             if (key === 'y') {
                 fs.write(filePath, content);
                 onExit();
@@ -94,14 +102,8 @@ export default function Nano({ filePath, onExit }: NanoProps) {
 
             {/* Shortcuts Footer */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1 px-2 py-1 text-xs">
-                <div className="flex"><span className="bg-white text-black px-0.5 mr-1">^G</span> Get Help</div>
                 <div className="flex"><span className="bg-white text-black px-0.5 mr-1">^O</span> Write Out</div>
-                <div className="flex"><span className="bg-white text-black px-0.5 mr-1">^W</span> Where Is</div>
-                <div className="flex"><span className="bg-white text-black px-0.5 mr-1">^K</span> Cut Text</div>
                 <div className="flex"><span className="bg-white text-black px-0.5 mr-1">^X</span> Exit</div>
-                <div className="flex"><span className="bg-white text-black px-0.5 mr-1">^J</span> Justify</div>
-                <div className="flex"><span className="bg-white text-black px-0.5 mr-1">^R</span> Read File</div>
-                <div className="flex"><span className="bg-white text-black px-0.5 mr-1">^U</span> Uncut Text</div>
             </div>
         </div>
     );
