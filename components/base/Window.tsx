@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { useWMStore } from "@/lib/store/wm";
 import { getIconPath } from "@/lib/utils/icons";
@@ -141,7 +141,7 @@ export default function Window({
 function WindowTopBar({ title }: { title: string }) {
   return (
     <div className="relative bg-ub-window-title border-t-2 border-white border-opacity-5 py-1.5 px-3 text-white w-full select-none rounded-b-none">
-      <div className="flex justify-center text-sm font-bold">{title}</div>
+      <div className="flex justify-center text-sm font-bold truncate px-6">{title}</div>
     </div>
   );
 }
