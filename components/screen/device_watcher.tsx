@@ -6,7 +6,7 @@ import { useWMStore } from '@/lib/store/wm';
 export const DeviceWatcher = () => {
     const { devices, updateDevice } = useBlockDeviceStore();
     const { deleteNode } = useFileSystemStore();
-    const { windows } = useWMStore();
+    const { windows, focusedWindowId, closeWindow } = useWMStore();
 
     // Track the window ID we opened for the ephemeral README
     const [readmeWindowId, setReadmeWindowId] = useState<string | null>(null);
@@ -17,21 +17,33 @@ export const DeviceWatcher = () => {
         if (devices.sr0.state === 'readme_injected' && !readmeWindowId) {
              const foundWin = Object.values(windows).find(w => w.title.includes('README.txt'));
              if (foundWin) {
-                 // console.log("[DeviceWatcher] Found README window:", foundWin.id);
                  setReadmeWindowId(foundWin.id);
              }
         }
     }, [windows, devices.sr0.state, readmeWindowId]);
 
-    // Watcher for Window Close
+    // Watcher for Window Close OR Lost Focus
     useEffect(() => {
         if (readmeWindowId) {
-            // Check if the window is still open
-            if (!windows[readmeWindowId]) {
-                // console.log("[DeviceWatcher] README window closed. Cleaning up.");
-                // Window is gone, clean up
+            // Check if the window is still open AND focused
+            // If it is NOT focused (and another window/desktop is), OR if it's gone entirely.
+            // Note: When opening, focusedWindowId might take a tick to update?
+            // But we only set readmeWindowId when we find the window in 'windows'.
+            // Usually openWindow sets focus.
+            // If focusedWindowId is null/undefined, it means desktop is focused usually?
 
-                // 1. Delete file
+            const isWindowOpen = !!windows[readmeWindowId];
+            const isWindowFocused = focusedWindowId === readmeWindowId;
+
+            if (!isWindowOpen || !isWindowFocused) {
+                // Window is gone or lost focus -> Cleanup
+
+                // 1. Force close the window if it's still open (visual cleanup for "lost focus")
+                if (isWindowOpen) {
+                    closeWindow(readmeWindowId);
+                }
+
+                // 2. Delete file
                 const desktopPath = '/home/user/Desktop';
                 const fsState = useFileSystemStore.getState();
                 const desktopNode = resolvePath(desktopPath, fsState.nodes, fsState.rootId);
@@ -43,14 +55,14 @@ export const DeviceWatcher = () => {
                     }
                 }
 
-                // 2. Update state to armed
+                // 3. Update state to armed
                 updateDevice('sr0', { state: 'armed' });
 
-                // 3. Stop watching
+                // 4. Stop watching
                 setReadmeWindowId(null);
             }
         }
-    }, [windows, readmeWindowId, deleteNode, updateDevice]);
+    }, [windows, focusedWindowId, readmeWindowId, deleteNode, updateDevice, closeWindow]);
 
     return null; // This component renders nothing
 };
