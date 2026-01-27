@@ -5,6 +5,7 @@ import { useFS } from "@/lib/fs";
 import { getIconPath } from "@/lib/utils/icons";
 import { apps as appRegistry } from "@/components/apps/registry";
 import { useLauncher } from "@/lib/hooks/use-launcher";
+import { useBlockDevices } from "@/lib/hooks/use-block-devices";
 
 interface FileManagerProps {
     initialCwd?: string;
@@ -13,6 +14,7 @@ interface FileManagerProps {
 export default function FileManager({ initialCwd }: FileManagerProps) {
     const fs = useFS();
     const { open } = useLauncher();
+    const { mount } = useBlockDevices();
 
     // State
     const [cwd, setCwd] = useState<string>(initialCwd || "/home/user");
@@ -199,6 +201,27 @@ export default function FileManager({ initialCwd }: FileManagerProps) {
                         const isSelected = selected === itemPath;
                         const isRenaming = renaming === itemPath;
 
+                        // Icons for special block devices
+                        const iconSrc = (() => {
+                            if (cwd === '/dev' || cwd === '/dev/') {
+                                if (item.name === 'sr0') return getIconPath('cdrom');
+                                return getIconPath('application-x-generic'); // Fallback for disks
+                            }
+
+                            if (item.name.endsWith('.app')) {
+                                const appName = item.name.replace('.app', '');
+                                const foundApp = Object.values(appRegistry).find(app => app.id === appName || app.name === appName);
+                                if (foundApp) return getIconPath(foundApp.icon);
+                            }
+                            if (item.type === 'dir') return getIconPath("folder");
+                            const ext = item.name.split('.').pop()?.toLowerCase();
+                            if (ext === 'txt' || ext === 'md') {
+                                return getIconPath("text-x-generic");
+                            }
+                            return getIconPath("application-x-generic");
+                        })();
+
+
                         return (
                             <div
                                 key={item.id}
@@ -216,6 +239,19 @@ export default function FileManager({ initialCwd }: FileManagerProps) {
                                 onDoubleClick={(e) => {
                                     e.stopPropagation();
                                     if (isRenaming) return;
+
+                                    // Block Device Logic
+                                    if (cwd === '/dev' || cwd === '/dev/') {
+                                         if (item.name === 'sda' || item.name === 'sda1') {
+                                             setCwd('/');
+                                             return;
+                                         }
+                                         if (item.name === 'sr0') {
+                                             mount('/dev/sr0');
+                                             return;
+                                         }
+                                    }
+
                                     if (item.type === 'dir') {
                                         setCwd(itemPath);
                                         setSelected(null);
@@ -226,19 +262,7 @@ export default function FileManager({ initialCwd }: FileManagerProps) {
                                 onContextMenu={(e) => handleContextMenu(e, 'item', itemPath)}
                             >
                                 <img
-                                    src={(() => {
-                                        if (item.name.endsWith('.app')) {
-                                            const appName = item.name.replace('.app', '');
-                                            const foundApp = Object.values(appRegistry).find(app => app.id === appName || app.name === appName);
-                                            if (foundApp) return getIconPath(foundApp.icon);
-                                        }
-                                        if (item.type === 'dir') return getIconPath("folder");
-                                        const ext = item.name.split('.').pop()?.toLowerCase();
-                                        if (ext === 'txt' || ext === 'md') {
-                                            return getIconPath("text-x-generic");
-                                        }
-                                        return getIconPath("application-x-generic");
-                                    })()}
+                                    src={iconSrc}
                                     className="w-12 h-12 mb-1 pointer-events-none"
                                     alt={item.name}
                                 />
