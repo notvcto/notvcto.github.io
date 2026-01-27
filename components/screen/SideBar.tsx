@@ -128,7 +128,7 @@ export default function SideBar({ toggleShowApps, showAppsActive }: SideBarProps
                     id="cdrom"
                     title="CD-ROM"
                     icon={getIconPath("cdrom")}
-                    isOpen={devices.sr0.mounted}
+                    isOpen={!!windows['file-manager-cdrom']}
                     isFocused={false}
                     openApp={() => {
                         const sr0 = devices.sr0;
@@ -146,7 +146,7 @@ export default function SideBar({ toggleShowApps, showAppsActive }: SideBarProps
                     id="trash"
                     title="Trash"
                     icon={getIconPath("user-trash")}
-                    isOpen={false}
+                    isOpen={!!windows['file-manager-trash']}
                     isFocused={false}
                     openApp={() => {
                          openWindow('file-manager-trash', 'file-manager', 'Trash', 'user-trash', { initialCwd: '/trash' });
