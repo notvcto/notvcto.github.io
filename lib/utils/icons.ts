@@ -21,6 +21,7 @@ export const icons = {
   "user-trash": "/themes/Yaru/places/user-trash.png",
   folder: "/themes/Yaru/places/folder.png",
   cdrom: "/themes/Yaru/devices/media-optical.png",
+  "drive-harddisk": "/themes/Yaru/devices/drive-harddisk.png",
 
   // Status
   "dialog-information": "/themes/Yaru/status/dialog-information.png",
