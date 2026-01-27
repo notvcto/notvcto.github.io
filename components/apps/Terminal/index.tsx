@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useFS } from "@/lib/fs";
-import { useWMStore } from "@/lib/store/wm";
+import { useTerminalEngine } from "./useTerminalEngine";
 
 type TerminalLineType = "input" | "output" | "error";
 
@@ -13,59 +13,10 @@ interface TerminalLine {
   cwd?: string; // Only for input lines to show context
 }
 
-// --- Path Resolution Logic (Shell Owned) ---
-
-const normalizePath = (path: string): string => {
-  if (!path) return "/";
-  const parts = path.split("/").filter((p) => p !== "" && p !== ".");
-  const stack: string[] = [];
-
-  for (const part of parts) {
-    if (part === "..") {
-      stack.pop();
-    } else {
-      stack.push(part);
-    }
-  }
-
-  const result = "/" + stack.join("/");
-  return result || "/";
-};
-
-const resolvePath = (cwd: string, target: string): string => {
-  if (!target) return cwd;
-
-  // Handle ~ (Home)
-  if (target === "~" || target.startsWith("~/")) {
-     target = "/home/user" + target.slice(1);
-  }
-
-  // Absolute path
-  if (target.startsWith("/")) {
-    return normalizePath(target);
-  }
-
-  // Relative path
-  const separator = cwd === "/" ? "" : "/";
-  return normalizePath(`${cwd}${separator}${target}`);
-};
-
-const getParentDir = (path: string): string => {
-    if (path === '/') return '/';
-    const parts = path.split('/');
-    parts.pop(); // Remove file/last dir
-    const parent = parts.join('/') || '/';
-    return parent;
-};
-
-const getFileName = (path: string): string => {
-    if (path === '/') return '';
-    const parts = path.split('/');
-    return parts[parts.length - 1];
-}
-
 export default function TerminalApp() {
   const fs = useFS();
+  const { execute } = useTerminalEngine();
+
   // We strictly own CWD.
   const [cwd, setCwd] = useState<string>("/home/user");
 
@@ -112,7 +63,7 @@ export default function TerminalApp() {
       setHistory((prev: TerminalLine[]) => [...prev, ...(Array.isArray(lines) ? lines : [lines])]);
   };
 
-  const executeCommand = (cmdStr: string) => {
+  const executeCommand = async (cmdStr: string) => {
     const trimmed = cmdStr.trim();
     if (!trimmed) {
         addToHistory({ id: Date.now().toString(), type: "input", text: "", cwd });
@@ -126,220 +77,21 @@ export default function TerminalApp() {
     setCommandHistory((prev: string[]) => [...prev, trimmed]);
     setHistoryIndex(-1); // Reset history pointer
 
-    const parts = trimmed.split(/\s+/);
-    const cmd = parts[0];
-    const args = parts.slice(1);
+    // Execute via Engine
+    const result = await execute(trimmed, cwd, setCwd);
 
-    // Helper for adding output
-    const out = (text: string) => ({ id: Date.now().toString() + Math.random(), type: "output" as const, text });
-    const err = (text: string) => ({ id: Date.now().toString() + Math.random(), type: "error" as const, text });
+    if (result.clear) {
+        setHistory([]);
+        return;
+    }
 
-    try {
-        switch (cmd) {
-            case "help":
-                addToHistory(out("Available commands: ls, cd, pwd, mkdir, touch, rm, cat, mv, clear, exit"));
-                break;
-
-            case "clear":
-                setHistory([]);
-                break;
-
-            case "pwd":
-                addToHistory(out(cwd));
-                break;
-
-            case "cd": {
-                const target = args[0] || "/home/user";
-                const absolutePath = resolvePath(cwd, target);
-
-                if (!fs.exists(absolutePath)) {
-                    addToHistory(err(`cd: ${target}: No such file or directory`));
-                } else {
-                    const stat = fs.stat(absolutePath);
-                    if (stat?.type === "dir") {
-                        setCwd(absolutePath);
-                    } else {
-                        addToHistory(err(`cd: ${target}: Not a directory`));
-                    }
-                }
-                break;
-            }
-
-            case "ls": {
-                const target = args[0] || ".";
-                const absolutePath = resolvePath(cwd, target);
-
-                if (!fs.exists(absolutePath)) {
-                    addToHistory(err(`ls: cannot access '${target}': No such file or directory`));
-                } else {
-                    const stat = fs.stat(absolutePath);
-                    if (stat?.type === "dir") {
-                        const children = fs.list(absolutePath);
-                        // Sort: directories first, then alphabetical
-                        children.sort((a, b) => {
-                            if (a.type === b.type) return a.name.localeCompare(b.name);
-                            return a.type === 'dir' ? -1 : 1;
-                        });
-
-                        const names = children.map(c => c.type === 'dir' ? c.name + '/' : c.name).join("  ");
-                        if (names) addToHistory(out(names));
-                    } else {
-                        // Is a file
-                        addToHistory(out(args[0] || getFileName(absolutePath)));
-                    }
-                }
-                break;
-            }
-
-            case "mkdir": {
-                if (!args[0]) {
-                    addToHistory(err("mkdir: missing operand"));
-                    break;
-                }
-                const target = resolvePath(cwd, args[0]);
-                if (fs.exists(target)) {
-                    addToHistory(err(`mkdir: cannot create directory '${args[0]}': File exists`));
-                } else {
-                    // Check parent exists
-                    const parent = getParentDir(target);
-                    if (!fs.exists(parent)) {
-                         addToHistory(err(`mkdir: cannot create directory '${args[0]}': No such file or directory`));
-                    } else {
-                        fs.mkdir(target);
-                    }
-                }
-                break;
-            }
-
-            case "touch": {
-                if (!args[0]) {
-                    addToHistory(err("touch: missing operand"));
-                    break;
-                }
-                const target = resolvePath(cwd, args[0]);
-                if (!fs.exists(target)) {
-                    const parent = getParentDir(target);
-                     if (!fs.exists(parent)) {
-                         addToHistory(err(`touch: cannot touch '${args[0]}': No such file or directory`));
-                    } else {
-                        fs.write(target, "");
-                    }
-                }
-                break;
-            }
-
-            case "rm": {
-                if (!args[0]) {
-                    addToHistory(err("rm: missing operand"));
-                    break;
-                }
-                const target = resolvePath(cwd, args[0]);
-                if (!fs.exists(target)) {
-                    addToHistory(err(`rm: cannot remove '${args[0]}': No such file or directory`));
-                } else {
-                    const stat = fs.stat(target);
-                    if (stat?.type === 'dir') {
-                         addToHistory(err(`rm: cannot remove '${args[0]}': Is a directory`));
-                    } else {
-                        fs.trash(target);
-                    }
-                }
-                break;
-            }
-
-            case "cat": {
-                if (!args[0]) {
-                    addToHistory(err("cat: missing operand"));
-                    break;
-                }
-                const target = resolvePath(cwd, args[0]);
-                if (!fs.exists(target)) {
-                    addToHistory(err(`cat: ${args[0]}: No such file or directory`));
-                } else {
-                    const stat = fs.stat(target);
-                    if (stat?.type === 'dir') {
-                        addToHistory(err(`cat: ${args[0]}: Is a directory`));
-                    } else {
-                        const content = fs.read(target);
-                        if (content !== null) addToHistory(out(content));
-                    }
-                }
-                break;
-            }
-
-            case "mv": {
-                if (args.length < 2) {
-                    addToHistory(err("mv: missing file operand"));
-                    break;
-                }
-                const srcArg = args[0];
-                const destArg = args[1];
-
-                const srcPath = resolvePath(cwd, srcArg);
-                const destPath = resolvePath(cwd, destArg);
-
-                if (!fs.exists(srcPath)) {
-                    addToHistory(err(`mv: cannot stat '${srcArg}': No such file or directory`));
-                    break;
-                }
-
-                // Case 1: Destination exists
-                if (fs.exists(destPath)) {
-                    const destStat = fs.stat(destPath);
-                    if (destStat?.type === 'dir') {
-                        // Move into directory
-                        fs.move(srcPath, destPath);
-                    } else {
-                        // Destination is a file. Overwrite is unsupported per strict requirements.
-                        addToHistory(err(`mv: '${destArg}' exists. Overwriting not supported.`));
-                    }
-                    break;
-                }
-
-                // Case 2: Destination does not exist (Rename or Move+Rename)
-                const destParentPath = getParentDir(destPath);
-                const destName = getFileName(destPath);
-
-                if (!fs.exists(destParentPath)) {
-                     addToHistory(err(`mv: cannot move '${srcArg}' to '${destArg}': No such file or directory`));
-                     break;
-                }
-
-                const destParentStat = fs.stat(destParentPath);
-                if (destParentStat?.type !== 'dir') {
-                    addToHistory(err(`mv: cannot move '${srcArg}' to '${destArg}': Not a directory`));
-                    break;
-                }
-
-                const srcParentPath = getParentDir(srcPath);
-
-                if (srcParentPath === destParentPath) {
-                    // Simple Rename
-                    fs.rename(srcPath, destName);
-                } else {
-                    // Move + Rename
-                    fs.move(srcPath, destParentPath);
-                    const srcName = getFileName(srcPath);
-                    const intermediatePath = resolvePath(destParentPath, srcName);
-                    fs.rename(intermediatePath, destName);
-                }
-                break;
-            }
-
-            case "exit":
-                setHistory([]);
-                break;
-
-            case "echo":
-                addToHistory(out(args.join(" ")));
-                break;
-
-            default:
-                addToHistory(err(`${cmd}: command not found`));
-        }
-
-    } catch (e: any) {
-        addToHistory(err(`Internal Error: ${e.message}`));
+    if (result.output) {
+        const type = result.exitCode !== 0 ? "error" : "output";
+        addToHistory({
+            id: Date.now().toString() + Math.random(),
+            type,
+            text: result.output
+        });
     }
   };
 
