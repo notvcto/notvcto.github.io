@@ -13,6 +13,7 @@ const wallpapers: Record<string, string> = {
   "wall-9": "./images/wallpapers/wall-9.webp",
   "wall-10": "./images/wallpapers/wall-10.webp",
   "minimal": "./images/wallpapers/minimal.png",
+  "questing-quokka-d": "./images/wallpapers/questing-quokka-d.webp",
 };
 
 const accentColors = [
