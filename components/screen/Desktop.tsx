@@ -292,7 +292,7 @@ export default function Desktop({ blogPosts, achievements }: DesktopProps) {
              />
 
              <BackgroundImage img={wallpaper} />
-             <Navbar />
+             <Navbar lockScreen={() => setLocked(true)} />
              <NotificationToast />
              <DeviceWatcher />
              <SideBar toggleShowApps={() => setShowApps(!showApps)} showAppsActive={showApps} />
