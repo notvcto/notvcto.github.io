@@ -47,6 +47,8 @@ export default function TerminalApp() {
       setCwd("/");
     }
 
+    console.log("Terminal Engine v2 Loaded");
+
     // Welcome Message
     setHistory([
         { id: "init-1", type: "output", text: "Welcome to Ubuntu 22.04.2 LTS (GNU/Linux 5.15.0-76-generic x86_64)" },
