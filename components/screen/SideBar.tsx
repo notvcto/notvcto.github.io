@@ -4,6 +4,7 @@ import { useWMStore } from "@/lib/store/wm";
 import { defaultApps } from "@/components/apps/registry";
 import SideBarApp from "@/components/base/SideBarApp";
 import { getIconPath } from "@/lib/utils/icons";
+import { useBlockDevices } from "@/lib/hooks/use-block-devices";
 
 interface SideBarProps {
     toggleShowApps: () => void;
@@ -12,6 +13,7 @@ interface SideBarProps {
 
 export default function SideBar({ toggleShowApps, showAppsActive }: SideBarProps) {
     const { windows, focusedWindowId, openWindow, minimizeWindow, focusWindow } = useWMStore();
+    const { mount } = useBlockDevices();
     const [orderedFavIds, setOrderedFavIds] = useState<string[]>([]);
     const [draggingId, setDraggingId] = useState<string | null>(null);
 
@@ -127,7 +129,7 @@ export default function SideBar({ toggleShowApps, showAppsActive }: SideBarProps
                     isOpen={false}
                     isFocused={false}
                     openApp={() => {
-                        console.log("Open CDROM");
+                        mount('/dev/sr0');
                     }}
                 />
             </div>

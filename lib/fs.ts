@@ -1,4 +1,5 @@
-import { useFileSystemStore, FSNode, FileNode, DirNode } from './store/filesystem';
+import { useFileSystemStore, FSNode, FileNode, DirNode, resolvePath as resolvePathFromStore } from './store/filesystem';
+import { useBlockDeviceStore } from './store/blockDevices';
 
 // --- Helper Functions (Internal) ---
 
@@ -27,46 +28,57 @@ export const resolveRelativePath = (cwd: string, target: string): string => {
     return result || '/';
 };
 
-// Resolve path string to a Node ID
-// Note: We accept nodes and rootId as arguments to keep this pure,
-// or we can use the store state if we want to bind it.
-// For `useFS`, we will pass the current store state.
-const resolvePathToNode = (path: string, nodes: Record<string, FSNode>, rootId: string): FSNode | null => {
-  if (path === '/') return nodes[rootId];
+// Internal resolver using the store's helper but injecting virtual nodes
+const resolveNode = (path: string, nodes: Record<string, FSNode>, rootId: string, devices: Record<string, any>): FSNode | null => {
+    // 1. Virtual /dev
+    if (path === '/dev' || path === '/dev/') {
+        return {
+            id: 'virtual-dev',
+            name: 'dev',
+            type: 'dir',
+            parent: rootId,
+            children: ['dev-sda', 'dev-sda1', 'dev-sr0'],
+            createdAt: 0,
+            modifiedAt: 0,
+        } as DirNode;
+    }
+    if (path === '/dev/sda') return { id: 'dev-sda', name: 'sda', type: 'file', parent: 'virtual-dev', content: '', createdAt: 0, modifiedAt: 0 } as FileNode;
+    if (path === '/dev/sda1') return { id: 'dev-sda1', name: 'sda1', type: 'file', parent: 'virtual-dev', content: '', createdAt: 0, modifiedAt: 0 } as FileNode;
+    if (path === '/dev/sr0') return { id: 'dev-sr0', name: 'sr0', type: 'file', parent: 'virtual-dev', content: '', createdAt: 0, modifiedAt: 0 } as FileNode;
 
-  // Remove trailing slash
-  if (path.length > 1 && path.endsWith('/')) {
-      path = path.slice(0, -1);
-  }
+    // 2. Virtual CDROM content
+    // We assume devices.sr0 exists
+    if (devices.sr0 && devices.sr0.mounted && devices.sr0.mountPoint) {
+         let mp = devices.sr0.mountPoint; // e.g. /mnt/cdrom
+         if (mp.endsWith('/') && mp.length > 1) mp = mp.slice(0, -1);
 
-  // Handle absolute paths only for now (or assume relative paths are resolved before calling this if needed)
-  // But standard is absolute.
-  if (!path.startsWith('/')) {
-      // In a real FS, we would resolve against CWD.
-      // For now, we assume absolute paths or relative from root if missing leading slash (bad practice but handleable).
-      // But let's enforce absolute.
-      // However, typical usage might pass relative paths if we don't track CWD here.
-      // The consumers (Terminal) track CWD. They should resolve path before calling API.
-      // So we assume path is absolute.
-  }
+         if (path === `${mp}/README.txt`) {
+             return {
+                id: 'virtual-cdrom-readme',
+                name: 'README.txt',
+                type: 'file',
+                parent: 'virtual-cdrom-root', // Placeholder
+                content: 'File is encrypted.',
+                createdAt: 0,
+                modifiedAt: 0
+             } as FileNode;
+         }
+    }
 
-  const parts = path.split('/').filter(Boolean);
-  let current: FSNode = nodes[rootId];
-
-  if (!current) return null; // Safety
-
-  for (const part of parts) {
-    if (current.type !== 'dir') return null;
-    const foundId = (current as DirNode).children.find(childId => nodes[childId]?.name === part);
-    if (!foundId) return null;
-    current = nodes[foundId];
-  }
-
-  return current;
+    // 3. Fallback to real store
+    return resolvePathFromStore(path, nodes, rootId);
 };
 
 const getNodePath = (id: string, nodes: Record<string, FSNode>, rootId: string): string => {
     let current = nodes[id];
+
+    // Handle virtual IDs
+    if (id === 'virtual-dev') return '/dev';
+    if (id === 'dev-sda') return '/dev/sda';
+    if (id === 'dev-sda1') return '/dev/sda1';
+    if (id === 'dev-sr0') return '/dev/sr0';
+    if (id === 'virtual-cdrom-readme') return '/mnt/cdrom/README.txt'; // Assuming mountpoint /mnt/cdrom
+
     if (!current) return '';
     if (id === rootId) return '/';
 
@@ -128,7 +140,9 @@ export function useFS(): FileSystemAPI {
       updateMetadata
   } = useFileSystemStore();
 
-  const resolve = (path: string) => resolvePathToNode(path, nodes, rootId);
+  const { devices } = useBlockDeviceStore();
+
+  const resolve = (path: string) => resolveNode(path, nodes, rootId, devices);
   const absolute = (id: string) => getNodePath(id, nodes, rootId);
 
   return {
@@ -139,9 +153,41 @@ export function useFS(): FileSystemAPI {
         return null;
     },
     list: (path: string) => {
+        // Special case for /dev
+        if (path === '/dev' || path === '/dev/') {
+             return [
+                 resolve('/dev/sda'),
+                 resolve('/dev/sda1'),
+                 resolve('/dev/sr0')
+             ].filter(Boolean) as FSNode[];
+        }
+
+        // Special case for mounted CDROM
+        if (devices.sr0.mounted && devices.sr0.mountPoint) {
+            // Remove trailing slash for comparison
+            const normalizedPath = path.endsWith('/') && path.length > 1 ? path.slice(0, -1) : path;
+            const normalizedMount = devices.sr0.mountPoint.endsWith('/') && devices.sr0.mountPoint.length > 1 ? devices.sr0.mountPoint.slice(0, -1) : devices.sr0.mountPoint;
+
+            if (normalizedPath === normalizedMount) {
+                 return [
+                     resolve(`${normalizedMount}/README.txt`)
+                 ].filter(Boolean) as FSNode[];
+            }
+        }
+
         const node = resolve(path);
         if (node && node.type === 'dir') {
-            return node.children.map(id => nodes[id]).filter(Boolean);
+            const children = node.children.map(id => nodes[id]).filter(Boolean);
+
+            // Inject /dev if we are at root
+            const isRoot = path === '/' || path === '' || node.id === rootId;
+            if (isRoot) {
+                 if (!children.find(c => c.name === 'dev')) {
+                     const devNode = resolve('/dev');
+                     if (devNode) children.push(devNode);
+                 }
+            }
+            return children;
         }
         return [];
     },
@@ -156,14 +202,18 @@ export function useFS(): FileSystemAPI {
     write: (path: string, content: string) => {
         const node = resolve(path);
         if (node && node.type === 'file') {
+            // Prevent writing to virtual files
+            if (node.id.startsWith('dev-') || node.id.startsWith('virtual-')) return;
             updateFile(node.id, content);
         } else {
-            // Create if not exists? Standard 'write' usually overwrites or creates.
-            // Split path to parent + name
+            // Create if not exists
             const parts = path.split('/');
             const name = parts.pop();
             const parentPath = parts.join('/') || '/';
             const parent = resolve(parentPath);
+            // Prevent creating in virtual dirs (except maybe real subdirs if we mixed them, but /dev is purely virtual)
+            if (parent && parent.id.startsWith('virtual-')) return;
+
             if (parent && parent.type === 'dir' && name) {
                  createFile(parent.id, name, content);
             }
@@ -172,19 +222,16 @@ export function useFS(): FileSystemAPI {
     mkdir: (path: string) => {
         if (resolve(path)) return; // Already exists
 
-        // Find parent
-        // For simplicity, we assume parent exists (no recursive mkdir -p yet unless we want it)
-        // Let's implement non-recursive first as per store capabilities.
-        // But users might expect 'mkdir /home/user/new/folder'
-
         let targetPath = path;
         if (targetPath.endsWith('/')) targetPath = targetPath.slice(0, -1);
 
         const parts = targetPath.split('/');
         const name = parts.pop();
-        const parentPath = parts.join('/') || '/'; // if path was /foo, parent is /
+        const parentPath = parts.join('/') || '/';
 
         const parent = resolve(parentPath);
+        if (parent && parent.id.startsWith('virtual-')) return; // Block virtual
+
         if (parent && parent.type === 'dir' && name) {
             createDir(parent.id, name);
         } else {
@@ -195,11 +242,15 @@ export function useFS(): FileSystemAPI {
     // Lifecycle
     delete: (path: string) => {
         const node = resolve(path);
-        if (node) deleteNode(node.id);
+        if (node && !node.id.startsWith('dev-') && !node.id.startsWith('virtual-')) {
+             deleteNode(node.id);
+        }
     },
 
     trash: (path: string) => {
         const node = resolve(path);
+        if (node && (node.id.startsWith('dev-') || node.id.startsWith('virtual-'))) return; // Can't trash virtual
+
         const trashDir = resolve('/trash');
         if (node && trashDir && trashDir.type === 'dir') {
             updateMetadata(node.id, { originalParent: node.parent });
@@ -224,12 +275,10 @@ export function useFS(): FileSystemAPI {
     // Management
     move: (fromPath: string, toPath: string) => {
         const node = resolve(fromPath);
-        const targetParent = resolve(toPath); // Assuming toPath is the *directory* to move into?
-        // Or is toPath the new full path?
-        // Standard `mv src dest` -> if dest is dir, move inside. If dest is file/newname, rename/move.
+        if (node && (node.id.startsWith('dev-') || node.id.startsWith('virtual-'))) return;
 
-        // Let's assume toPath is the TARGET DIRECTORY for now, matching `moveNode` store signature (id, newParentId)
-        // But `fs.move(from, to)` usually implies full path.
+        const targetParent = resolve(toPath);
+        if (targetParent && targetParent.id.startsWith('virtual-')) return;
 
         if (node && targetParent && targetParent.type === 'dir') {
              moveNode(node.id, targetParent.id);
@@ -238,12 +287,16 @@ export function useFS(): FileSystemAPI {
 
     rename: (path: string, newName: string) => {
         const node = resolve(path);
-        if (node) renameNode(node.id, newName);
+        if (node && !node.id.startsWith('dev-') && !node.id.startsWith('virtual-')) {
+             renameNode(node.id, newName);
+        }
     },
 
     updateMetadata: (path: string, metadata: Record<string, any>) => {
         const node = resolve(path);
-        if (node) updateMetadata(node.id, metadata);
+        if (node && !node.id.startsWith('dev-') && !node.id.startsWith('virtual-')) {
+             updateMetadata(node.id, metadata);
+        }
     },
 
     init,
