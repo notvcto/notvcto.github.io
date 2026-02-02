@@ -1,41 +1,16 @@
 [
   {
-    "name": "notvcto.github.io",
-    "date": "Sep 2024",
-    "link": "https://github.com/notvcto/notvcto.github.io",
+    "name": "grow-garden-live",
+    "date": "Jun 2025",
+    "link": "https://github.com/notvcto/grow-garden-live",
     "description": [
-      "The page you're seeing right now!"
+      "Grow a Garden stock website."
     ],
     "languages": [
       "typescript",
-      "javascript",
+      "css",
       "html",
-      "css"
-    ],
-    "topics": []
-  },
-  {
-    "name": "GardenBot",
-    "date": "May 2025",
-    "link": "https://github.com/notvcto/GardenBot",
-    "description": [
-      "Discord bot for Grow a Garden stock notifying."
-    ],
-    "languages": [
       "javascript"
-    ],
-    "topics": []
-  },
-  {
-    "name": "omen",
-    "date": "Sep 2024",
-    "link": "https://github.com/notvcto/omen",
-    "description": [
-      "No description provided."
-    ],
-    "languages": [
-      "javascript",
-      "scss"
     ],
     "topics": []
   },
@@ -53,13 +28,44 @@
     ]
   },
   {
-    "name": "vsh",
-    "date": "Jul 2025",
-    "link": "https://github.com/notvcto/vsh",
+    "name": "GardenBot",
+    "date": "May 2025",
+    "link": "https://github.com/notvcto/GardenBot",
     "description": [
-      "The beginner-friendly, power-user-capable shell."
+      "Discord bot for Grow a Garden stock notifying."
     ],
-    "languages": [],
+    "languages": [
+      "javascript"
+    ],
+    "topics": []
+  },
+  {
+    "name": "notvcto.github.io",
+    "date": "Sep 2024",
+    "link": "https://github.com/notvcto/notvcto.github.io",
+    "description": [
+      "The page you're seeing right now!"
+    ],
+    "languages": [
+      "typescript",
+      "javascript",
+      "html",
+      "css",
+      "python"
+    ],
+    "topics": []
+  },
+  {
+    "name": "omen",
+    "date": "Sep 2024",
+    "link": "https://github.com/notvcto/omen",
+    "description": [
+      "No description provided."
+    ],
+    "languages": [
+      "javascript",
+      "scss"
+    ],
     "topics": []
   },
   {
@@ -71,21 +77,6 @@
     ],
     "languages": [
       "python"
-    ],
-    "topics": []
-  },
-  {
-    "name": "grow-garden-live",
-    "date": "Jun 2025",
-    "link": "https://github.com/notvcto/grow-garden-live",
-    "description": [
-      "Grow a Garden stock website."
-    ],
-    "languages": [
-      "typescript",
-      "css",
-      "html",
-      "javascript"
     ],
     "topics": []
   },
