@@ -1,5 +1,75 @@
 [
   {
+    "name": "notvcto",
+    "date": "Feb 2022",
+    "link": "https://github.com/notvcto/notvcto",
+    "description": [
+      "Config files for my GitHub profile."
+    ],
+    "languages": [],
+    "topics": [
+      "config",
+      "github-config"
+    ]
+  },
+  {
+    "name": "vwh",
+    "date": "Feb 2026",
+    "link": "https://github.com/notvcto/vwh",
+    "description": [
+      "The VWH Accountability Standard. A native Rust CLI for cryptographically verifying digital artifacts."
+    ],
+    "languages": [
+      "rust"
+    ],
+    "topics": [
+      "accountability",
+      "cli",
+      "cryptography",
+      "digital-signature",
+      "ed25519",
+      "file-format",
+      "forensics",
+      "provenance",
+      "rust",
+      "security",
+      "supply-chain-security",
+      "verification"
+    ]
+  },
+  {
+    "name": "vsh",
+    "date": "Feb 2026",
+    "link": "https://github.com/notvcto/vsh",
+    "description": [
+      "A shell for everyone, built by everyone. Cognitive flexibility meets full shell power."
+    ],
+    "languages": [
+      "rust"
+    ],
+    "topics": [
+      "beginner-friendly",
+      "cli",
+      "command-line",
+      "community-driven",
+      "rust",
+      "shell",
+      "terminal"
+    ]
+  },
+  {
+    "name": "vwh-registry",
+    "date": "Feb 2026",
+    "link": "https://github.com/notvcto/vwh-registry",
+    "description": [
+      "Public registry for VWH-generated signing keys and revoked artifacts."
+    ],
+    "languages": [
+      "html"
+    ],
+    "topics": []
+  },
+  {
     "name": "notvcto.github.io",
     "date": "Sep 2024",
     "link": "https://github.com/notvcto/notvcto.github.io",
@@ -29,19 +99,6 @@
       "javascript"
     ],
     "topics": []
-  },
-  {
-    "name": "notvcto",
-    "date": "Feb 2022",
-    "link": "https://github.com/notvcto/notvcto",
-    "description": [
-      "Config files for my GitHub profile."
-    ],
-    "languages": [],
-    "topics": [
-      "config",
-      "github-config"
-    ]
   },
   {
     "name": "GardenBot",
