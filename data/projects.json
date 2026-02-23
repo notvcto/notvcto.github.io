@@ -1,5 +1,21 @@
 [
   {
+    "name": "notvcto.github.io",
+    "date": "Sep 2024",
+    "link": "https://github.com/notvcto/notvcto.github.io",
+    "description": [
+      "The page you're seeing right now!"
+    ],
+    "languages": [
+      "typescript",
+      "javascript",
+      "html",
+      "css",
+      "python"
+    ],
+    "topics": []
+  },
+  {
     "name": "notvcto",
     "date": "Feb 2022",
     "link": "https://github.com/notvcto/notvcto",
@@ -66,22 +82,6 @@
     ],
     "languages": [
       "html"
-    ],
-    "topics": []
-  },
-  {
-    "name": "notvcto.github.io",
-    "date": "Sep 2024",
-    "link": "https://github.com/notvcto/notvcto.github.io",
-    "description": [
-      "The page you're seeing right now!"
-    ],
-    "languages": [
-      "typescript",
-      "javascript",
-      "html",
-      "css",
-      "python"
     ],
     "topics": []
   },
