@@ -1,5 +1,24 @@
 [
   {
+    "name": "lacinator",
+    "date": "Mar 2026",
+    "link": "https://github.com/notvcto/lacinator",
+    "description": [
+      "The one and only Lacinator - Truth or Dare Discord bot for the homies"
+    ],
+    "languages": [
+      "javascript"
+    ],
+    "topics": [
+      "discord",
+      "discord-bot",
+      "discord-js",
+      "discordjs",
+      "javascript",
+      "truth-or-dare"
+    ]
+  },
+  {
     "name": "notvcto.github.io",
     "date": "Sep 2024",
     "link": "https://github.com/notvcto/notvcto.github.io",
