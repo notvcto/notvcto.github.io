@@ -1,5 +1,21 @@
 [
   {
+    "name": "notvcto.github.io",
+    "date": "Sep 2024",
+    "link": "https://github.com/notvcto/notvcto.github.io",
+    "description": [
+      "The page you're seeing right now!"
+    ],
+    "languages": [
+      "typescript",
+      "javascript",
+      "html",
+      "css",
+      "python"
+    ],
+    "topics": []
+  },
+  {
     "name": "lacinator",
     "date": "Mar 2026",
     "link": "https://github.com/notvcto/lacinator",
@@ -17,22 +33,6 @@
       "javascript",
       "truth-or-dare"
     ]
-  },
-  {
-    "name": "notvcto.github.io",
-    "date": "Sep 2024",
-    "link": "https://github.com/notvcto/notvcto.github.io",
-    "description": [
-      "The page you're seeing right now!"
-    ],
-    "languages": [
-      "typescript",
-      "javascript",
-      "html",
-      "css",
-      "python"
-    ],
-    "topics": []
   },
   {
     "name": "notvcto",
