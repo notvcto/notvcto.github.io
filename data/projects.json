@@ -1,5 +1,54 @@
 [
   {
+    "name": "compress-video",
+    "date": "Apr 2026",
+    "link": "https://github.com/notvcto/compress-video",
+    "description": [
+      "An interactive FFmpeg wrapper for video compression."
+    ],
+    "languages": [
+      "shell"
+    ],
+    "topics": [
+      "bash",
+      "cli",
+      "ffmpeg",
+      "linux",
+      "video-compression"
+    ]
+  },
+  {
+    "name": "get",
+    "date": "Apr 2026",
+    "link": "https://github.com/notvcto/get",
+    "description": [
+      "Linux tooling by notvcto"
+    ],
+    "languages": [
+      "shell",
+      "html"
+    ],
+    "topics": []
+  },
+  {
+    "name": "dotfiles",
+    "date": "Apr 2026",
+    "link": "https://github.com/notvcto/dotfiles",
+    "description": [
+      "No description provided."
+    ],
+    "languages": [
+      "shell",
+      "python",
+      "css",
+      "lua",
+      "glsl",
+      "perl",
+      "qml"
+    ],
+    "topics": []
+  },
+  {
     "name": "notvcto.github.io",
     "date": "Sep 2024",
     "link": "https://github.com/notvcto/notvcto.github.io",
