@@ -3,7 +3,7 @@ name: Update Projects List
 
 on:
   schedule:
-    - cron: "0 2 * * 1" # every Monday at 2AM
+    - cron: "0 2 * * 1"
   workflow_dispatch:
 
 jobs:
@@ -17,10 +17,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
-
-      - name: Install fetch
-        run: npm install node-fetch
+          node-version: 24
 
       - name: Run fetch script
         run: node scripts/fetch-projects.mjs
