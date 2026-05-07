@@ -1,20 +1,68 @@
 [
   {
-    "name": "compress-video",
-    "date": "Apr 2026",
-    "link": "https://github.com/notvcto/compress-video",
+    "name": "notvcto.github.io",
+    "date": "Sep 2024",
+    "link": "https://github.com/notvcto/notvcto.github.io",
     "description": [
-      "An interactive FFmpeg wrapper for video compression."
+      "The page you're seeing right now!"
     ],
     "languages": [
-      "shell"
+      "typescript",
+      "javascript",
+      "html",
+      "css",
+      "python"
+    ],
+    "topics": []
+  },
+  {
+    "name": "rscapt",
+    "date": "May 2026",
+    "link": "https://github.com/notvcto/rscapt",
+    "description": [
+      "OBS replay buffer → 1440p clip processor for Windows"
+    ],
+    "languages": [
+      "rust"
+    ],
+    "topics": []
+  },
+  {
+    "name": "dusky-asahi",
+    "date": "Apr 2026",
+    "link": "https://github.com/notvcto/dusky-asahi",
+    "description": [
+      "Dusky Hyprland desktop environment ported to Apple Silicon — Asahi Linux / Arch Linux   ARM (ALARM) on M1/M2/M3 Macs"
+    ],
+    "languages": [
+      "shell",
+      "python",
+      "css",
+      "lua",
+      "glsl",
+      "qml"
     ],
     "topics": [
-      "bash",
-      "cli",
-      "ffmpeg",
-      "linux",
-      "video-compression"
+      "alarm",
+      "apple-silicon",
+      "arch-linux-arm",
+      "asahi-linux",
+      "asahilinux",
+      "dotfiles",
+      "hyprland",
+      "m1",
+      "m2",
+      "matugen",
+      "rice",
+      "uwsm",
+      "wayland",
+      "archlinux",
+      "automated",
+      "configs",
+      "rofi",
+      "scripts",
+      "swaync",
+      "asahi-alarm"
     ]
   },
   {
@@ -31,20 +79,22 @@
     "topics": []
   },
   {
-    "name": "notvcto.github.io",
-    "date": "Sep 2024",
-    "link": "https://github.com/notvcto/notvcto.github.io",
+    "name": "compress-video",
+    "date": "Apr 2026",
+    "link": "https://github.com/notvcto/compress-video",
     "description": [
-      "The page you're seeing right now!"
+      "An interactive FFmpeg wrapper for video compression."
     ],
     "languages": [
-      "typescript",
-      "javascript",
-      "html",
-      "css",
-      "python"
+      "shell"
     ],
-    "topics": []
+    "topics": [
+      "bash",
+      "cli",
+      "ffmpeg",
+      "linux",
+      "video-compression"
+    ]
   },
   {
     "name": "lacinator",
