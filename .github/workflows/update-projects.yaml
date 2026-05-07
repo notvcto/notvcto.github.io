@@ -1,27 +1,23 @@
 # .github/workflows/update-projects.yml
 name: Update Projects List
-
 on:
   schedule:
     - cron: "0 2 * * 1"
   workflow_dispatch:
-
 jobs:
   update-projects:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 24
-
       - name: Run fetch script
         run: node scripts/fetch-projects.mjs
-
       - name: Commit updated projects.json
         run: |
           git config user.name "github-actions[bot]"
