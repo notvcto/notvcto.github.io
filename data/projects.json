@@ -1,5 +1,33 @@
 [
   {
+    "name": "rscapt",
+    "date": "May 2026",
+    "link": "https://github.com/notvcto/rscapt",
+    "description": [
+      "OBS replay buffer → 1440p clip processor for Windows"
+    ],
+    "languages": [
+      "rust",
+      "typescript",
+      "css",
+      "html"
+    ],
+    "topics": []
+  },
+  {
+    "name": "notvcto",
+    "date": "Feb 2022",
+    "link": "https://github.com/notvcto/notvcto",
+    "description": [
+      "Config files for my GitHub profile."
+    ],
+    "languages": [],
+    "topics": [
+      "config",
+      "github-config"
+    ]
+  },
+  {
     "name": "notvcto.github.io",
     "date": "Sep 2024",
     "link": "https://github.com/notvcto/notvcto.github.io",
@@ -12,18 +40,6 @@
       "html",
       "css",
       "python"
-    ],
-    "topics": []
-  },
-  {
-    "name": "rscapt",
-    "date": "May 2026",
-    "link": "https://github.com/notvcto/rscapt",
-    "description": [
-      "OBS replay buffer → 1440p clip processor for Windows"
-    ],
-    "languages": [
-      "rust"
     ],
     "topics": []
   },
@@ -113,19 +129,6 @@
       "discordjs",
       "javascript",
       "truth-or-dare"
-    ]
-  },
-  {
-    "name": "notvcto",
-    "date": "Feb 2022",
-    "link": "https://github.com/notvcto/notvcto",
-    "description": [
-      "Config files for my GitHub profile."
-    ],
-    "languages": [],
-    "topics": [
-      "config",
-      "github-config"
     ]
   },
   {
