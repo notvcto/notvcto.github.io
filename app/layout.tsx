@@ -15,9 +15,37 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "NOTVCTO // SYSTEMS ARCHITECT",
+  metadataBase: new URL("https://notvcto.github.io"),
+  title: {
+    default: "NOTVCTO // SYSTEMS ARCHITECT",
+    template: "%s | NOTVCTO",
+  },
   description: "Victor Soto - System Architect & Interface Designer crafting intelligent digital experiences",
-    generator: 'v0.app'
+  openGraph: {
+    title: "NOTVCTO // SYSTEMS ARCHITECT",
+    description: "Victor Soto - System Architect & Interface Designer crafting intelligent digital experiences",
+    url: "https://notvcto.github.io",
+    siteName: "Victor Soto Portfolio",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NOTVCTO // SYSTEMS ARCHITECT",
+    description: "Victor Soto - System Architect & Interface Designer crafting intelligent digital experiences",
+    creator: "@notvcto",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 }
 
 export const viewport: Viewport = {
