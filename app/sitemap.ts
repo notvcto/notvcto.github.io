@@ -4,7 +4,7 @@ import { getAllPosts } from '@/lib/blog.server'
 export const dynamic = 'force-static'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://notvcto.github.io'
+  const baseUrl = 'https://notvc.to'
   const posts = getAllPosts()
 
   const blogPosts = posts.map((post) => ({

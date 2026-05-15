@@ -8,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: 'https://notvcto.github.io/sitemap.xml',
+    sitemap: 'https://notvc.to/sitemap.xml',
   }
 }

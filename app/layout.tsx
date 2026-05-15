@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://notvcto.github.io"),
+  metadataBase: new URL("https://notvc.to"),
   title: {
     default: "NOTVCTO // SYSTEMS ARCHITECT",
     template: "%s | NOTVCTO",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "NOTVCTO // SYSTEMS ARCHITECT",
     description: "Victor Soto - System Architect & Interface Designer crafting intelligent digital experiences",
-    url: "https://notvcto.github.io",
+    url: "https://notvc.to",
     siteName: "Victor Soto Portfolio",
     locale: "en_US",
     type: "website",
