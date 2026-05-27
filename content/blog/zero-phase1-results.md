@@ -17,12 +17,11 @@ reasoning problems across web exploitation, reverse engineering, cryptography, a
 forensics. No training, no fine-tuning. Just the base models, cold.
 
 Here are the solve rates:
-
-```
-Qwen2.5-1.5B-Instruct   25.0%
-Qwen2.5-3B-Instruct     25.0%
-Qwen2.5-7B-Instruct     28.1%
-```
+| Model | Solve Rate |
+|---|---|
+| Qwen2.5-1.5B | 25.0% |
+| Qwen2.5-3B | 25.0% |
+| Qwen2.5-7B | 28.1% |
 
 The 7B bump is a single half-credit on an XSS problem. Effectively flat across all
 three sizes.
