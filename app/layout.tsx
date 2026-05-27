@@ -46,6 +46,21 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  icons: {
+    icon: [
+      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-48.png", sizes: "48x48", type: "image/png" },
+      { url: "/favicon-96.png", sizes: "96x96", type: "image/png" },
+    ],
+    apple: [
+      { url: "/favicon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    other: [
+      { rel: "android-chrome-192x192", url: "/favicon-192.png" },
+      { rel: "android-chrome-512x512", url: "/favicon-512.png" },
+    ],
+  },
 }
 
 export const viewport: Viewport = {
