@@ -26,7 +26,7 @@ async function getAllPosts() {
 
 async function generateImages() {
   console.log('Generating OG images...');
-  const browser = await puppeteer.launch({ headless: 'new' });
+  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
   const page = await browser.newPage();
   await page.setViewport({ width: 1200, height: 630, deviceScaleFactor: 1 });
 
@@ -60,4 +60,7 @@ async function generateImages() {
   console.log('Finished generating OG images.');
 }
 
-generateImages().catch(console.error);
+generateImages().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

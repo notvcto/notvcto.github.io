@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "node scripts/generate-og.mjs && next build",
+    "build": "npx puppeteer browsers install chrome && node scripts/generate-og.mjs && next build",
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start"
