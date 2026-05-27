@@ -60,14 +60,15 @@ export function BlogPostClient({ post }: { post: BlogPost }) {
             <blockquote className="border-l-4 border-white/10 pl-6 py-2 my-8 italic bg-white/[0.01] rounded-r-lg" {...props} />
           ),
           table: ({node, ...props}) => (
-            <div className="my-8 overflow-x-auto border border-white/5 rounded-xl bg-white/[0.01]">
-              <table className="w-full border-collapse text-left" {...props} />
+            <div className="my-8 overflow-x-auto border border-white/10 rounded-xl bg-white/[0.01]">
+              <table className="w-full border-collapse text-left m-0!" {...props} />
             </div>
           ),
           thead: ({node, ...props}) => <thead className="border-b border-white/10 bg-white/[0.02]" {...props} />,
-          tbody: ({node, ...props}) => <tbody className="divide-y divide-white/5" {...props} />,
-          th: ({node, ...props}) => <th className="px-6 py-3 font-mono text-[10px] tracking-widest text-muted-foreground uppercase" {...props} />,
-          td: ({node, ...props}) => <td className="px-6 py-4 text-white/80" {...props} />,
+          tbody: ({node, ...props}) => <tbody {...props} />,
+          th: ({node, ...props}) => <th className="px-6 py-4 font-mono text-[10px] tracking-widest text-muted-foreground uppercase border-none!" {...props} />,
+          tr: ({node, ...props}) => <tr className="border-b border-white/10 last:border-none!" {...props} />,
+          td: ({node, ...props}) => <td className="px-6 py-4 text-white/80 border-none!" {...props} />,
           code: ({node, className, children, ...props}) => {
             const match = /language-(\w+)/.exec(className || '');
             const isInline = !className;
