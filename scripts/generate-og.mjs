@@ -35,7 +35,7 @@ async function generateImages() {
   // Generate Portfolio (Landing) Image
   console.log('Generating portfolio.png');
   const portfolioUrl = `${templatePath}?screenshot=1&type=portfolio`;
-  await page.goto(portfolioUrl, { waitUntil: 'networkidle0' });
+  await page.goto(portfolioUrl);
   await page.waitForSelector('body.ready');
   const stagePortfolio = await page.$('#stage');
   await stagePortfolio.screenshot({ path: path.join(ogOutputDirectory, 'portfolio.png') });
@@ -50,7 +50,7 @@ async function generateImages() {
     const url = encodeURIComponent(`notvc.to/blog/${post.slug}`);
     
     const postUrl = `${templatePath}?screenshot=1&type=post&category=${category}&title=${title}&desc=${desc}&url=${url}`;
-    await page.goto(postUrl, { waitUntil: 'networkidle0' });
+    await page.goto(postUrl);
     await page.waitForSelector('body.ready');
     const stagePost = await page.$('#stage');
     await stagePost.screenshot({ path: path.join(ogOutputDirectory, `${post.slug}.png`) });
