@@ -1,7 +1,7 @@
 ---
 title: 'I got tired of AI that lies to be polite — so I''m building one that doesn''t'
 shortTitle: 'Introducing Zero'
-date: '2026-05-26T12:00:00'
+date: '2026-05-27T01:10:12'
 category: 'Zero'
 complexity: 8.5
 readingTime: '9 min'
