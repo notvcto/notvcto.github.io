@@ -28,12 +28,21 @@ export const metadata: Metadata = {
     siteName: "Victor Soto Portfolio",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "/og/portfolio.png",
+        width: 1200,
+        height: 630,
+        alt: "NOTVCTO // SYSTEMS ARCHITECT",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "NOTVCTO // SYSTEMS ARCHITECT",
     description: "Victor Soto - System Architect & Interface Designer crafting intelligent digital experiences",
     creator: "@notvcto",
+    images: ["/og/portfolio.png"],
   },
   robots: {
     index: true,

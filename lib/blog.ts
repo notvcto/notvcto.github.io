@@ -2,6 +2,8 @@ export interface BlogPost {
   slug: string
   title: string
   shortTitle: string
+  ogTitle?: string
+  ogSubtitle?: string
   date: string
   category: string
   complexity: number

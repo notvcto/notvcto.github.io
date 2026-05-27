@@ -1,6 +1,8 @@
 ---
 title: 'Your ISP is lying to you — and your router will tell you everything'
 shortTitle: 'ISP Router Decryption'
+ogTitle: 'I decrypted my ISP router'
+ogSubtitle: 'A 5-minute dive into hidden super admin accounts and config.bin'
 date: '2026-04-17T12:00:00'
 category: 'Engineering'
 complexity: 7.2

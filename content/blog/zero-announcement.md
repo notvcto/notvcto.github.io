@@ -1,6 +1,8 @@
 ---
 title: 'I got tired of AI that lies to be polite — so I''m building one that doesn''t'
 shortTitle: 'Introducing Zero'
+ogTitle: 'I got tired of AI that lies to be polite'
+ogSubtitle: 'A minimum viable security reasoning model'
 date: '2026-05-27T01:10:12'
 category: 'Zero'
 complexity: 8.5

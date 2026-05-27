@@ -1,6 +1,8 @@
 ---
 title: 'Case Study: Cross-Platform Persistent Logic Bomb'
 shortTitle: 'Cross-Platform Persistent Logic Bomb'
+ogTitle: 'Cross-Platform Logic Bomb'
+ogSubtitle: 'A persistent DoS vulnerability within the Riot Games ecosystem'
 date: '2026-01-23T14:30:00'
 category: 'Engineering'
 complexity: 8.4
