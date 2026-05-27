@@ -254,7 +254,7 @@ const templates = {
       ctx.fillText(d.category.toUpperCase(), x, 115);
 
       ctx.fillStyle = '#fefefe';
-      ctx.font = `italic 700 72px "Playfair Display", Georgia, serif`;
+      ctx.font = `400 72px "Playfair Display", Georgia, serif`;
       const lines = wrapText(ctx, d.title, x, 225, 580, 86);
 
       ctx.fillStyle = '#666';
@@ -292,7 +292,7 @@ const templates = {
       ctx.font = `500 44px "Geist Mono", "Courier New", monospace`;
       ctx.fillText('vcto', x, 183);
 
-      ctx.font = `italic 700 62px "Playfair Display", Georgia, serif`;
+      ctx.font = `400 62px "Playfair Display", Georgia, serif`;
       const lines = wrapText(ctx, d.tagline, x, 300, 580, 76);
 
       ctx.fillStyle = '#555';
@@ -321,7 +321,7 @@ const templates = {
     canvas(ctx, d) {
       const x = 88;
       ctx.fillStyle = '#fefefe';
-      ctx.font = `italic 700 96px "Playfair Display", Georgia, serif`;
+      ctx.font = `400 96px "Playfair Display", Georgia, serif`;
       ctx.fillText(d.name, x, 290);
 
       ctx.fillStyle = '#555';
@@ -483,8 +483,8 @@ async function init() {
   try {
     const pf = new FontFace(
       'Playfair Display',
-      'url(https://cdn.jsdelivr.net/npm/@fontsource/playfair-display@5.1.1/files/playfair-display-latin-700-italic.woff2)',
-      { weight: '700', style: 'italic' }
+      'url(https://cdn.jsdelivr.net/npm/@fontsource/playfair-display@5.1.1/files/playfair-display-latin-400-normal.woff2)',
+      { weight: '400', style: 'normal' }
     );
     const gm = new FontFace(
       'Geist Mono',
