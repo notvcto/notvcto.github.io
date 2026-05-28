@@ -2,13 +2,13 @@
 title: 'I got tired of AI that lies to be polite — so I''m building one that doesn''t'
 shortTitle: 'Introducing Zero'
 ogTitle: 'I got tired of AI that lies to be polite'
-ogSubtitle: 'A minimum viable security reasoning model'
+ogSubtitle: 'A reasoning model trained on security problems'
 date: '2026-05-27T01:10:12'
 category: 'Zero'
 complexity: 8.5
 readingTime: '9 min'
 author: 'notvcto'
-description: 'Zero is a minimum viable security reasoning model trained on CTF problems via adversarial self-play. It tells you what''s wrong and why. No hedging. No sugar coating.'
+description: 'Zero is trained on CTF problems via adversarial self-play to develop rigorous, verifiable reasoning. The security domain is the training ground. Whether that reasoning transfers beyond it is one of the research questions.'
 tags: ['ai', 'ml', 'research', 'zero', 'grpo', 'reasoning', 'ctf', 'security', 'llm']
 ---
 
@@ -31,10 +31,12 @@ I got tired of it. So I'm building Zero.
 
 ## What Zero is
 
-Zero is a small, open-source language model trained specifically to reason through
-security problems (CTF challenges, code audits, vulnerability analysis) and give
-you a straight answer. Not "this could potentially be an issue." Just: "this is a
-SQL injection, here's why it's exploitable, here's the fix."
+Zero is a small, open-source language model trained on security problems — CTF
+challenges, code audits, vulnerability analysis. Not because security people are
+the only intended audience, but because security problems have properties that
+make them ideal for training rigorous reasoning: verifiable answers, clean reasoning
+chains, and no room to pattern-match your way to a solution. That's the vehicle.
+Whether the reasoning transfers beyond it is one of the research questions.
 
 The directness isn't a prompt engineering trick. It's baked into how the model is
 trained. The reward function penalizes hedging tokens. Calibrated uncertainty is
@@ -52,7 +54,7 @@ Zero isn't just a fine-tune with a "be blunt" system prompt. There are three thi
 happening simultaneously that I haven't seen combined before.
 
 **Minimum viable reasoning.** The real question I want to answer is: how small can
-a model be and still develop genuine security reasoning? Not memorization, not
+a model be and still develop genuine reasoning through GRPO? Not memorization, not
 pattern matching on training data. Actual reasoning. I'm running the same training
 approach across 1.5B, 3B, and 7B parameter models and measuring where the capability
 cliff is. That delta is a research contribution regardless of which model you end up
@@ -84,11 +86,11 @@ clean reasoning chains. They're also genuinely hard enough that a model can't ju
 pattern-match to the solution. It has to think.
 
 The evaluation goes three layers deep. CTF solve rate on held-out problems. General
-reasoning benchmarks (GSM8K, ARC-Challenge, HumanEval) to measure whether security
+reasoning benchmarks (GSM8K, ARC-Challenge, HumanEval) to measure whether the
 reasoning transfers to math and code. That's the most interesting research question.
 And human evaluation by real CTF players rating correctness, directness, and usefulness.
 
-If security reasoning generalizes, that's a finding worth documenting. If it doesn't,
+If the reasoning generalizes, that's a finding worth documenting. If it doesn't,
 that's also a finding worth documenting.
 
 ---
@@ -107,8 +109,8 @@ Phase 1 starts now: baseline evaluation across all three model sizes with no tra
 to document where reasoning currently lives before we touch anything. Then dataset
 construction. Then the self-play loop.
 
-If you compete in CTFs and want to help evaluate early outputs, my Discord server
-is where that'll happen. Credit in the model card for everyone who contributes.
+If you compete in CTFs and want to help evaluate early outputs, my [Discord](https://discord.gg/Ht5ehR8Wpu) is
+where that'll happen. Credit in the model card for everyone who contributes.
 
 This took about two hours to go from "I'm sick of AI that hedges" to a full research
 spec. That's either a good sign or a warning sign. Probably both.
