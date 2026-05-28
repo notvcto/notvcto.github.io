@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
@@ -16,6 +16,14 @@ interface BlogPostClientProps {
 
 export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
   const [copied, setCopied] = useState(false)
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current)
+    }
+  }, [])
+
   return (
     <article className="prose prose-invert prose-quoteless max-w-none prose-headings:font-playfair prose-p:font-sans prose-p:text-muted-foreground prose-p:text-lg prose-p:leading-relaxed prose-li:text-muted-foreground prose-strong:text-white prose-pre:bg-white/[0.02] prose-pre:border prose-pre:border-white/5">
       <header className="mb-12 border-b border-white/5 pb-8 not-prose">
@@ -144,7 +152,8 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
             onClick={() => {
               navigator.clipboard.writeText(window.location.href)
               setCopied(true)
-              setTimeout(() => setCopied(false), 2000)
+              if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current)
+              copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000)
             }}
             className="w-10 h-10 rounded-full border border-white/10 bg-white/[0.02] flex items-center justify-center shrink-0 hover:border-white/20 hover:bg-white/[0.05] transition-all duration-300"
             aria-label="Copy link"

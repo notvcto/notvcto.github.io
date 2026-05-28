@@ -2,6 +2,7 @@
 
 import { useRef } from "react"
 import { motion, useScroll, useTransform, useSpring } from "framer-motion"
+import { EASE_IN_OUT } from "@/lib/animation"
 
 const statements = [
   "Every layer of abstraction hides flaws.",
@@ -58,7 +59,7 @@ export function About() {
         initial={{ scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 1.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+        transition={{ duration: 1.5, ease: EASE_IN_OUT }}
         className="mt-10 mx-8 md:mx-12 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent origin-left"
       />
     </section>

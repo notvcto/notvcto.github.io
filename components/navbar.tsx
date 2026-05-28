@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { useLenis } from "lenis/react"
+import { EASE_OUT_EXPO } from "@/lib/animation"
 
 const navLinks = [
   { label: "About", href: "/#about" },
@@ -46,7 +47,7 @@ export function Navbar() {
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.8, ease: EASE_OUT_EXPO }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled ? "bg-background/80 backdrop-blur-md border-b border-border" : ""
         }`}

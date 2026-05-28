@@ -5,24 +5,6 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
 import type { Mesh, ShaderMaterial } from "three"
 
-// Modernization Shim (2026): THREE.Clock is deprecated since r183.
-// We suppress the warning via THREE's internal logger to avoid console noise from libraries like R3F.
-if (typeof window !== "undefined") {
-  const t = THREE as any
-  if (t.setConsoleFunction) {
-    const originalConsole = t.getConsoleFunction ? t.getConsoleFunction() : null
-    t.setConsoleFunction((type: string, message: string, ...params: any[]) => {
-      if (type === "warn" && typeof message === "string" && message.includes("THREE.Clock: This module has been deprecated")) {
-        return
-      }
-      if (originalConsole) {
-        originalConsole(type, message, ...params)
-      } else {
-        console[type as "warn" | "error" | "log"](message, ...params)
-      }
-    })
-  }
-}
 
 function Sphere({ interactive = true }: { interactive?: boolean }) {
   const meshRef = useRef<Mesh>(null)
@@ -155,24 +137,6 @@ function Sphere({ interactive = true }: { interactive?: boolean }) {
 export function SentientSphere({ interactive = true }: { interactive?: boolean }) {
   const [mounted, setMounted] = useState(false)
   
-  // Custom Timer for R3F to use instead of deprecated Clock
-  const timer = useMemo(() => {
-    const t = new THREE.Timer()
-    return {
-      getDelta: () => {
-        t.update()
-        return t.getDelta()
-      },
-      get elapsedTime() {
-        return t.getElapsed()
-      },
-      set elapsedTime(v: number) {},
-      start: () => {},
-      stop: () => {},
-      reset: () => t.reset(),
-    } as any
-  }, [])
-
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -187,7 +151,6 @@ export function SentientSphere({ interactive = true }: { interactive?: boolean }
 
   return (
     <Canvas
-      clock={timer}
       camera={{ position: [0, 0, 5], fov: 45 }}
       className="w-full h-full"
       dpr={[1, 2]}

@@ -3,6 +3,7 @@
 import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { useLenis } from "lenis/react"
+import { EASE_IN_OUT } from "@/lib/animation"
 
 export function Hero() {
   const containerRef = useRef<HTMLElement>(null)
@@ -23,7 +24,7 @@ export function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+          transition={{ duration: 1, delay: 0.2, ease: EASE_IN_OUT }}
           className="max-w-[90%] md:max-w-none"
         >
           <p className="font-mono text-[9px] sm:text-[10px] md:text-xs tracking-[0.3em] text-muted-foreground mb-1 md:mb-2">01 — DISCIPLINE</p>
@@ -38,7 +39,7 @@ export function Hero() {
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          transition={{ duration: 0.8, delay: 0.6, ease: EASE_IN_OUT }}
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
         >
           <motion.button
@@ -69,7 +70,7 @@ export function Hero() {
         <motion.div
           initial={{ opacity: 0, y: -40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+          transition={{ duration: 1, delay: 0.4, ease: EASE_IN_OUT }}
           className="self-end text-right max-w-[90%] md:max-w-none"
         >
           <p className="font-mono text-[9px] sm:text-[10px] md:text-xs tracking-[0.3em] text-muted-foreground mb-1 md:mb-2">02 — CRAFT</p>

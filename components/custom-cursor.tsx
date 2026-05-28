@@ -1,41 +1,49 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
+import { motion, useMotionValue, useSpring } from "framer-motion"
 
 export function CustomCursor() {
-  const [position, setPosition] = useState({ x: 0, y: 0 })
   const [isHovering, setIsHovering] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [isTouchDevice, setIsTouchDevice] = useState(false)
 
+  // Motion values bypass React's render cycle — no re-render on every mouse pixel
+  const rawX = useMotionValue(0)
+  const rawY = useMotionValue(0)
+
+  const dotX = useSpring(rawX, { stiffness: 500, damping: 28, mass: 0.5 })
+  const dotY = useSpring(rawY, { stiffness: 500, damping: 28, mass: 0.5 })
+  const ringX = useSpring(rawX, { stiffness: 300, damping: 20, mass: 0.8 })
+  const ringY = useSpring(rawY, { stiffness: 300, damping: 20, mass: 0.8 })
+
   useEffect(() => {
-    // Check for touch device
     const touchQuery = window.matchMedia("(pointer: coarse)")
     setIsTouchDevice(touchQuery.matches)
-    
-    // Listen for changes
-    const handler = (e: MediaQueryListEvent) => setIsTouchDevice(e.matches)
-    touchQuery.addEventListener("change", handler)
+    const handleTouchChange = (e: MediaQueryListEvent) => setIsTouchDevice(e.matches)
+    touchQuery.addEventListener("change", handleTouchChange)
 
     const handleMouseMove = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY })
+      rawX.set(e.clientX)
+      rawY.set(e.clientY)
       setIsVisible(true)
     }
 
-    const handleMouseEnter = () => setIsVisible(true)
     const handleMouseLeave = () => setIsVisible(false)
+    const handleMouseEnter = () => setIsVisible(true)
 
     const handleHoverStart = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      if (target.closest("a, button, [data-cursor-hover]")) {
+      if ((e.target as HTMLElement).closest("a, button, [data-cursor-hover]")) {
         setIsHovering(true)
       }
     }
 
     const handleHoverEnd = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      if (target.closest("a, button, [data-cursor-hover]")) {
+      // Only clear hover if the pointer isn't moving into another interactive element.
+      // Without this check, moving between children inside a link flickers isHovering off/on.
+      const leaving = (e.target as HTMLElement).closest("a, button, [data-cursor-hover]")
+      const entering = (e.relatedTarget as HTMLElement | null)?.closest("a, button, [data-cursor-hover]")
+      if (leaving && !entering) {
         setIsHovering(false)
       }
     }
@@ -47,14 +55,14 @@ export function CustomCursor() {
     document.addEventListener("mouseout", handleHoverEnd)
 
     return () => {
-      touchQuery.removeEventListener("change", handler)
+      touchQuery.removeEventListener("change", handleTouchChange)
       window.removeEventListener("mousemove", handleMouseMove)
       document.removeEventListener("mouseenter", handleMouseEnter)
       document.removeEventListener("mouseleave", handleMouseLeave)
       document.removeEventListener("mouseover", handleHoverStart)
       document.removeEventListener("mouseout", handleHoverEnd)
     }
-  }, [])
+  }, [rawX, rawY])
 
   if (isTouchDevice) return null
 
@@ -63,24 +71,16 @@ export function CustomCursor() {
       {/* Main cursor dot */}
       <motion.div
         className="fixed top-0 left-0 w-3 h-3 bg-white rounded-full pointer-events-none z-[10000] mix-blend-difference"
-        animate={{
-          x: position.x - 6,
-          y: position.y - 6,
-          scale: isHovering ? 0 : 5,
-          opacity: isVisible ? 1 : 0,
-        }}
-        transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
+        style={{ x: dotX, y: dotY, translateX: "-6px", translateY: "-6px" }}
+        animate={{ scale: isHovering ? 0 : 5, opacity: isVisible ? 1 : 0 }}
+        transition={{ duration: 0.15 }}
       />
       {/* Hover ring */}
       <motion.div
         className="fixed top-0 left-0 w-12 h-12 border border-white rounded-full pointer-events-none z-[10000] mix-blend-difference"
-        animate={{
-          x: position.x - 24,
-          y: position.y - 24,
-          scale: isHovering ? 1 : 0,
-          opacity: isVisible ? 1 : 0,
-        }}
-        transition={{ type: "spring", stiffness: 300, damping: 20, mass: 0.8 }}
+        style={{ x: ringX, y: ringY, translateX: "-24px", translateY: "-24px" }}
+        animate={{ scale: isHovering ? 1 : 0, opacity: isVisible ? 1 : 0 }}
+        transition={{ duration: 0.15 }}
       />
     </>
   )

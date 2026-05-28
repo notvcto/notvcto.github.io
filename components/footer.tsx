@@ -3,24 +3,25 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
+import { EASE_IN_OUT } from "@/lib/animation"
 
 export function Footer() {
   const [time, setTime] = useState("")
   const [isHovered, setIsHovered] = useState(false)
 
   useEffect(() => {
-    const updateTime = () => {
+    let rafId: number
+    const tick = () => {
       const now = new Date()
-      const hours = now.getHours().toString().padStart(2, "0")
-      const minutes = now.getMinutes().toString().padStart(2, "0")
-      const seconds = now.getSeconds().toString().padStart(2, "0")
-      const milliseconds = now.getMilliseconds().toString().padStart(3, "0")
-      setTime(`${hours}:${minutes}:${seconds}.${milliseconds}`)
+      const hh = now.getHours().toString().padStart(2, "0")
+      const mm = now.getMinutes().toString().padStart(2, "0")
+      const ss = now.getSeconds().toString().padStart(2, "0")
+      const ms = now.getMilliseconds().toString().padStart(3, "0")
+      setTime(`${hh}:${mm}:${ss}.${ms}`)
+      rafId = requestAnimationFrame(tick)
     }
-
-    updateTime()
-    const interval = setInterval(updateTime, 10)
-    return () => clearInterval(interval)
+    rafId = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafId)
   }, [])
 
   return (
@@ -38,7 +39,7 @@ export function Footer() {
           className="absolute inset-0 bg-[#2563eb]"
           initial={{ y: "100%" }}
           animate={{ y: isHovered ? "0%" : "100%" }}
-          transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+          transition={{ duration: 0.5, ease: EASE_IN_OUT }}
         />
 
         {/* Content */}

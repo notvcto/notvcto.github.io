@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { Search, List, X, BookOpen, ChevronRight } from "lucide-react"
@@ -18,46 +18,42 @@ export function BlogMobileNav({ posts }: BlogMobileNavProps) {
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  useEffect(() => { setMounted(true) }, [])
 
-  const filteredPosts = posts.filter((post) =>
-    post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.shortTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredPosts = useMemo(() => {
+    const q = searchQuery.toLowerCase()
+    return posts.filter((post) =>
+      post.title.toLowerCase().includes(q) ||
+      post.shortTitle?.toLowerCase().includes(q) ||
+      post.category.toLowerCase().includes(q) ||
+      post.tags.some((tag) => tag.toLowerCase().includes(q))
+    )
+  }, [posts, searchQuery])
+
+  const categories = useMemo(
+    () => Array.from(new Set(filteredPosts.map((post) => post.category))),
+    [filteredPosts]
   )
 
-  const categories = Array.from(new Set(filteredPosts.map(post => post.category)))
+  useEffect(() => { setIsOpen(false) }, [pathname])
 
-  // Close when pathname changes
   useEffect(() => {
-    setIsOpen(false)
-  }, [pathname])
-
-  // Prevent body scroll when open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden"
-    } else {
-      document.body.style.overflow = "unset"
-    }
-    return () => {
-      document.body.style.overflow = "unset"
-    }
+    document.body.style.overflow = isOpen ? "hidden" : ""
+    return () => { document.body.style.overflow = "" }
   }, [isOpen])
 
   if (!mounted) return null
 
   return (
     <>
-      {/* Mobile Trigger - Fixed Bottom Center Pill */}
+      {/* Mobile Trigger */}
       <motion.button
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(true)}
+        aria-expanded={isOpen}
+        aria-controls="blog-mobile-drawer"
         className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] h-11 px-6 bg-[#0a0a0a]/80 backdrop-blur-2xl text-white rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex items-center gap-3 border border-white/10 active:bg-white/[0.1] transition-colors"
       >
         <List className="w-4 h-4 opacity-70" />
@@ -68,7 +64,13 @@ export function BlogMobileNav({ posts }: BlogMobileNavProps) {
       {createPortal(
         <AnimatePresence>
           {isOpen && (
-            <div className="fixed inset-0 z-[9999] md:hidden">
+            <div
+              id="blog-mobile-drawer"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Article navigation"
+              className="fixed inset-0 z-[9999] md:hidden"
+            >
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -89,7 +91,11 @@ export function BlogMobileNav({ posts }: BlogMobileNavProps) {
                     <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
                     <span className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase">Investigation Log</span>
                   </div>
-                  <button onClick={() => setIsOpen(false)} className="p-2 -mr-2 text-muted-foreground hover:text-white transition-colors">
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    aria-label="Close navigation"
+                    className="p-2 -mr-2 text-muted-foreground hover:text-white transition-colors"
+                  >
                     <X className="w-6 h-6" />
                   </button>
                 </div>
@@ -100,6 +106,7 @@ export function BlogMobileNav({ posts }: BlogMobileNavProps) {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
                       type="text"
+                      aria-label="Search articles"
                       placeholder="Search investigations..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -125,9 +132,10 @@ export function BlogMobileNav({ posts }: BlogMobileNavProps) {
                                 <li key={post.slug}>
                                   <Link
                                     href={`/blog/${post.slug}`}
+                                    aria-current={isActive ? "page" : undefined}
                                     className={`flex items-center justify-between p-3 rounded-xl transition-all ${
-                                      isActive 
-                                        ? "bg-white/5 text-white border border-white/10" 
+                                      isActive
+                                        ? "bg-white/5 text-white border border-white/10"
                                         : "text-muted-foreground hover:bg-white/[0.02]"
                                     }`}
                                   >

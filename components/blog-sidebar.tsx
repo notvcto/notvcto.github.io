@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Search, BookOpen, Command } from "lucide-react"
@@ -93,14 +93,20 @@ export function BlogSidebar({ posts }: BlogSidebarProps) {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [])
 
-  const filteredPosts = posts.filter((post) =>
-    post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.shortTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-  )
+  const filteredPosts = useMemo(() => {
+    const q = searchQuery.toLowerCase()
+    return posts.filter((post) =>
+      post.title.toLowerCase().includes(q) ||
+      post.shortTitle?.toLowerCase().includes(q) ||
+      post.category.toLowerCase().includes(q) ||
+      post.tags.some((tag) => tag.toLowerCase().includes(q))
+    )
+  }, [posts, searchQuery])
 
-  const categories = Array.from(new Set(filteredPosts.map(post => post.category)))
+  const categories = useMemo(
+    () => Array.from(new Set(filteredPosts.map((post) => post.category))),
+    [filteredPosts]
+  )
 
   return (
     <aside className="hidden md:flex w-72 lg:w-80 flex-col sticky h-[calc(100vh-8rem)] top-24 shrink-0">
@@ -111,8 +117,9 @@ export function BlogSidebar({ posts }: BlogSidebarProps) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-white transition-all duration-300" />
             <input 
               ref={searchInputRef}
-              type="text" 
-              placeholder="Search articles..." 
+              type="text"
+              aria-label="Search articles"
+              placeholder="Search articles..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-white/[0.03] border border-white/5 rounded-xl py-2.5 pl-10 pr-12 text-[12px] font-mono tracking-tight text-foreground focus:outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all duration-300 placeholder:text-muted-foreground/50 shadow-inner"
