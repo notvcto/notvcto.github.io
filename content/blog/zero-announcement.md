@@ -3,7 +3,7 @@ title: 'I got tired of AI that lies to be polite — so I''m building one that d
 shortTitle: 'Introducing Zero'
 ogTitle: 'I got tired of AI that lies to be polite'
 ogSubtitle: 'A reasoning model trained on security problems'
-date: '2026-05-27T01:10:12'
+date: '2026-05-26T01:10:12'
 category: 'Zero'
 complexity: 8.5
 readingTime: '9 min'
