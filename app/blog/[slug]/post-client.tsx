@@ -134,22 +134,34 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
             );
           },
           pre: ({node, ...props}) => <div className="not-prose">{props.children}</div>,
-          img: ({src, alt}) => (
-            <figure className="my-8 not-prose">
-              <img
-                src={src}
-                alt={alt || ''}
-                loading="lazy"
-                onClick={() => typeof src === 'string' && setLightboxSrc(src)}
-                className="rounded-xl border border-white/5 w-full object-cover cursor-zoom-in transition-opacity duration-300 hover:opacity-90"
-              />
-              {alt && (
-                <figcaption className="mt-3 text-center font-mono text-[11px] tracking-widest text-muted-foreground uppercase">
-                  {alt}
-                </figcaption>
-              )}
-            </figure>
-          ),
+          img: ({src, alt}) => {
+            const fmt = typeof src === 'string'
+              ? (src.split('.').pop()?.split('?')[0]?.toUpperCase() || 'IMAGE')
+              : 'IMAGE'
+            return (
+              <figure className="my-8 not-prose rounded-xl border border-white/5 overflow-hidden shadow-2xl bg-[#0a0a0a]">
+                <div className="flex items-center justify-between px-4 py-2 bg-white/[0.03] border-b border-white/5">
+                  <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">{fmt}</span>
+                  <div className="flex gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-white/10" />
+                    <div className="w-2 h-2 rounded-full bg-white/10" />
+                  </div>
+                </div>
+                <img
+                  src={src as string}
+                  alt={alt || ''}
+                  loading="lazy"
+                  onClick={() => typeof src === 'string' && setLightboxSrc(src)}
+                  className="w-full object-cover cursor-zoom-in transition-opacity duration-300 hover:opacity-90"
+                />
+                {alt && (
+                  <figcaption className="px-4 py-2 border-t border-white/5 text-center font-mono text-[11px] tracking-widest text-muted-foreground uppercase bg-white/[0.02]">
+                    {alt}
+                  </figcaption>
+                )}
+              </figure>
+            )
+          },
         }}
       >
         {post.content}
