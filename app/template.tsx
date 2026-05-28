@@ -1,11 +1,23 @@
 "use client"
 
+import { useEffect } from "react"
 import { motion } from "framer-motion"
 import { usePathname } from "next/navigation"
+import { useLenis } from "lenis/react"
 import type React from "react"
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const lenis = useLenis()
+
+  useEffect(() => {
+    if (window.location.hash) return
+    if (lenis) {
+      lenis.scrollTo(0, { immediate: true })
+    } else {
+      window.scrollTo(0, 0)
+    }
+  }, [pathname, lenis])
 
   return (
     <motion.div
