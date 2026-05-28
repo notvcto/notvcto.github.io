@@ -9,16 +9,17 @@ const contentDirectory = path.join(process.cwd(), 'content/blog');
 const ogOutputDirectory = path.join(process.cwd(), 'public/og');
 const manifestPath = path.join(ogOutputDirectory, '.manifest.json');
 
-// Three.js loaded from node_modules — same version as the app, no CDN, no version mismatch.
-const THREE_JS_SRC = fs.readFileSync(
-  path.resolve(process.cwd(), 'node_modules/three/build/three.min.js'),
-  'utf8'
-);
+// Pin the installed Three.js version into the hash so a version bump invalidates cached images.
+const THREE_VERSION = JSON.parse(
+  fs.readFileSync(path.resolve(process.cwd(), 'node_modules/three/package.json'), 'utf8')
+).version;
 
-// Hash the script itself so any change to rendering code invalidates all cached images.
-const SCRIPT_HASH = hashString(
-  fs.readFileSync(fileURLToPath(import.meta.url), 'utf8')
-);
+// Hash the script itself + Three.js version so any change to rendering code or Three.js
+// version invalidates all cached images.
+const SCRIPT_HASH = hashString([
+  fs.readFileSync(fileURLToPath(import.meta.url), 'utf8'),
+  THREE_VERSION,
+].join('|'));
 
 if (!fs.existsSync(ogOutputDirectory)) {
   fs.mkdirSync(ogOutputDirectory, { recursive: true });
@@ -126,18 +127,18 @@ function buildOGPage(overlayHtml) {
   <div id="overlay">${overlayHtml}
   </div>
 </div>
-<script>${THREE_JS_SRC}</script>
-<script>
+<script type="module">
+import { WebGLRenderer, Scene, PerspectiveCamera, IcosahedronGeometry, ShaderMaterial, Mesh } from '../../node_modules/three/build/three.module.min.js';
 const W = 1200, H = 630;
-const renderer = new THREE.WebGLRenderer({
+const renderer = new WebGLRenderer({
   canvas: document.getElementById('gl'),
   antialias: true, alpha: true, preserveDrawingBuffer: true,
 });
 renderer.setSize(W, H);
 renderer.setPixelRatio(1);
 
-const scene  = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 100);
+const scene  = new Scene();
+const camera = new PerspectiveCamera(45, W / H, 0.1, 100);
 camera.position.set(0, 0, 5);
 
 const uniforms = { uTime: { value: 0 } };
@@ -217,9 +218,9 @@ const fragmentShader = \`
   }
 \`;
 
-const geo  = new THREE.IcosahedronGeometry(1.8, 20);
-const mat  = new THREE.ShaderMaterial({ vertexShader, fragmentShader, uniforms, transparent: true, wireframe: true });
-const mesh = new THREE.Mesh(geo, mat);
+const geo  = new IcosahedronGeometry(1.8, 20);
+const mat  = new ShaderMaterial({ vertexShader, fragmentShader, uniforms, transparent: true, wireframe: true });
+const mesh = new Mesh(geo, mat);
 mesh.position.x = 0.6;
 scene.add(mesh);
 
@@ -282,30 +283,38 @@ async function generateImages() {
 
   const browser = await puppeteer.launch({
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--allow-file-access-from-files'],
   });
   const page = await browser.newPage();
   await page.setViewport({ width: 1200, height: 630, deviceScaleFactor: 1 });
 
-  if (needsPortfolio) {
-    console.log('  portfolio.png');
-    await page.setContent(buildOGPage(buildPortfolioOverlay()), { waitUntil: 'domcontentloaded' });
+  const tempHtmlPath = path.join(ogOutputDirectory, '.temp-og.html');
+
+  async function renderOG(overlayHtml, outputPath) {
+    fs.writeFileSync(tempHtmlPath, buildOGPage(overlayHtml));
+    await page.goto(`file://${tempHtmlPath}`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('body.ready');
     const stage = await page.$('#stage');
-    await stage.screenshot({ path: path.join(ogOutputDirectory, 'portfolio.png') });
-    manifest['portfolio'] = PORTFOLIO_HASH;
+    await stage.screenshot({ path: outputPath });
   }
 
-  for (const post of postsToGenerate) {
-    console.log(`  ${post.slug}.png`);
-    await page.setContent(buildOGPage(buildPostOverlay(post)), { waitUntil: 'domcontentloaded' });
-    await page.waitForSelector('body.ready');
-    const stage = await page.$('#stage');
-    await stage.screenshot({ path: path.join(ogOutputDirectory, `${post.slug}.png`) });
-    manifest[post.slug] = getPostHash(post);
+  try {
+    if (needsPortfolio) {
+      console.log('  portfolio.png');
+      await renderOG(buildPortfolioOverlay(), path.join(ogOutputDirectory, 'portfolio.png'));
+      manifest['portfolio'] = PORTFOLIO_HASH;
+    }
+
+    for (const post of postsToGenerate) {
+      console.log(`  ${post.slug}.png`);
+      await renderOG(buildPostOverlay(post), path.join(ogOutputDirectory, `${post.slug}.png`));
+      manifest[post.slug] = getPostHash(post);
+    }
+  } finally {
+    if (fs.existsSync(tempHtmlPath)) fs.unlinkSync(tempHtmlPath);
+    await browser.close();
   }
 
-  await browser.close();
   saveManifest(manifest);
   console.log('Done.');
 }
