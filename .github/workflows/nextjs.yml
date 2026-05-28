@@ -83,6 +83,20 @@ jobs:
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock', '**/pnpm-lock.yaml') }}-
+      - name: Cache Puppeteer browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/puppeteer
+          key: ${{ runner.os }}-puppeteer-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - name: Cache OG images
+        uses: actions/cache@v4
+        with:
+          path: public/og
+          # Restore from exact match first, then fall back to any prior og cache so the
+          # manifest-based skip in generate-og.mjs can reuse unchanged images.
+          key: ${{ runner.os }}-og-${{ hashFiles('content/blog/**', 'og-template.html', 'scripts/generate-og.mjs') }}
+          restore-keys: |
+            ${{ runner.os }}-og-
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
