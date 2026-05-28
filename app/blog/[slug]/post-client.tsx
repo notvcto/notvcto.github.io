@@ -1,11 +1,13 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { createPortal } from "react-dom"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism"
+import { motion, AnimatePresence } from "framer-motion"
 import { Share2, Check, ChevronRight } from "lucide-react"
 import { getComplexityColor, type BlogPost, type BlogPostMeta } from "@/lib/blog"
 
@@ -16,13 +18,26 @@ interface BlogPostClientProps {
 
 export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
   const [copied, setCopied] = useState(false)
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null)
+  const [mounted, setMounted] = useState(false)
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     return () => {
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current)
     }
   }, [])
+
+  useEffect(() => {
+    if (!lightboxSrc) return
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxSrc(null)
+    }
+    window.addEventListener('keydown', handleEsc)
+    return () => window.removeEventListener('keydown', handleEsc)
+  }, [lightboxSrc])
 
   return (
     <article className="prose prose-invert prose-quoteless max-w-none prose-headings:font-playfair prose-p:font-sans prose-p:text-muted-foreground prose-p:text-lg prose-p:leading-relaxed prose-li:text-muted-foreground prose-strong:text-white prose-pre:bg-white/[0.02] prose-pre:border prose-pre:border-white/5">
@@ -119,10 +134,53 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
             );
           },
           pre: ({node, ...props}) => <div className="not-prose">{props.children}</div>,
+          img: ({src, alt}) => (
+            <figure className="my-8 not-prose">
+              <img
+                src={src}
+                alt={alt || ''}
+                loading="lazy"
+                onClick={() => typeof src === 'string' && setLightboxSrc(src)}
+                className="rounded-xl border border-white/5 w-full object-cover cursor-zoom-in transition-opacity duration-300 hover:opacity-90"
+              />
+              {alt && (
+                <figcaption className="mt-3 text-center font-mono text-[11px] tracking-widest text-muted-foreground uppercase">
+                  {alt}
+                </figcaption>
+              )}
+            </figure>
+          ),
         }}
       >
         {post.content}
       </ReactMarkdown>
+
+      {mounted && createPortal(
+        <AnimatePresence>
+          {lightboxSrc && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setLightboxSrc(null)}
+              className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 md:p-8 cursor-zoom-out"
+            >
+              <motion.img
+                initial={{ scale: 0.92, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.92, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                src={lightboxSrc}
+                alt=""
+                onClick={(e) => e.stopPropagation()}
+                className="max-w-full max-h-[90vh] rounded-xl border border-white/10 object-contain cursor-default shadow-2xl"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
       <footer className="mt-20 pt-12 border-t border-white/5 not-prose space-y-8">
         {nextPost && (
