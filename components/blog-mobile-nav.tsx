@@ -6,10 +6,10 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Search, List, X, BookOpen, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import type { BlogPost } from "@/lib/blog"
+import type { BlogPostMeta } from "@/lib/blog"
 
 interface BlogMobileNavProps {
-  posts: BlogPost[]
+  posts: BlogPostMeta[]
 }
 
 export function BlogMobileNav({ posts }: BlogMobileNavProps) {
@@ -24,7 +24,7 @@ export function BlogMobileNav({ posts }: BlogMobileNavProps) {
 
   const filteredPosts = posts.filter((post) =>
     post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.shortTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    post.shortTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     post.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
     post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
   )

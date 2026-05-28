@@ -22,7 +22,7 @@ export function About() {
   const smoothX = useSpring(x, { stiffness: 100, damping: 30 })
 
   return (
-    <section id="about" ref={containerRef} className="relative py-8 md:py-0 overflow-hidden">
+    <section id="about" ref={containerRef} className="relative py-8 md:py-0 overflow-hidden bg-background">
       {/* Section Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

@@ -138,17 +138,18 @@ export function Navbar() {
                     handleNavClick(e, link.href)
                     setIsMenuOpen(false)
                   }}
+                  className="group text-4xl font-sans tracking-tight text-foreground text-left"
                 >
-                  <motion.button
+                  <motion.span
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 20 }}
                     transition={{ delay: index * 0.1 }}
-                    className="group text-4xl font-sans tracking-tight text-foreground text-left"
+                    className="block"
                   >
                     <span className="text-accent font-mono text-sm mr-2">0{index + 1}</span>
                     {link.label}
-                  </motion.button>
+                  </motion.span>
                 </Link>
               ))}
               <motion.div

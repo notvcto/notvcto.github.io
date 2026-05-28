@@ -14,6 +14,8 @@ export interface BlogPost {
   content: string
 }
 
+export type BlogPostMeta = Omit<BlogPost, "content">
+
 export function getComplexityColor(score: number): string {
   if (score < 4.0) return "text-green-500"
   if (score < 7.0) return "text-yellow-500"

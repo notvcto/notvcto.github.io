@@ -75,7 +75,7 @@ function MarqueeRow({ items, direction = "left" }: { items: string[]; direction?
 
 export function TechMarquee() {
   return (
-    <section className="relative py-8 overflow-hidden md:py-16">
+    <section className="relative py-8 overflow-hidden md:py-16 bg-background">
       {/* Section Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

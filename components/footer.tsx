@@ -24,7 +24,7 @@ export function Footer() {
   }, [])
 
   return (
-    <footer id="contact" className="relative">
+    <footer id="contact" className="relative bg-background">
       {/* Main CTA */}
       <motion.a
         href="mailto:contact@notvc.to"

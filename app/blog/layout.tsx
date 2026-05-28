@@ -1,7 +1,6 @@
 import type React from "react"
-import { BlogBackground } from "@/components/blog-background"
 import { BlogSidebar } from "@/components/blog-sidebar"
-import { getAllPosts } from "@/lib/blog.server"
+import { getAllPostsMeta } from "@/lib/blog.server"
 
 import { BlogMobileNav } from "@/components/blog-mobile-nav"
 
@@ -10,13 +9,10 @@ export default async function BlogLayout({
 }: {
   children: React.ReactNode
 }) {
-  const posts = getAllPosts()
+  const posts = getAllPostsMeta()
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col relative">
-      {/* Persisted Sentient Sphere Background */}
-      <BlogBackground />
-
+    <div className="min-h-screen bg-transparent text-foreground flex flex-col relative">
       <div className="flex-1 flex flex-col md:flex-row relative z-10 max-w-[1600px] mx-auto w-full px-6 lg:px-12 md:gap-12">
         {/* Sidebar - Floating GitBook Style */}
         <BlogSidebar posts={posts} />

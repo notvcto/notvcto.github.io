@@ -1,21 +1,23 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useState } from "react"
+import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism"
-import { getComplexityColor, type BlogPost } from "@/lib/blog"
-import { ChevronRight } from "lucide-react"
+import { Share2, Check, ChevronRight } from "lucide-react"
+import { getComplexityColor, type BlogPost, type BlogPostMeta } from "@/lib/blog"
 
-export function BlogPostClient({ post }: { post: BlogPost }) {
+interface BlogPostClientProps {
+  post: BlogPost
+  nextPost: BlogPostMeta | null
+}
+
+export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
+  const [copied, setCopied] = useState(false)
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="prose prose-invert prose-quoteless max-w-none prose-headings:font-playfair prose-p:font-sans prose-p:text-muted-foreground prose-p:text-lg prose-p:leading-relaxed prose-li:text-muted-foreground prose-strong:text-white prose-pre:bg-white/[0.02] prose-pre:border prose-pre:border-white/5"
-    >
+    <article className="prose prose-invert prose-quoteless max-w-none prose-headings:font-playfair prose-p:font-sans prose-p:text-muted-foreground prose-p:text-lg prose-p:leading-relaxed prose-li:text-muted-foreground prose-strong:text-white prose-pre:bg-white/[0.02] prose-pre:border prose-pre:border-white/5">
       <header className="mb-12 border-b border-white/5 pb-8 not-prose">
         <div className="flex items-center gap-6 mb-6 flex-wrap">
           <div className="flex items-center gap-2 px-2 py-0.5 border border-white/10 rounded font-mono text-[10px] tracking-widest text-muted-foreground uppercase bg-white/[0.02]">
@@ -102,18 +104,6 @@ export function BlogPostClient({ post }: { post: BlogPost }) {
                       fontFamily: 'inherit',
                     }
                   }}
-                  // Neutralize punctuation and operators that often default to blue in Prism themes
-                  codeTagProps={{
-                    style: {
-                      fontFamily: 'inherit',
-                    }
-                  }}
-                  // @ts-ignore - style overrides for tokens
-                  stylesheet={{
-                    'punctuation': { color: '#a0a0a0' },
-                    'operator': { color: '#a0a0a0' },
-                    'keyword': { color: '#ffffff' },
-                  }}
                 >
                   {String(children).replace(/\n$/, '')}
                 </SyntaxHighlighter>
@@ -126,24 +116,46 @@ export function BlogPostClient({ post }: { post: BlogPost }) {
         {post.content}
       </ReactMarkdown>
 
-      <footer className="mt-20 pt-12 border-t border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-8 not-prose">
-        <div className="flex gap-3 flex-wrap">
-          {post.tags.map(tag => (
-            <span key={tag} className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground border border-white/10 px-3 py-1 rounded-full uppercase bg-white/[0.02]">
-              #{tag}
-            </span>
-          ))}
+      <footer className="mt-20 pt-12 border-t border-white/5 not-prose space-y-8">
+        {nextPost && (
+          <Link href={`/blog/${nextPost.slug}`} className="group block">
+            <div className="relative p-8 bg-white/[0.01] border border-white/5 rounded-2xl transition-all duration-500 group-hover:bg-white/[0.03] group-hover:border-white/10 group-hover:-translate-y-1 flex items-center justify-between shadow-2xl overflow-hidden min-h-[120px]">
+              <div className="absolute inset-0 bg-gradient-to-r from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="relative flex flex-col justify-center">
+                <span className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase opacity-60 mb-2 group-hover:text-white transition-colors">Next Article</span>
+                <h3 className="text-xl font-playfair text-white leading-tight">{nextPost.title}</h3>
+              </div>
+              <div className="relative w-10 h-10 rounded-full border border-white/10 flex items-center justify-center bg-white/5 transition-all duration-500 group-hover:border-white/20 group-hover:bg-white/10 group-hover:scale-105 shrink-0 ml-8">
+                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-white transition-colors" />
+              </div>
+            </div>
+          </Link>
+        )}
+
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex gap-2 flex-wrap">
+            {post.tags.map(tag => (
+              <span key={tag} className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground border border-white/10 px-3 py-1 rounded-full uppercase bg-white/[0.02]">
+                #{tag}
+              </span>
+            ))}
+          </div>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href)
+              setCopied(true)
+              setTimeout(() => setCopied(false), 2000)
+            }}
+            className="w-10 h-10 rounded-full border border-white/10 bg-white/[0.02] flex items-center justify-center shrink-0 hover:border-white/20 hover:bg-white/[0.05] transition-all duration-300"
+            aria-label="Copy link"
+          >
+            {copied
+              ? <Check className="w-4 h-4 text-accent" />
+              : <Share2 className="w-4 h-4 text-muted-foreground" />
+            }
+          </button>
         </div>
-        <button 
-          onClick={() => {
-            navigator.clipboard.writeText(window.location.href);
-            alert("Link copied to clipboard!");
-          }}
-          className="font-mono text-[10px] tracking-widest text-white hover:text-accent transition-colors uppercase border border-white/10 px-4 py-2 rounded-lg bg-white/[0.02] hover:bg-accent/5 hover:border-accent/20"
-        >
-          Share Investigation →
-        </button>
       </footer>
-    </motion.article>
+    </article>
   )
 }

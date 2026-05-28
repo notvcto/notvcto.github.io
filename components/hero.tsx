@@ -3,7 +3,6 @@
 import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { useLenis } from "lenis/react"
-import { SentientSphere } from "./sentient-sphere"
 
 export function Hero() {
   const containerRef = useRef<HTMLElement>(null)
@@ -17,12 +16,7 @@ export function Hero() {
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8])
 
   return (
-    <section ref={containerRef} className="relative h-svh w-full overflow-hidden bg-[#050505]">
-      {/* 3D Sphere Background */}
-      <div className="absolute inset-0">
-        <SentientSphere />
-      </div>
-
+    <section ref={containerRef} className="relative h-svh w-full overflow-hidden bg-transparent">
       {/* Typography Overlay */}
       <motion.div style={{ opacity, scale }} className="relative z-10 h-full flex flex-col justify-between p-6 sm:p-8 md:p-12 md:px-12 md:py-20 py-24">
         {/* Top Left */}

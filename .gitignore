@@ -28,3 +28,6 @@ next-env.d.ts
 
 # generated
 /public/og/
+
+#graphify
+/graphify-out

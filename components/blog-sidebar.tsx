@@ -5,14 +5,14 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Search, BookOpen, Command } from "lucide-react"
 import { motion } from "framer-motion"
-import type { BlogPost } from "@/lib/blog"
+import type { BlogPostMeta } from "@/lib/blog"
 
 interface BlogSidebarProps {
-  posts: BlogPost[]
+  posts: BlogPostMeta[]
 }
 
 interface SidebarArticleLinkProps {
-  post: BlogPost
+  post: BlogPostMeta
   isActive: boolean
 }
 
@@ -95,7 +95,7 @@ export function BlogSidebar({ posts }: BlogSidebarProps) {
 
   const filteredPosts = posts.filter((post) =>
     post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.shortTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    post.shortTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     post.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
     post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
   )

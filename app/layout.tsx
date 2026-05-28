@@ -78,6 +78,7 @@ export const viewport: Viewport = {
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { CustomCursor } from "@/components/custom-cursor"
 import { Navbar } from "@/components/navbar"
+import { GlobalSphere } from "@/components/global-sphere"
 
 export default function RootLayout({
   children,
@@ -86,8 +87,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${playfair.variable} ${geistMono.variable}`}>
-      <body className="font-sans antialiased overflow-x-hidden">
+      <body className="relative font-sans antialiased overflow-x-hidden">
         <div className="noise-overlay" />
+        <GlobalSphere />
         <SmoothScroll>
           <CustomCursor />
           <Navbar />

@@ -68,7 +68,7 @@ export function Works() {
   }
 
   return (
-    <section id="works" className="relative py-8 px-6 md:px-12 md:py-16">
+    <section id="works" className="relative py-8 px-6 md:px-12 md:py-16 bg-background">
       {/* Section Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

@@ -1,12 +1,6 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
-import { motion } from "framer-motion"
-import { getPostBySlug, getAllPosts } from "@/lib/blog.server"
-import { getComplexityColor } from "@/lib/blog"
-
-// Client-side wrapper for motion animation
+import { getPostBySlug, getAllPosts, getAllPostsMeta } from "@/lib/blog.server"
 import { BlogPostClient } from "./post-client"
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -58,5 +52,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     notFound()
   }
 
-  return <BlogPostClient post={post} />
+  const allPosts = getAllPostsMeta()
+  const currentIndex = allPosts.findIndex((p) => p.slug === slug)
+  const nextPost = currentIndex !== -1 && currentIndex < allPosts.length - 1
+    ? allPosts[currentIndex + 1]
+    : null
+
+  return <BlogPostClient post={post} nextPost={nextPost} />
 }

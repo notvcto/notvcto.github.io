@@ -1,8 +1,7 @@
 import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
-import { formatDistanceToNow } from "date-fns"
-import { type BlogPost } from "./blog"
+import { type BlogPost, type BlogPostMeta } from "./blog"
 
 const contentDirectory = path.join(process.cwd(), "content/blog")
 
@@ -47,10 +46,24 @@ export function getPostBySlug(slug: string): BlogPost | null {
   }
 }
 
-export function getLatestUpdateStatus(): string {
-  const posts = getAllPosts()
-  if (posts.length === 0) return "No updates yet"
-  
-  const latestDate = new Date(posts[0].date)
-  return `Last updated ${formatDistanceToNow(latestDate)} ago`
+export function getAllPostsMeta(): BlogPostMeta[] {
+  if (!fs.existsSync(contentDirectory)) {
+    return []
+  }
+
+  const fileNames = fs.readdirSync(contentDirectory)
+  return fileNames
+    .filter((fileName) => fileName.endsWith(".md"))
+    .map((fileName) => {
+      const slug = fileName.replace(/\.md$/, "")
+      const fullPath = path.join(contentDirectory, fileName)
+      const fileContents = fs.readFileSync(fullPath, "utf8")
+      const { data } = matter(fileContents)
+
+      return {
+        slug,
+        ...(data as Omit<BlogPostMeta, "slug">),
+      }
+    })
+    .sort((a, b) => (a.date < b.date ? 1 : -1))
 }
