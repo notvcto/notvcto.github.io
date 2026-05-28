@@ -8,17 +8,18 @@ category: 'Zero'
 complexity: 7.5
 readingTime: '6 min'
 author: 'notvcto'
-description: 'Phase 1 baseline results are in. All three models scored around 25% on security reasoning problems with no training. Scaling did nothing. Here is what that means.'
+description: 'Phase 1 baseline results are in. All three models scored around 25% on reasoning problems with no training. Scaling did nothing. Here is what that means for the research.'
 tags: ['ai', 'ml', 'research', 'zero', 'grpo', 'reasoning', 'ctf', 'security', 'llm']
 ---
 
-Phase 1 is done. I ran Qwen2.5 at 1.5B, 3B, and 7B through 16 text-only security
-reasoning problems across web exploitation, reverse engineering, cryptography, and
-forensics. No training, no fine-tuning. Just the base models, cold.
+Phase 1 is done. I ran Qwen2.5 at 1.5B, 3B, and 7B through 16 text-only problems
+across web exploitation, reverse engineering, cryptography, and forensics. No training,
+no fine-tuning. Just the base models, cold.
 
 Here are the solve rates:
+
 | Model | Solve Rate |
-|---|---|
+| --- | --- |
 | Qwen2.5-1.5B | 25.0% |
 | Qwen2.5-3B | 25.0% |
 | Qwen2.5-7B | 28.1% |
@@ -31,9 +32,9 @@ three sizes.
 ## What flat means
 
 The whole premise of Zero is finding the minimum viable model size for genuine
-security reasoning — and measuring whether that reasoning transfers to anything
-else. Phase 1 was supposed to establish a floor to measure from. What it actually
-found is that the floor doesn't move with scale, at least not at baseline.
+reasoning — trained on security problems, measured across general tasks too. Phase 1
+was supposed to establish a floor to measure from. What it actually found is that
+the floor doesn't move with scale, at least not at baseline.
 
 Going from 1.5B to 7B didn't unlock new problem categories. Didn't improve web
 exploitation (0/4 across every model). Didn't crack crypto. The problems each size
@@ -89,11 +90,10 @@ them that confidence requires evidence.
 
 ## What's next
 
-Phase 2 is dataset construction. Real security writeups from CTFtime, PicoCTF, and
-HackTheBox, normalized into Zero's voice register and formatted as
-`(challenge, reasoning_chain, solution)` triples. The base64 hallucination result
-specifically means the crypto corpus needs worked examples where the model has to
-show its computation — not just state the answer.
+Phase 2 is dataset construction. Real writeups from CTFtime, PicoCTF, and HackTheBox,
+normalized into Zero's voice register and formatted as `(challenge, reasoning_chain, solution)`
+triples. The base64 hallucination result specifically means the crypto corpus needs
+worked examples where the model has to show its computation — not just state the answer.
 
 The [phase 1 notebook](https://github.com/notvcto/zero/blob/main/phase1/zero_phase1_baseline.ipynb)
 and [full results CSV](https://github.com/notvcto/zero/blob/main/phase1/zero_phase1_results.csv)
