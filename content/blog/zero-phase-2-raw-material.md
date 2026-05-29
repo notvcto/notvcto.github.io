@@ -3,7 +3,7 @@ title: 'Zero Phase 2: raw material'
 shortTitle: 'Phase 2: Dataset Pipeline'
 ogTitle: 'Zero Phase 2: raw material'
 ogSubtitle: 'Building the pipeline that feeds the training loop'
-date: '2026-05-29T02:25:03Z'
+date: '2026-05-29T02:25:00'
 category: 'Zero'
 complexity: 8
 readingTime: '9 min'
@@ -27,12 +27,15 @@ learn from them.
 Every training sample in Zero's seed corpus is a triple:
 
 ```json
+// The full schema includes id, source, category, difficulty, flag, abstention flag, and metadata, but the three fields above are what the model trains on.
+
 {
   "challenge": "Clean, self-contained problem statement.",
   "reasoning_chain": "Step-by-step reasoning toward the solution.",
   "solution": "Final answer or flag."
 }
 ```
+
 
 The middle field is the whole bet. Most fine-tuning datasets pair (problem, answer).
 Zero needs the reasoning chain because GRPO trains on the process of getting to an
