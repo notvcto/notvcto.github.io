@@ -168,9 +168,9 @@ complete, the dataset pushes to HuggingFace as `notvcto/zero-dataset` with a
 
 ## What's running right now
 
-The scraper is running overnight in a tmux session: 100 pages of CTFtime, 2000
+The scraper is running overnight in a tmux session: 200 pages of CTFtime, 2,000
 PicoCTF challenges, 500 HTB retired machines, 300 0xdf posts, 200 IppSec transcripts.
-Expected yield before deduplication: ~3,500–4,000 raw entries.
+Expected yield before deduplication: 3,500–5,000 raw entries.
 
 Tomorrow the enrichment pass starts. After that, Phase 3: training zero-forge on
 the seed corpus so it can begin generating problems. That's when the adversarial
