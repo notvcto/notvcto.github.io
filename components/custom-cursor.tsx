@@ -5,6 +5,7 @@ import { motion, useMotionValue, useSpring } from "framer-motion"
 
 export function CustomCursor() {
   const [isHovering, setIsHovering] = useState(false)
+  const [isOverImage, setIsOverImage] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [isTouchDevice, setIsTouchDevice] = useState(false)
 
@@ -33,9 +34,9 @@ export function CustomCursor() {
     const handleMouseEnter = () => setIsVisible(true)
 
     const handleHoverStart = (e: MouseEvent) => {
-      if ((e.target as HTMLElement).closest("a, button, [data-cursor-hover]")) {
-        setIsHovering(true)
-      }
+      const target = e.target as HTMLElement
+      if (target.closest("a, button, [data-cursor-hover]")) setIsHovering(true)
+      setIsOverImage(target.tagName === 'IMG')
     }
 
     const handleHoverEnd = (e: MouseEvent) => {
@@ -43,9 +44,8 @@ export function CustomCursor() {
       // Without this check, moving between children inside a link flickers isHovering off/on.
       const leaving = (e.target as HTMLElement).closest("a, button, [data-cursor-hover]")
       const entering = (e.relatedTarget as HTMLElement | null)?.closest("a, button, [data-cursor-hover]")
-      if (leaving && !entering) {
-        setIsHovering(false)
-      }
+      if (leaving && !entering) setIsHovering(false)
+      if ((e.relatedTarget as HTMLElement | null)?.tagName !== 'IMG') setIsOverImage(false)
     }
 
     window.addEventListener("mousemove", handleMouseMove)
@@ -68,18 +68,21 @@ export function CustomCursor() {
 
   return (
     <>
-      {/* Main cursor dot */}
+      {/* Main cursor dot — hidden over images to avoid mix-blend-difference color inversion */}
       <motion.div
         className="fixed top-0 left-0 w-3 h-3 bg-white rounded-full pointer-events-none z-[10000] mix-blend-difference"
         style={{ x: dotX, y: dotY, translateX: "-6px", translateY: "-6px" }}
-        animate={{ scale: isHovering ? 0 : 5, opacity: isVisible ? 1 : 0 }}
+        animate={{ scale: isHovering || isOverImage ? 0 : 5, opacity: isVisible ? 1 : 0 }}
         transition={{ duration: 0.15 }}
       />
-      {/* Hover ring */}
+      {/* Hover ring — plain white (no difference blend) over images so colors aren't inverted */}
       <motion.div
-        className="fixed top-0 left-0 w-12 h-12 border border-white rounded-full pointer-events-none z-[10000] mix-blend-difference"
-        style={{ x: ringX, y: ringY, translateX: "-24px", translateY: "-24px" }}
-        animate={{ scale: isHovering ? 1 : 0, opacity: isVisible ? 1 : 0 }}
+        className="fixed top-0 left-0 w-12 h-12 border border-white rounded-full pointer-events-none z-[10000]"
+        style={{
+          x: ringX, y: ringY, translateX: "-24px", translateY: "-24px",
+          mixBlendMode: isOverImage ? 'normal' : 'difference',
+        }}
+        animate={{ scale: isHovering || isOverImage ? 1 : 0, opacity: isVisible ? (isOverImage ? 0.5 : 1) : 0 }}
         transition={{ duration: 0.15 }}
       />
     </>
