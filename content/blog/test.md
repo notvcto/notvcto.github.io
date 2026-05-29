@@ -14,5 +14,6 @@ tags: ['lol', 'no', 'completely testing']
 
 # test
 
+![alt](/images/test/screenshot2026-04-0513-27-18.jpg)
 
-will this image disappear from the repo
+will this image be embedded properly again
