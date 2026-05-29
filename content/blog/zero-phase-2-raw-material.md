@@ -3,7 +3,7 @@ title: 'Zero Phase 2: raw material'
 shortTitle: 'Phase 2: Dataset Pipeline'
 ogTitle: 'Zero Phase 2: raw material'
 ogSubtitle: 'Building the pipeline that feeds the training loop'
-date: '2026-05-29T22:30:00'
+date: '2026-05-28T22:30:00'
 category: 'Zero'
 complexity: 8
 readingTime: '9 min'
