@@ -27,7 +27,9 @@ learn from them.
 Every training sample in Zero's seed corpus is a triple:
 
 ```json
-// The full schema includes id, source, category, difficulty, flag, abstention flag, and metadata, but the three fields above are what the model trains on.
+// The full schema includes id, source, category, difficulty,
+flag, abstention flag, and metadata, but the three fields 
+below are what the model trains on.
 
 {
   "challenge": "Clean, self-contained problem statement.",
