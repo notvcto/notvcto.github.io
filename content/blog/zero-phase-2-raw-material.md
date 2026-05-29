@@ -46,7 +46,7 @@ learns pattern matching. If it sees the reasoning, it has something to reinforce
 
 The chain isn't just steps. It's Zero's voice applied to a problem: grounded,
 direct, every claim tied to a concrete observation. For web challenges that means
-actual payloads. For crypto it means actual computations — numbers, not descriptions
+actual payloads. For crypto it means actual computations, numbers, not descriptions
 of numbers. That last constraint comes directly from Phase 1.
 
 ---
@@ -60,13 +60,13 @@ the vulnerability category. None reasoned to the minimum viable solution. They
 know the attack surface. They don't reason through it.
 
 Base64 hallucinated across all sizes. Every model described a decoding process and
-produced a plausible-looking result that was simply invented. Not computed — pattern-matched
+produced a plausible-looking result that was simply invented. Not computed; pattern-matched
 to what a decode response looks like, then filled in from somewhere else. The fix
 is direct: every crypto entry's reasoning chain must include full worked computations.
 Actual inputs, actual outputs, actual code.
 
 Zero abstentions. Not one, across 48 test cases. Every model always produced an
-answer — confident, wrong, never uncertain. You can't reward correct abstention
+answer. Confident, wrong, never uncertain. You can't reward correct abstention
 during training if the training data never shows it. Hence uncertainty injection.
 
 ---
@@ -113,8 +113,7 @@ solution, split by section headers like "enumeration", "foothold", "exploitation
 and a solution hint (tail of the writeup plus any flags found by regex).
 
 This extraction is imperfect. Some writeups don't have headers. Some put the
-solution in the intro. The normalization layer produces something roughly right —
-good enough for the enrichment step to fill gaps, not good enough to use as
+solution in the intro. The normalization layer produces something roughly right, good enough for the enrichment step to fill gaps, not good enough to use as
 training data directly.
 
 ---
@@ -122,14 +121,14 @@ training data directly.
 ## Enrichment
 
 The enrichment step is where normalized raw data becomes a proper triple in Zero's
-voice. There's no API call here — the pipeline runs with `--scrape-only`, dumps
+voice. There's no API call here. The pipeline runs with `--scrape-only`, dumps
 normalized pass-through triples, and Claude Code handles enrichment in batches.
 
 The enrichment prompt gives Claude the raw challenge, the extracted steps, the
 solution hint, and the flag, then asks for a clean triple. For crypto, the prompt
 explicitly requires full numerical computation in the reasoning chain. For any
 entry where the source material is too thin, the correct output is
-`INSUFFICIENT_DATA` — that entry gets dropped rather than padded.
+`INSUFFICIENT_DATA`, that entry gets dropped rather than padded.
 
 This is intentional. Enrichment requires judgment that an automated pipeline
 shouldn't fake.
@@ -140,7 +139,7 @@ shouldn't fake.
 
 Before enrichment, 10% of entries get their solution stripped.
 
-The decision is deterministic — based on a hash of `source:title:url` — so the
+The decision is deterministic (based on a hash of `source:title:url`) so the
 same entry always gets the same treatment across runs. Stripped entries go through
 a different enrichment prompt: instead of "here's the solution, write the reasoning,"
 it's "here's the challenge with no solution, write what you can observe and what's
@@ -163,15 +162,15 @@ multiple sources.
 The pipeline writes to `phase2/data/seed.jsonl` incrementally, flushing after
 every write. If it dies mid-run, you don't lose everything. Once enrichment is
 complete, the dataset pushes to HuggingFace as `notvcto/zero-dataset` with a
-95/5 train/test split — the test split held out for eval Layer 1.
+95/5 train/test split. The test split held out for eval Layer 1.
 
 ---
 
 ## What's running right now
 
-The scraper is running overnight in a tmux session: 20 pages of CTFtime, 500
-PicoCTF challenges, 200 HTB retired machines, 100 0xdf posts, 50 IppSec transcripts.
-Expected yield before deduplication: 1,000–1,500 raw entries.
+The scraper is running overnight in a tmux session: 100 pages of CTFtime, 2000
+PicoCTF challenges, 500 HTB retired machines, 300 0xdf posts, 200 IppSec transcripts.
+Expected yield before deduplication: ~3,500–4,000 raw entries.
 
 Tomorrow the enrichment pass starts. After that, Phase 3: training zero-forge on
 the seed corpus so it can begin generating problems. That's when the adversarial
