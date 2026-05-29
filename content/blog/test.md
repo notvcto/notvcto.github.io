@@ -3,7 +3,7 @@ title: 'testing'
 shortTitle: 'testing images'
 ogTitle: 'is this thing on'
 ogSubtitle: 'yes it is'
-date: '2026-05-28T23:48:32Z'
+date: '2026-05-28T23:48:00'
 category: 'testing'
 complexity: 1
 readingTime: '2 min'
@@ -13,6 +13,6 @@ tags: ['lol', 'no', 'completely testing']
 ---
 
 # test
-![alt](/images/manga1.jpg)
+
 
 did this image render properly
