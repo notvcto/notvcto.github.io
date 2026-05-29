@@ -1,6 +1,6 @@
 ---
 title: 'Zero Phase 1: the floor is flat'
-shortTitle: 'Phase 1 Results'
+shortTitle: 'Phase 1: Results'
 ogTitle: 'Zero Phase 1: the floor is flat'
 ogSubtitle: 'Baseline results across 1.5B, 3B, and 7B'
 date: '2026-05-27T22:00:00'
