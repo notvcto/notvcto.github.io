@@ -88,7 +88,7 @@ a CVE exploiting mirth connect.
 ## The pipeline overwrote data on crash
 
 Every run opened `seed.jsonl` in write mode. A crash mid-run meant losing
-everything written so far. This happened once. The OMV box shut itself down
+everything written so far. This happened once. The Linux box I was running the pipeline on shut itself down
 partway through a run and took 1,684 entries with it.
 
 The fix is append mode with resume support. On startup the pipeline now reads
@@ -112,7 +112,7 @@ videos get the same treatment.
 
 ## Where things stand
 
-Pipeline is running on the OMV box with 1,684 existing entries pre-loaded.
+Pipeline is running on the same Linux machine with 1,684 existing entries pre-loaded.
 Sources: GitHub (2,000 repos, 100 files each), 0xdf (570 posts), IppSec
 (533 videos). Crash-safe. When it finishes, enrichment starts.
 
