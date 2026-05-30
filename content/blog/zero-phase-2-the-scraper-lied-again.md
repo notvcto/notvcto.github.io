@@ -12,7 +12,7 @@ description: 'After fixing the CTFtime scraper to fetch actual writeups instead 
 tags: ['ai', 'ml', 'research', 'zero', 'grpo', 'reasoning', 'ctf', 'security', 'llm', 'dataset']
 ---
 
-Yesterday's post was about fixing the scraper. Today's is about what we found when
+This morning's post was about fixing the scraper. Today's is about what we found when
 we actually looked at the data it produced.
 
 After getting CTFtime to fetch real writeup pages instead of event announcements,
