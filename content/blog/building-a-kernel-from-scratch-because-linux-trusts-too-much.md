@@ -160,16 +160,16 @@ conventions, its own failure modes.
 
 On Wolfram there's `fer`. One CLI, native to the capability model.
 
-```
-fer pkg install <name>      package management
-fer drv load <file>         load a driver, shows capability request, prompts
-fer cap audit <pid>         full capability derivation tree
-fer cap revoke <handle>     revoke a capability instantly
-fer jobs                    job tree, live
-fer mem inspect <vmo>       who holds this VMO, with what rights
-fer ipc monitor <channel>   observe message flow
-fer spawn <bin> --cap <...> launch with explicit capabilities
-```
+| command | what it does |
+|---|---|
+| `fer pkg install <name>` | package management |
+| `fer drv load <file>` | load a driver, shows capability request, prompts |
+| `fer cap audit <pid>` | full capability derivation tree |
+| `fer cap revoke <handle>` | revoke a capability instantly |
+| `fer jobs` | job tree, live |
+| `fer mem inspect <vmo>` | who holds this VMO, with what rights |
+| `fer ipc monitor <channel>` | observe message flow |
+| `fer spawn <bin> --cap <...>` | launch with explicit capabilities |
 
 These aren't bolted-on tools. The kernel already tracks all of this to function.
 `fer` just surfaces it.
