@@ -2,8 +2,9 @@
   "name": "notvcto-portfolio",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@11.1.1",
   "scripts": {
-    "build": "npx puppeteer browsers install chrome && node scripts/generate-og.mjs && next build",
+    "build": "pnpm exec puppeteer browsers install chrome && node scripts/generate-og.mjs && next build",
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start"
@@ -28,12 +29,16 @@
     "tw-animate-css": "1.4.0"
   },
   "devDependencies": {
+    "@fontsource/geist-mono": "^5.2.8",
+    "@fontsource/playfair-display": "^5.2.8",
     "@tailwindcss/postcss": "^4.3.0",
     "@types/node": "^25.7.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/three": "^0.177.0",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.6",
     "postcss": "^8.5.14",
     "puppeteer": "^25.1.0",
     "tailwindcss": "^4.3.0",

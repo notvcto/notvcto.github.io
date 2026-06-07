@@ -132,9 +132,11 @@ export function Works() {
               {/* Mobile/Touch Image Preview */}
               {isTouchDevice && (
                 <div className="w-full aspect-video overflow-hidden rounded-xl border border-white/10 shadow-xl">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={project.image}
                     alt={project.title}
+                    referrerPolicy="no-referrer"
                     className="w-full h-full object-cover grayscale-[20%] contrast-[1.1]"
                   />
                 </div>
@@ -163,6 +165,7 @@ export function Works() {
               <motion.img
                 src={projects[hoveredIndex].image}
                 alt={projects[hoveredIndex].title}
+                referrerPolicy="no-referrer"
                 className="w-full h-full object-cover"
                 initial={{ scale: 1.2 }}
                 animate={{ scale: 1 }}

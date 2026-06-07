@@ -8,6 +8,15 @@ import matter from 'gray-matter';
 const contentDirectory = path.join(process.cwd(), 'content/blog');
 const ogOutputDirectory = path.join(process.cwd(), 'public/og');
 const manifestPath = path.join(ogOutputDirectory, '.manifest.json');
+const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const playfairFontPath = path.resolve(
+  process.cwd(),
+  'node_modules/@fontsource/playfair-display/files/playfair-display-latin-400-normal.woff2'
+);
+const geistMonoFontPath = path.resolve(
+  process.cwd(),
+  'node_modules/@fontsource/geist-mono/files/geist-mono-latin-500-normal.woff2'
+);
 
 // Pin the installed Three.js version into the hash so a version bump invalidates cached images.
 const THREE_VERSION = JSON.parse(
@@ -40,6 +49,17 @@ function saveManifest(manifest) {
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 }
 
+function assertSafeKey(key) {
+  if (key !== 'portfolio' && !slugPattern.test(key)) {
+    throw new Error(`Invalid OG image key: ${key}`);
+  }
+}
+
+function imagePathForKey(key) {
+  assertSafeKey(key);
+  return path.join(ogOutputDirectory, `${key}.png`);
+}
+
 function getPostHash(post) {
   return hashString([
     SCRIPT_HASH,
@@ -54,7 +74,21 @@ const PORTFOLIO_HASH = hashString(`portfolio|${SCRIPT_HASH}`);
 
 function needsGeneration(key, hash, manifest) {
   if (manifest[key] !== hash) return true;
-  return !fs.existsSync(path.join(ogOutputDirectory, `${key}.png`));
+  return !fs.existsSync(imagePathForKey(key));
+}
+
+function cleanUnexpectedOutput(allowedKeys) {
+  for (const fileName of fs.readdirSync(ogOutputDirectory)) {
+    if (fileName === '.manifest.json') continue;
+    if (!fileName.endsWith('.png')) {
+      fs.unlinkSync(path.join(ogOutputDirectory, fileName));
+      continue;
+    }
+    const key = fileName.replace(/\.png$/, '');
+    if (!allowedKeys.has(key)) {
+      fs.unlinkSync(path.join(ogOutputDirectory, fileName));
+    }
+  }
 }
 
 // ── Content ───────────────────────────────────────────────────────────────────
@@ -65,6 +99,9 @@ async function getAllPosts() {
     .filter((f) => f.endsWith('.md'))
     .map((f) => {
       const slug = f.replace(/\.md$/, '');
+      if (!slugPattern.test(slug)) {
+        throw new Error(`Invalid blog slug for OG image generation: ${slug}`);
+      }
       const { data } = matter(fs.readFileSync(path.join(contentDirectory, f), 'utf8'));
       return { slug, ...data };
     });
@@ -238,12 +275,12 @@ async function init() {
   try {
     const pf = new FontFace(
       'Playfair Display',
-      'url(https://cdn.jsdelivr.net/npm/@fontsource/playfair-display@5.1.1/files/playfair-display-latin-400-normal.woff2)',
+      'url(file://${playfairFontPath})',
       { weight: '400', style: 'normal' }
     );
     const gm = new FontFace(
       'Geist Mono',
-      'url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5.1.1/files/geist-mono-latin-500-normal.woff2)',
+      'url(file://${geistMonoFontPath})',
       { weight: '500' }
     );
     await Promise.all([pf.load(), gm.load()]);
@@ -265,6 +302,8 @@ init();
 async function generateImages() {
   const manifest = loadManifest();
   const posts = await getAllPosts();
+  const allowedKeys = new Set(['portfolio', ...posts.map((post) => post.slug)]);
+  cleanUnexpectedOutput(allowedKeys);
 
   const needsPortfolio = needsGeneration('portfolio', PORTFOLIO_HASH, manifest);
   const postsToGenerate = posts.filter((post) =>
@@ -286,6 +325,14 @@ async function generateImages() {
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--allow-file-access-from-files'],
   });
   const page = await browser.newPage();
+  await page.setRequestInterception(true);
+  page.on('request', (request) => {
+    if (request.url().startsWith('file://')) {
+      request.continue();
+      return;
+    }
+    request.abort();
+  });
   await page.setViewport({ width: 1200, height: 630, deviceScaleFactor: 1 });
 
   const tempHtmlPath = path.join(ogOutputDirectory, '.temp-og.html');
@@ -301,13 +348,13 @@ async function generateImages() {
   try {
     if (needsPortfolio) {
       console.log('  portfolio.png');
-      await renderOG(buildPortfolioOverlay(), path.join(ogOutputDirectory, 'portfolio.png'));
+      await renderOG(buildPortfolioOverlay(), imagePathForKey('portfolio'));
       manifest['portfolio'] = PORTFOLIO_HASH;
     }
 
     for (const post of postsToGenerate) {
       console.log(`  ${post.slug}.png`);
-      await renderOG(buildPostOverlay(post), path.join(ogOutputDirectory, `${post.slug}.png`));
+      await renderOG(buildPostOverlay(post), imagePathForKey(post.slug));
       manifest[post.slug] = getPostHash(post);
     }
   } finally {

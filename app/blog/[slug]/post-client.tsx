@@ -39,6 +39,8 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
     return () => window.removeEventListener('keydown', handleEsc)
   }, [lightboxSrc])
 
+  const canonicalUrl = `https://notvc.to/blog/${post.slug}`
+
   return (
     <article className="prose prose-invert prose-quoteless max-w-none prose-headings:font-playfair prose-p:font-sans prose-p:text-muted-foreground prose-p:text-lg prose-p:leading-relaxed prose-li:text-muted-foreground prose-strong:text-white prose-pre:bg-white/[0.02] prose-pre:border prose-pre:border-white/5">
       <header className="mb-12 border-b border-white/5 pb-8 not-prose">
@@ -73,28 +75,40 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
       <ReactMarkdown 
         remarkPlugins={[remarkGfm]}
         components={{
-          h1: ({node, ...props}) => <h1 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-bold mb-6 text-white" {...props} />,
-          h2: ({node, ...props}) => <h2 className="text-xl sm:text-2xl md:text-3xl font-playfair font-bold mt-12 mb-4 text-white" {...props} />,
-          h3: ({node, ...props}) => <h3 className="text-lg sm:text-xl md:text-2xl font-playfair font-bold mt-8 mb-3 text-white" {...props} />,
-          p: ({node, ...props}) => <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-6 font-sans" {...props} />,
-          ul: ({node, ...props}) => <ul className="list-disc pl-6 space-y-2 mb-6 text-muted-foreground" {...props} />,
-          ol: ({node, ...props}) => <ol className="list-decimal pl-6 space-y-2 mb-6 text-muted-foreground" {...props} />,
-          li: ({node, ...props}) => <li className="text-lg leading-relaxed" {...props} />,
-          hr: ({node, ...props}) => <hr className="my-12 border-white/5" {...props} />,
-          blockquote: ({node, ...props}) => (
+          h1: (props) => <h1 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-bold mb-6 text-white" {...props} />,
+          h2: (props) => <h2 className="text-xl sm:text-2xl md:text-3xl font-playfair font-bold mt-12 mb-4 text-white" {...props} />,
+          h3: (props) => <h3 className="text-lg sm:text-xl md:text-2xl font-playfair font-bold mt-8 mb-3 text-white" {...props} />,
+          p: (props) => <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-6 font-sans" {...props} />,
+          ul: (props) => <ul className="list-disc pl-6 space-y-2 mb-6 text-muted-foreground" {...props} />,
+          ol: (props) => <ol className="list-decimal pl-6 space-y-2 mb-6 text-muted-foreground" {...props} />,
+          li: (props) => <li className="text-lg leading-relaxed" {...props} />,
+          hr: (props) => <hr className="my-12 border-white/5" {...props} />,
+          blockquote: (props) => (
             <blockquote className="border-l-4 border-white/10 pl-6 py-2 my-8 italic bg-white/[0.01] rounded-r-lg" {...props} />
           ),
-          table: ({node, ...props}) => (
+          a: ({ href, ...props }) => {
+            const isExternal = typeof href === 'string' && /^(https?:)?\/\//i.test(href)
+
+            return (
+              <a
+                href={href}
+                rel={isExternal ? "noreferrer" : undefined}
+                referrerPolicy={isExternal ? "no-referrer" : undefined}
+                {...props}
+              />
+            )
+          },
+          table: (props) => (
             <div className="my-8 overflow-x-auto border border-white/10 rounded-xl bg-white/[0.01]">
               <table className="w-full border-collapse text-left m-0!" {...props} />
             </div>
           ),
-          thead: ({node, ...props}) => <thead className="border-b border-white/10 bg-white/[0.02]" {...props} />,
-          tbody: ({node, ...props}) => <tbody {...props} />,
-          th: ({node, ...props}) => <th className="px-6 py-4 font-mono text-[10px] tracking-widest text-muted-foreground uppercase border-none!" {...props} />,
-          tr: ({node, ...props}) => <tr className="border-b border-white/10 last:border-none!" {...props} />,
-          td: ({node, ...props}) => <td className="px-6 py-4 text-white/80 border-none!" {...props} />,
-          code: ({node, className, children, ...props}) => {
+          thead: (props) => <thead className="border-b border-white/10 bg-white/[0.02]" {...props} />,
+          tbody: (props) => <tbody {...props} />,
+          th: (props) => <th className="px-6 py-4 font-mono text-[10px] tracking-widest text-muted-foreground uppercase border-none!" {...props} />,
+          tr: (props) => <tr className="border-b border-white/10 last:border-none!" {...props} />,
+          td: (props) => <td className="px-6 py-4 text-white/80 border-none!" {...props} />,
+          code: ({ className, children }) => {
             const match = /language-(\w+)/.exec(className || '');
             const isInline = !className;
             
@@ -133,11 +147,21 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
               </div>
             );
           },
-          pre: ({node, ...props}) => <div className="not-prose">{props.children}</div>,
+          pre: (props) => <div className="not-prose">{props.children}</div>,
           img: ({src, alt}) => {
+            const safeSrc = typeof src === 'string' && src.startsWith('/') ? src : ''
             const fmt = typeof src === 'string'
               ? (src.split('.').pop()?.split('?')[0]?.toUpperCase() || 'IMAGE')
               : 'IMAGE'
+
+            if (!safeSrc) {
+              return (
+                <div className="my-8 not-prose rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3 font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
+                  Remote image blocked
+                </div>
+              )
+            }
+
             return (
               <figure className="my-8 not-prose rounded-xl border border-white/5 overflow-hidden shadow-2xl bg-[#0a0a0a]">
                 <div className="flex items-center justify-between px-4 py-2 bg-white/[0.03] border-b border-white/5">
@@ -147,11 +171,13 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
                     <div className="w-2 h-2 rounded-full bg-white/10" />
                   </div>
                 </div>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={src as string}
+                  src={safeSrc}
                   alt={alt || ''}
                   loading="lazy"
-                  onClick={() => typeof src === 'string' && setLightboxSrc(src)}
+                  referrerPolicy="no-referrer"
+                  onClick={() => setLightboxSrc(safeSrc)}
                   className="w-full object-cover cursor-zoom-in transition-opacity duration-300 hover:opacity-90"
                 />
                 {alt && (
@@ -185,6 +211,7 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
                 transition={{ duration: 0.2 }}
                 src={lightboxSrc}
                 alt=""
+                referrerPolicy="no-referrer"
                 onClick={(e) => e.stopPropagation()}
                 className="max-w-full max-h-[90vh] rounded-xl border border-white/10 object-contain cursor-default shadow-2xl"
               />
@@ -220,10 +247,13 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
           </div>
           <button
             onClick={() => {
-              navigator.clipboard.writeText(window.location.href)
-              setCopied(true)
-              if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current)
-              copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000)
+              navigator.clipboard.writeText(canonicalUrl)
+                .then(() => {
+                  setCopied(true)
+                  if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current)
+                  copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000)
+                })
+                .catch(() => setCopied(false))
             }}
             className="w-10 h-10 rounded-full border border-white/10 bg-white/[0.02] flex items-center justify-center shrink-0 hover:border-white/20 hover:bg-white/[0.05] transition-all duration-300"
             aria-label="Copy link"

@@ -34,18 +34,25 @@ export function CustomCursor() {
     const handleMouseEnter = () => setIsVisible(true)
 
     const handleHoverStart = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
+      const target = e.target
+      if (!(target instanceof Element)) return
       if (target.closest("a, button, [data-cursor-hover]")) setIsHovering(true)
       setIsOverImage(target.tagName === 'IMG')
     }
 
     const handleHoverEnd = (e: MouseEvent) => {
+      const target = e.target
+      const relatedTarget = e.relatedTarget
+      if (!(target instanceof Element)) return
+
       // Only clear hover if the pointer isn't moving into another interactive element.
       // Without this check, moving between children inside a link flickers isHovering off/on.
-      const leaving = (e.target as HTMLElement).closest("a, button, [data-cursor-hover]")
-      const entering = (e.relatedTarget as HTMLElement | null)?.closest("a, button, [data-cursor-hover]")
+      const leaving = target.closest("a, button, [data-cursor-hover]")
+      const entering = relatedTarget instanceof Element
+        ? relatedTarget.closest("a, button, [data-cursor-hover]")
+        : null
       if (leaving && !entering) setIsHovering(false)
-      if ((e.relatedTarget as HTMLElement | null)?.tagName !== 'IMG') setIsOverImage(false)
+      if (!(relatedTarget instanceof Element) || relatedTarget.tagName !== 'IMG') setIsOverImage(false)
     }
 
     window.addEventListener("mousemove", handleMouseMove)

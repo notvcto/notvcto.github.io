@@ -52,7 +52,7 @@ export function Footer() {
               }}
               transition={{ duration: 0.3 }}
             >
-              Let's <span className="italic">Collaborate</span>
+              Let&apos;s <span className="italic">Collaborate</span>
             </motion.h2>
 
             <motion.div

@@ -58,7 +58,7 @@ export function BlogIndexClient({ firstPost, latestDate }: BlogIndexClientProps)
             <span className="text-white">whoami</span>
           </div>
           <div className="mt-4 text-muted-foreground leading-relaxed">
-            I'm a System Architect and Interface Designer obsessed with building intelligent digital experiences.
+            I&apos;m a System Architect and Interface Designer obsessed with building intelligent digital experiences.
             This blog serves as a log for my technical investigations, architectural patterns, and design philosophies.
           </div>
         </div>

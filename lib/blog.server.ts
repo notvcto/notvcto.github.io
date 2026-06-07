@@ -4,6 +4,7 @@ import matter from "gray-matter"
 import { type BlogPost, type BlogPostMeta } from "./blog"
 
 const contentDirectory = path.join(process.cwd(), "content/blog")
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 const REQUIRED_FIELDS: (keyof BlogPost)[] = [
   "title", "date", "category", "complexity", "readingTime",
@@ -11,6 +12,9 @@ const REQUIRED_FIELDS: (keyof BlogPost)[] = [
 ]
 
 function validateFrontmatter(slug: string, data: Record<string, unknown>): void {
+  if (!SLUG_PATTERN.test(slug)) {
+    throw new Error(`Blog post "${slug}" has invalid slug — use lowercase letters, numbers, and hyphens`)
+  }
   for (const field of REQUIRED_FIELDS) {
     if (data[field] === undefined || data[field] === null) {
       throw new Error(`Blog post "${slug}" is missing required frontmatter field: "${field}"`)
@@ -22,6 +26,10 @@ function validateFrontmatter(slug: string, data: Record<string, unknown>): void 
   if (typeof data.complexity !== "number") {
     throw new Error(`Blog post "${slug}" has invalid "complexity" field — must be a number`)
   }
+}
+
+export function isValidPostSlug(slug: string): boolean {
+  return SLUG_PATTERN.test(slug)
 }
 
 export function getAllPosts(): BlogPost[] {
@@ -39,6 +47,8 @@ export function getAllPosts(): BlogPost[] {
 }
 
 export function getPostBySlug(slug: string): BlogPost | null {
+  if (!isValidPostSlug(slug)) return null
+
   try {
     const { data, content } = matter(
       fs.readFileSync(path.join(contentDirectory, `${slug}.md`), "utf8")

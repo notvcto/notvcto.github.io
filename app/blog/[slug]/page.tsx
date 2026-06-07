@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { getPostBySlug, getAllPosts, getAllPostsMeta } from "@/lib/blog.server"
+import { getPostBySlug, getAllPosts, getAllPostsMeta, isValidPostSlug } from "@/lib/blog.server"
 import { BlogPostClient } from "./post-client"
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
+  if (!isValidPostSlug(slug)) return {}
+
   const post = getPostBySlug(slug)
 
   if (!post) return {}
@@ -46,6 +48,10 @@ export async function generateStaticParams() {
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
+  if (!isValidPostSlug(slug)) {
+    notFound()
+  }
+
   const post = getPostBySlug(slug)
 
   if (!post) {
