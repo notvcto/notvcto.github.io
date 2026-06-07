@@ -149,7 +149,7 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
           },
           pre: (props) => <div className="not-prose">{props.children}</div>,
           img: ({src, alt}) => {
-            const safeSrc = typeof src === 'string' && src.startsWith('/') ? src : ''
+            const safeSrc = typeof src === 'string' && src.startsWith('/') && !src.startsWith('//') ? src : ''
             const fmt = typeof src === 'string'
               ? (src.split('.').pop()?.split('?')[0]?.toUpperCase() || 'IMAGE')
               : 'IMAGE'
