@@ -1,4 +1,6 @@
 version: 2
+# Touching this file after the repository migration triggers an immediate
+# Dependabot version-update check.
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
