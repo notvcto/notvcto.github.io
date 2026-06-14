@@ -37,7 +37,7 @@
     "@types/react-dom": "^19.2.3",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/three": "^0.184.1",
-    "eslint": "^9.39.4",
+    "eslint": "^10.5.0",
     "eslint-config-next": "^16.2.7",
     "postcss": "^8.5.15",
     "puppeteer": "^25.1.0",
