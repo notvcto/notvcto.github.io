@@ -39,7 +39,7 @@
     "@types/three": "^0.185.0",
     "eslint": "^10.6.0",
     "eslint-config-next": "^16.2.9",
-    "postcss": "^8.5.15",
+    "postcss": "^8.5.16",
     "puppeteer": "^25.1.0",
     "tailwindcss": "^4.3.1",
     "typescript": "^6.0.3"
