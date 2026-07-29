@@ -198,3 +198,89 @@
 .animate-marquee-right {
   animation: marquee-right 50s linear infinite;
 }
+
+/* ── Print styles (resume) ─────────────────────────────────────────────── */
+@media print {
+  :root {
+    --background: #fff;
+    --foreground: #111;
+    --muted-foreground: #555;
+    --border: #ddd;
+    /* --accent stays brand blue for section labels/links */
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #111 !important;
+    height: auto !important;
+  }
+
+  /* Everything is rem-based (Tailwind) — scaling the root compacts type
+     AND spacing to print density (text-base 16px → 12px ≈ 9pt) */
+  html {
+    font-size: 12px;
+  }
+
+  .no-print,
+  .noise-overlay {
+    display: none !important;
+  }
+
+  /* framer-motion leaves below-fold sections at opacity:0 / translated —
+     without this reset anything not yet scrolled into view prints blank */
+  * {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Zero @page margin so the browser has no margin box to stamp its
+     URL/date/title header-footer into; paper margin comes from padding. */
+  @page {
+    margin: 0;
+  }
+
+  .resume-print {
+    /* max-w-3xl is rem-based, so the root shrink squeezes it to ~150mm —
+       on paper, use the full sheet minus real margins */
+    max-width: none !important;
+    padding: 14mm 18mm !important;
+  }
+
+  /* Screen pt-28/36 + pb-24 waste half a page; last section's mb-12 can
+     spill a blank sheet */
+  .resume-print article > :last-child,
+  .resume-print article section:last-of-type {
+    margin-bottom: 0 !important;
+  }
+
+  /* White-tint utilities don't route through CSS vars — remap for paper */
+  .resume-print .border-white\/10 {
+    border-color: #ddd !important;
+  }
+  .resume-print .text-white\/90 {
+    color: #111 !important;
+  }
+  .resume-print [class*="bg-white"] {
+    background: transparent !important;
+  }
+
+  .resume-print a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .resume-print section {
+    break-inside: auto;
+  }
+  .resume-print h1,
+  .resume-print h2,
+  .resume-print h3 {
+    break-after: avoid;
+  }
+  .resume-print .break-inside-avoid {
+    break-inside: avoid;
+  }
+}

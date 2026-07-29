@@ -77,14 +77,14 @@ export function CustomCursor() {
     <>
       {/* Main cursor dot — hidden over images to avoid mix-blend-difference color inversion */}
       <motion.div
-        className="fixed top-0 left-0 w-3 h-3 bg-white rounded-full pointer-events-none z-[10000] mix-blend-difference"
+        className="no-print fixed top-0 left-0 w-3 h-3 bg-white rounded-full pointer-events-none z-[10000] mix-blend-difference"
         style={{ x: dotX, y: dotY, translateX: "-6px", translateY: "-6px" }}
         animate={{ scale: isHovering || isOverImage ? 0 : 5, opacity: isVisible ? 1 : 0 }}
         transition={{ duration: 0.15 }}
       />
       {/* Hover ring — plain white (no difference blend) over images so colors aren't inverted */}
       <motion.div
-        className="fixed top-0 left-0 w-12 h-12 border border-white rounded-full pointer-events-none z-[10000]"
+        className="no-print fixed top-0 left-0 w-12 h-12 border border-white rounded-full pointer-events-none z-[10000]"
         style={{
           x: ringX, y: ringY, translateX: "-24px", translateY: "-24px",
           mixBlendMode: isOverImage ? 'normal' : 'difference',

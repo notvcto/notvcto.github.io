@@ -10,6 +10,7 @@ import { EASE_OUT_EXPO } from "@/lib/animation"
 const navLinks = [
   { label: "About", href: "/#about" },
   { label: "Works", href: "/#works" },
+  { label: "Resume", href: "/resume" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/#contact" },
 ]
@@ -48,7 +49,7 @@ export function Navbar() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: EASE_OUT_EXPO }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={`no-print fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled ? "bg-background/80 backdrop-blur-md border-b border-border" : ""
         }`}
       >
