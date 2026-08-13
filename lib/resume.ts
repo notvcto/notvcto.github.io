@@ -10,6 +10,8 @@ export interface ResumeData {
     email: string
     site: string
     github: string
+    phone?: string
+    linkedin?: string
     location?: L
     availability?: L
   }
@@ -52,6 +54,8 @@ export const resume: ResumeData = {
     email: "contact@notvc.to",
     site: "notvc.to",
     github: "github.com/notvcto",
+    // phone: "",       // TODO: add if you want it on the public resume
+    // linkedin: "",    // TODO: add if you have/want one listed
     location: { en: "Baní, Dominican Republic", es: "Baní, República Dominicana" },
     availability: {
       en: "US citizen · Remote / on-site · Open to relocation (DR & US)",
@@ -59,8 +63,8 @@ export const resume: ResumeData = {
     },
   },
   summary: {
-    en: "Security researcher and systems programmer. Vulnerability findings triaged by Riot Games Security. Reports submitted to the U.S. Department of Defense, Agoda, and Neon bug bounty programs. I build open-source security tooling in Rust, from a cryptographic artifact-verification standard to a capability-based microkernel, and publish the research behind it. Bilingual (English/Spanish). US citizen based in the Dominican Republic, available for remote or on-site roles.",
-    es: "Investigador de seguridad y programador de sistemas. Hallazgos de vulnerabilidades validados por Riot Games Security. Reportes presentados a los programas de recompensas del Departamento de Defensa de EE. UU., Agoda y Neon. Construyo herramientas de seguridad de código abierto en Rust, desde un estándar de verificación criptográfica de artefactos hasta un microkernel basado en capacidades, y publico la investigación detrás de ellas. Bilingüe (inglés/español). Ciudadano estadounidense radicado en República Dominicana, disponible para roles remotos o presenciales.",
+    en: "Security researcher and systems programmer with hands-on network and infrastructure administration experience. Vulnerability findings triaged by Riot Games Security. Reports submitted to the U.S. Department of Defense, Agoda, and Neon bug bounty programs. I build open-source security tooling in Rust, from a cryptographic artifact-verification standard to a capability-based microkernel, and design and operate self-hosted infrastructure end to end, from GPON and routing hardware up through monitored, systemd-managed services. Bilingual (English/Spanish). US citizen based in the Dominican Republic, available for remote or on-site roles.",
+    es: "Investigador de seguridad y programador de sistemas con experiencia práctica en administración de redes e infraestructura. Hallazgos de vulnerabilidades validados por Riot Games Security. Reportes presentados a los programas de recompensas del Departamento de Defensa de EE. UU., Agoda y Neon. Construyo herramientas de seguridad de código abierto en Rust, desde un estándar de verificación criptográfica de artefactos hasta un microkernel basado en capacidades, y diseño y opero infraestructura auto-alojada de extremo a extremo, desde el hardware de GPON y enrutamiento hasta servicios monitoreados y gestionados con systemd. Bilingüe (inglés/español). Ciudadano estadounidense radicado en República Dominicana, disponible para roles remotos o presenciales.",
   },
   experience: [
     {
@@ -84,8 +88,34 @@ export const resume: ResumeData = {
           es: "Ingeniería inversa del firmware de un router de ISP (ZTE F670L): descifré los archivos de configuración del fabricante, encontré una cuenta privilegiada no documentada y credenciales de infraestructura expuestas. Publiqué la metodología.",
         },
         {
-        en: "Discovered and coordinated disclosure of a critical (CVSS 8.8) authentication weakness affecting an entire national ISP's subscriber base: GPON credentials derivable from data broadcast in the clear. Withheld the full technical report and used a PGP-signed initial contact when the national CSIRT's published encryption key was found expired, maintaining responsible disclosure standards despite the recipient's own infrastructure gaps.",
-        es: "Descubrí y coordiné la divulgación de una debilidad crítica de autenticación (CVSS 8.8) que afecta a toda la base de abonados de un ISP nacional: credenciales GPON derivables de datos transmitidos en claro. Retuve el reporte técnico completo y usé un primer contacto firmado con PGP al encontrar que la clave de cifrado publicada por el CSIRT nacional había expirado, manteniendo estándares de divulgación responsable pese a las brechas de infraestructura del propio receptor.",
+          en: "Discovered and coordinated disclosure of a critical (CVSS 8.8) authentication weakness affecting an entire national ISP's subscriber base: GPON credentials derivable from data broadcast in the clear. Withheld the full technical report and used a PGP-signed initial contact when the national CSIRT's published encryption key was found expired, maintaining responsible disclosure standards despite the recipient's own infrastructure gaps.",
+          es: "Descubrí y coordiné la divulgación de una debilidad crítica de autenticación (CVSS 8.8) que afecta a toda la base de abonados de un ISP nacional: credenciales GPON derivables de datos transmitidos en claro. Retuve el reporte técnico completo y usé un primer contacto firmado con PGP al encontrar que la clave de cifrado publicada por el CSIRT nacional había expirado, manteniendo estándares de divulgación responsable pese a las brechas de infraestructura del propio receptor.",
+        },
+      ],
+    },
+    {
+      role: {
+        en: "Independent Systems & Network Administrator",
+        es: "Administrador de Sistemas y Redes Independiente",
+      },
+      org: "notvcto",
+      period: { en: "2024 — Present", es: "2024 — Actualidad" },
+      bullets: [
+        {
+          en: "Deploy and operate a self-hosted service stack on Oracle Cloud VPS instances: a Matrix homeserver running at roughly 58MB RAM, LiveKit-based voice/video infrastructure (MatrixRTC), and a Caddy reverse proxy, all running as systemd services with no Docker.",
+          es: "Despliego y opero una pila de servicios auto-alojados en instancias VPS de Oracle Cloud: un servidor Matrix con un consumo de memoria de aproximadamente 58MB, infraestructura de voz/video basada en LiveKit (MatrixRTC), y un proxy inverso Caddy, todo ejecutándose como servicios systemd sin Docker.",
+        },
+        {
+          en: "Redesigning home network infrastructure end to end: replacing ISP-provided hardware with a Huawei MA5671A GPON SFP stick and a MikroTik hEX S router, after finding critical vulnerabilities in the original ISP equipment's firmware.",
+          es: "Rediseño integral de la infraestructura de red doméstica: reemplazo del equipo provisto por el ISP con un stick GPON Huawei MA5671A y un router MikroTik hEX S, tras encontrar vulnerabilidades críticas en el firmware del equipo original del ISP.",
+        },
+        {
+          en: "Built and maintain a monitoring and alerting stack (Gatus with SQLite persistence, ntfy) covering uptime and health checks across all self-hosted services.",
+          es: "Construí y mantengo una pila de monitoreo y alertas (Gatus con persistencia en SQLite, ntfy) que cubre el tiempo de actividad y verificaciones de estado de todos los servicios auto-alojados.",
+        },
+        {
+          en: "Manage DNS, WireGuard VPN tunnels, and TLS certificate lifecycles across multiple ARM and x86 VPS instances.",
+          es: "Administro DNS, túneles VPN WireGuard, y el ciclo de vida de certificados TLS en múltiples instancias VPS ARM y x86.",
         },
       ],
     },
@@ -126,8 +156,21 @@ export const resume: ResumeData = {
       items: ["Vulnerability Research", "Reverse Engineering", "Firmware Analysis", "Applied Cryptography", "Coordinated Disclosure"],
     },
     {
+      category: { en: "Networking", es: "Redes" },
+      items: ["GPON", "MikroTik RouterOS", "WireGuard", "DNS", "Reverse Proxying (Caddy)", "Network Design"],
+    },
+    {
       category: { en: "Systems", es: "Sistemas" },
-      items: ["Linux", "OS / Kernel Development", "RISC-V", "ARM64", "Wayland", "POSIX"],
+      items: ["Linux", "OS / Kernel Development", "RISC-V", "ARM64", "Wayland", "POSIX", "systemd", "Cloud VPS Administration", "Monitoring & Alerting"],
+    },
+    {
+      category: { en: "Databases", es: "Bases de Datos" },
+      items: ["CouchDB", "Distributed Data Sync"],
+    },
+    // The "yes, I can also use Excel" section — for recruiters skimming past "capability-based microkernel"
+    {
+      category: { en: "Office & Productivity", es: "Ofimática y Productividad" },
+      items: ["Microsoft Office (Word, Excel, PowerPoint)", "Google Workspace (Docs, Sheets, Slides)", "Notion", "Spreadsheet & Data Cleanup (CSV)", "Email & Calendar Management", "Windows & macOS"],
     },
     {
       category: { en: "Spoken", es: "Idiomas" },
@@ -146,4 +189,3 @@ export const resume: ResumeData = {
     },
   ],
 }
-
