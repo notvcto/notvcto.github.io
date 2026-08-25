@@ -102,24 +102,19 @@ export const resume: ResumeData = {
       period: { en: "2024 — Present", es: "2024 — Actualidad" },
       bullets: [
         {
-          // TODO(Vic): LiveKit/MatrixRTC not observed in the live process list on the OCI box.
-          // Confirm whether it's still deployed (elsewhere / not currently running) or cut this clause.
-          en: "Deploy and operate a self-hosted service stack on Oracle Cloud VPS instances: a Matrix homeserver running at roughly 58MB RAM, LiveKit-based voice/video infrastructure (MatrixRTC), and a Caddy reverse proxy, all running as systemd services with no Docker.",
-          es: "Despliego y opero una pila de servicios auto-alojados en instancias VPS de Oracle Cloud: un servidor Matrix con un consumo de memoria de aproximadamente 58MB, infraestructura de voz/video basada en LiveKit (MatrixRTC), y un proxy inverso Caddy, todo ejecutándose como servicios systemd sin Docker.",
+          // Folded: full service inventory from the live OCI box (ps aux / ss -tlnp / free -h),
+          // merged with the former separate Gatus/ntfy bullet. LiveKit/MatrixRTC runs on a
+          // separate dedicated box, kept as its own line below rather than implying it's on this one.
+          en: "Design and operate a multi-service self-hosted stack on a single ~1GB Oracle Cloud VPS: Tuwunel Matrix homeserver with a dedicated Matrix Authentication Service and CouchDB backing store, PostgreSQL, a Caddy reverse proxy, Vaultwarden (password vault), an Ergo IRC daemon, a custom-built CMS powering my blog, and a Gatus/ntfy monitoring and alerting stack covering uptime and health checks across all self-hosted services — over a dozen services running concurrently under 500MB RAM.",
+          es: "Diseño y opero una pila de servicios auto-alojados en un único VPS de Oracle Cloud de ~1GB: servidor Matrix Tuwunel con un servicio de autenticación dedicado y CouchDB como almacenamiento, PostgreSQL, un proxy inverso Caddy, Vaultwarden (gestor de contraseñas), un daemon IRC Ergo, un CMS propio que impulsa mi blog, y una pila de monitoreo y alertas con Gatus/ntfy que cubre el tiempo de actividad y verificaciones de estado de todos los servicios auto-alojados — más de una docena de servicios ejecutándose simultáneamente con menos de 500MB de RAM.",
         },
         {
-          // NEW — full service inventory pulled from the live OCI box (ps aux / ss -tlnp / free -h).
-          // Overlaps with the Gatus/ntfy bullet below — flagged for you to fold together if you want.
-          en: "Design and operate a multi-service self-hosted stack on a single ~1GB Oracle Cloud VPS: Tuwunel Matrix homeserver with a dedicated Matrix Authentication Service and CouchDB backing store, PostgreSQL, a Caddy reverse proxy, Vaultwarden (password vault), an Ergo IRC daemon, Gatus/ntfy monitoring and alerting, and a custom-built CMS powering my blog — over a dozen services running concurrently under 500MB RAM.",
-          es: "Diseño y opero una pila de servicios auto-alojados en un único VPS de Oracle Cloud de ~1GB: servidor Matrix Tuwunel con un servicio de autenticación dedicado y CouchDB como almacenamiento, PostgreSQL, un proxy inverso Caddy, Vaultwarden (gestor de contraseñas), un daemon IRC Ergo, monitoreo y alertas con Gatus/ntfy, y un CMS propio que impulsa mi blog — más de una docena de servicios ejecutándose simultáneamente con menos de 500MB de RAM.",
+          en: "Operate a separate LiveKit-based voice/video box (MatrixRTC) providing real-time calling for the Matrix homeserver.",
+          es: "Opero un servidor independiente basado en LiveKit (MatrixRTC) que provee llamadas en tiempo real para el servidor Matrix.",
         },
         {
           en: "Redesigning home network infrastructure end to end: replacing ISP-provided hardware with a Huawei MA5671A GPON SFP stick and a MikroTik hEX S router, after finding critical vulnerabilities in the original ISP equipment's firmware.",
           es: "Rediseño integral de la infraestructura de red doméstica: reemplazo del equipo provisto por el ISP con un stick GPON Huawei MA5671A y un router MikroTik hEX S, tras encontrar vulnerabilidades críticas en el firmware del equipo original del ISP.",
-        },
-        {
-          en: "Built and maintain a monitoring and alerting stack (Gatus with SQLite persistence, ntfy) covering uptime and health checks across all self-hosted services.",
-          es: "Construí y mantengo una pila de monitoreo y alertas (Gatus con persistencia en SQLite, ntfy) que cubre el tiempo de actividad y verificaciones de estado de todos los servicios auto-alojados.",
         },
         {
           en: "Manage DNS, WireGuard VPN tunnels, and TLS certificate lifecycles across multiple ARM and x86 VPS instances.",
@@ -185,7 +180,7 @@ export const resume: ResumeData = {
     },
     {
       category: { en: "Databases", es: "Bases de Datos" },
-      items: ["CouchDB", "PostgreSQL", "Distributed Data Sync"],
+      items: ["CouchDB", "PostgreSQL", "MongoDB", "Distributed Data Sync"],
     },
     // The "yes, I can also use Excel" section — for recruiters skimming past "capability-based microkernel"
     {
@@ -205,6 +200,15 @@ export const resume: ResumeData = {
       detail: {
         en: "GPA 3.98/4.00 · Coursework incl. AP Computer Science Principles, Intro to Java, Electrical Technology I–II",
         es: "GPA 3.98/4.00 · Cursos incl. AP Computer Science Principles, Introducción a Java, Tecnología Eléctrica I–II",
+      },
+    },
+    {
+      credential: { en: "National Recognition — Highest Grade, Computer Science Workshop", es: "Reconocimiento Nacional — Más Alta Calificación, Taller de Informática" },
+      org: "Dirección General de las Escuelas Vocacionales de las FF.AA. y de la P.N. — Escuela Vocacional de Baní",
+      period: { en: "2025", es: "2025" },
+      detail: {
+        en: "Awarded the highest grade nationwide in the Informática workshop for 2025.",
+        es: "Obtuve la más alta calificación a nivel nacional en el taller de Informática correspondiente al año 2025.",
       },
     },
   ],
