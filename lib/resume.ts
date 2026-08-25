@@ -102,8 +102,16 @@ export const resume: ResumeData = {
       period: { en: "2024 — Present", es: "2024 — Actualidad" },
       bullets: [
         {
+          // TODO(Vic): LiveKit/MatrixRTC not observed in the live process list on the OCI box.
+          // Confirm whether it's still deployed (elsewhere / not currently running) or cut this clause.
           en: "Deploy and operate a self-hosted service stack on Oracle Cloud VPS instances: a Matrix homeserver running at roughly 58MB RAM, LiveKit-based voice/video infrastructure (MatrixRTC), and a Caddy reverse proxy, all running as systemd services with no Docker.",
           es: "Despliego y opero una pila de servicios auto-alojados en instancias VPS de Oracle Cloud: un servidor Matrix con un consumo de memoria de aproximadamente 58MB, infraestructura de voz/video basada en LiveKit (MatrixRTC), y un proxy inverso Caddy, todo ejecutándose como servicios systemd sin Docker.",
+        },
+        {
+          // NEW — full service inventory pulled from the live OCI box (ps aux / ss -tlnp / free -h).
+          // Overlaps with the Gatus/ntfy bullet below — flagged for you to fold together if you want.
+          en: "Design and operate a multi-service self-hosted stack on a single ~1GB Oracle Cloud VPS: Tuwunel Matrix homeserver with a dedicated Matrix Authentication Service and CouchDB backing store, PostgreSQL, a Caddy reverse proxy, Vaultwarden (password vault), an Ergo IRC daemon, Gatus/ntfy monitoring and alerting, and a custom-built CMS powering my blog — over a dozen services running concurrently under 500MB RAM.",
+          es: "Diseño y opero una pila de servicios auto-alojados en un único VPS de Oracle Cloud de ~1GB: servidor Matrix Tuwunel con un servicio de autenticación dedicado y CouchDB como almacenamiento, PostgreSQL, un proxy inverso Caddy, Vaultwarden (gestor de contraseñas), un daemon IRC Ergo, monitoreo y alertas con Gatus/ntfy, y un CMS propio que impulsa mi blog — más de una docena de servicios ejecutándose simultáneamente con menos de 500MB de RAM.",
         },
         {
           en: "Redesigning home network infrastructure end to end: replacing ISP-provided hardware with a Huawei MA5671A GPON SFP stick and a MikroTik hEX S router, after finding critical vulnerabilities in the original ISP equipment's firmware.",
@@ -140,8 +148,20 @@ export const resume: ResumeData = {
           es: "Desarrollo Zero, un proyecto de investigación en ML aplicado que entrena un modelo de razonamiento de seguridad con problemas CTF mediante self-play adversarial (GRPO), pipeline de datos incluido.",
         },
         {
-          en: "Ship and maintain systems tooling: a POSIX shell in Rust (vsh), a Hyprland/Wayland desktop ported to Apple Silicon for Asahi Linux, media-processing CLIs.",
-          es: "Publico y mantengo herramientas de sistemas: un shell POSIX en Rust (vsh), un escritorio Hyprland/Wayland portado a Apple Silicon para Asahi Linux, CLIs de procesamiento multimedia.",
+          // CORRECTED — vsh is spec-phase, not shipped (no src/ yet in the repo). Original line
+          // said "Ship and maintain... a POSIX shell in Rust (vsh)", which overstated its status.
+          en: "Ship and maintain systems tooling: a Hyprland/Wayland desktop ported to Apple Silicon for Asahi Linux, media-processing CLIs. Designing vsh, a POSIX-compatible shell in Rust with multi-syntax command support (formal specification published; implementation in progress).",
+          es: "Publico y mantengo herramientas de sistemas: un escritorio Hyprland/Wayland portado a Apple Silicon para Asahi Linux, CLIs de procesamiento multimedia. Diseño vsh, un shell compatible con POSIX en Rust con soporte de sintaxis múltiple (especificación formal publicada; implementación en progreso).",
+        },
+        {
+          // NEW
+          en: "Built rscapt, a Rust daemon and dual-TUI application that watches an OBS replay buffer, automatically upscales clips to 1440p (Lanczos), and offers motion interpolation, NVENC/x265/AV1 compression, and one-click sharing. Cross-compiled for Windows from Linux via Zig; automated release builds via GitHub Actions.",
+          es: "Desarrollé rscapt, un daemon y aplicación de doble TUI en Rust que monitorea el buffer de repetición de OBS, escala automáticamente los clips a 1440p (Lanczos), y ofrece interpolación de movimiento, compresión NVENC/x265/AV1 y compartición con un clic. Compilación cruzada para Windows desde Linux vía Zig; builds de lanzamiento automatizados con GitHub Actions.",
+        },
+        {
+          // NEW
+          en: "Built compress-video, an interactive Bash/FFmpeg TUI for video compression: codec selection (H.265, AV1, HEVC NVENC), quality presets, optional trimming, live progress with ETA, and a before/after size report on completion.",
+          es: "Desarrollé compress-video, una TUI interactiva en Bash/FFmpeg para compresión de video: selección de códec (H.265, AV1, HEVC NVENC), preajustes de calidad, recorte opcional, progreso en vivo con ETA, y un reporte de tamaño antes/después al finalizar.",
         },
       ],
     },
@@ -165,7 +185,7 @@ export const resume: ResumeData = {
     },
     {
       category: { en: "Databases", es: "Bases de Datos" },
-      items: ["CouchDB", "Distributed Data Sync"],
+      items: ["CouchDB", "PostgreSQL", "Distributed Data Sync"],
     },
     // The "yes, I can also use Excel" section — for recruiters skimming past "capability-based microkernel"
     {
