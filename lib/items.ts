@@ -753,7 +753,7 @@ export const items: WishlistItem[] = [
             en: "Guitar Effects Pedals (ANY)",
             es: "Pedales de Efectos de Guitarra (CUALQUIERA)",
         },
-        sources: [{ name: "Amazon", url: "https://www.musiciansfriend.com/effects-pedals" }],
+        sources: [{ name: "Musician's Friend", url: "https://www.musiciansfriend.com/effects-pedals" }],
         price_estimate: { min: 100, max: 250 },
         category: "Electronics",
         notes: {
