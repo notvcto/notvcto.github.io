@@ -1,15 +1,15 @@
 ---
-title: 'Your ISP is lying to you — and your router will tell you everything'
-shortTitle: 'ISP Router Decryption'
-ogTitle: 'I decrypted my ISP router'
-ogSubtitle: 'A 5-minute dive into hidden super admin accounts and config.bin'
-date: '2026-04-17T12:00:00'
-category: 'Engineering'
+title: "Your ISP is lying to you — and your router will tell you everything"
+shortTitle: "ISP Router Decryption"
+ogTitle: "I decrypted my ISP router"
+ogSubtitle: "A 5-minute dive into hidden super admin accounts and config.bin"
+date: "2026-04-17T12:00:00"
+category: "Engineering"
 complexity: 7.2
-readingTime: '8 min'
-author: 'notvcto'
-description: 'How I decrypted my ISP-provided ZTE F670L config.bin in 5 minutes, found a hidden super admin account, and why none of this should surprise you.'
-tags: ['security', 'networking', 'zte', 'isp', 'router', 'gpon']
+readingTime: "8 min"
+author: "notvcto"
+description: "How I decrypted my ISP-provided ZTE F670L config.bin in 5 minutes, found a hidden super admin account, and why none of this should surprise you."
+tags: ["security", "networking", "zte", "isp", "router", "gpon"]
 ---
 
 I was pissed at my ISP locking down features so I mapped the whole routing
@@ -37,6 +37,7 @@ the label:
     KEY = serial_base (first 8 chars of serial) + byte-reversed MAC address
 
 So for serial `D38D0370XXXX` and MAC `c4:eb:ff:1e:28:26`:
+
 - Serial base: `D38D0370`
 - Byte-reversed MAC: `26:28:1e:ff:eb:c4` → `26281effebc4`
 - **Key: `D38D037026281effebc4`**

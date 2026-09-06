@@ -1,140 +1,143 @@
-import puppeteer from 'puppeteer';
-import fs from 'fs';
-import path from 'path';
-import crypto from 'crypto';
-import { fileURLToPath } from 'url';
-import matter from 'gray-matter';
+import crypto from "crypto";
+import fs from "fs";
+import matter from "gray-matter";
+import path from "path";
+import puppeteer from "puppeteer";
+import { fileURLToPath } from "url";
 
-const contentDirectory = path.join(process.cwd(), 'content/blog');
-const ogOutputDirectory = path.join(process.cwd(), 'public/og');
-const manifestPath = path.join(ogOutputDirectory, '.manifest.json');
+const contentDirectory = path.join(process.cwd(), "content/blog");
+const ogOutputDirectory = path.join(process.cwd(), "public/og");
+const manifestPath = path.join(ogOutputDirectory, ".manifest.json");
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const playfairFontPath = path.resolve(
-  process.cwd(),
-  'node_modules/@fontsource/playfair-display/files/playfair-display-latin-400-normal.woff2'
+    process.cwd(),
+    "node_modules/@fontsource/playfair-display/files/playfair-display-latin-400-normal.woff2",
 );
 const geistMonoFontPath = path.resolve(
-  process.cwd(),
-  'node_modules/@fontsource/geist-mono/files/geist-mono-latin-500-normal.woff2'
+    process.cwd(),
+    "node_modules/@fontsource/geist-mono/files/geist-mono-latin-500-normal.woff2",
 );
 
 // Pin the installed Three.js version into the hash so a version bump invalidates cached images.
 const THREE_VERSION = JSON.parse(
-  fs.readFileSync(path.resolve(process.cwd(), 'node_modules/three/package.json'), 'utf8')
+    fs.readFileSync(path.resolve(process.cwd(), "node_modules/three/package.json"), "utf8"),
 ).version;
 
 // Hash the script itself + Three.js version so any change to rendering code or Three.js
 // version invalidates all cached images.
-const SCRIPT_HASH = hashString([
-  fs.readFileSync(fileURLToPath(import.meta.url), 'utf8'),
-  THREE_VERSION,
-].join('|'));
+const SCRIPT_HASH = hashString([fs.readFileSync(fileURLToPath(import.meta.url), "utf8"), THREE_VERSION].join("|"));
 
 if (!fs.existsSync(ogOutputDirectory)) {
-  fs.mkdirSync(ogOutputDirectory, { recursive: true });
+    fs.mkdirSync(ogOutputDirectory, { recursive: true });
 }
 
 // ── Manifest ─────────────────────────────────────────────────────────────────
 
 function hashString(str) {
-  return crypto.createHash('sha256').update(str).digest('hex').slice(0, 16);
+    return crypto.createHash("sha256").update(str).digest("hex").slice(0, 16);
 }
 
 function loadManifest() {
-  try { return JSON.parse(fs.readFileSync(manifestPath, 'utf8')); }
-  catch { return {}; }
+    try {
+        return JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    } catch {
+        return {};
+    }
 }
 
 function saveManifest(manifest) {
-  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 }
 
 function assertSafeKey(key) {
-  if (key !== 'portfolio' && !slugPattern.test(key)) {
-    throw new Error(`Invalid OG image key: ${key}`);
-  }
+    if (key !== "portfolio" && !slugPattern.test(key)) {
+        throw new Error(`Invalid OG image key: ${key}`);
+    }
 }
 
 function imagePathForKey(key) {
-  assertSafeKey(key);
-  return path.join(ogOutputDirectory, `${key}.png`);
+    assertSafeKey(key);
+    return path.join(ogOutputDirectory, `${key}.png`);
 }
 
 function getPostHash(post) {
-  return hashString([
-    SCRIPT_HASH,
-    post.slug,
-    post.ogTitle    || post.title       || '',
-    post.ogSubtitle || post.description || '',
-    post.category   || '',
-  ].join('|'));
+    return hashString(
+        [
+            SCRIPT_HASH,
+            post.slug,
+            post.ogTitle || post.title || "",
+            post.ogSubtitle || post.description || "",
+            post.category || "",
+        ].join("|"),
+    );
 }
 
 const PORTFOLIO_HASH = hashString(`portfolio|${SCRIPT_HASH}`);
 
 function needsGeneration(key, hash, manifest) {
-  if (manifest[key] !== hash) return true;
-  return !fs.existsSync(imagePathForKey(key));
+    if (manifest[key] !== hash) return true;
+    return !fs.existsSync(imagePathForKey(key));
 }
 
 function cleanUnexpectedOutput(allowedKeys) {
-  for (const fileName of fs.readdirSync(ogOutputDirectory)) {
-    if (fileName === '.manifest.json') continue;
-    if (!fileName.endsWith('.png')) {
-      fs.unlinkSync(path.join(ogOutputDirectory, fileName));
-      continue;
+    for (const fileName of fs.readdirSync(ogOutputDirectory)) {
+        if (fileName === ".manifest.json") continue;
+        if (!fileName.endsWith(".png")) {
+            fs.unlinkSync(path.join(ogOutputDirectory, fileName));
+            continue;
+        }
+        const key = fileName.replace(/\.png$/, "");
+        if (!allowedKeys.has(key)) {
+            fs.unlinkSync(path.join(ogOutputDirectory, fileName));
+        }
     }
-    const key = fileName.replace(/\.png$/, '');
-    if (!allowedKeys.has(key)) {
-      fs.unlinkSync(path.join(ogOutputDirectory, fileName));
-    }
-  }
 }
 
 // ── Content ───────────────────────────────────────────────────────────────────
 
 async function getAllPosts() {
-  if (!fs.existsSync(contentDirectory)) return [];
-  return fs.readdirSync(contentDirectory)
-    .filter((f) => f.endsWith('.md'))
-    .map((f) => {
-      const slug = f.replace(/\.md$/, '');
-      if (!slugPattern.test(slug)) {
-        throw new Error(`Invalid blog slug for OG image generation: ${slug}`);
-      }
-      const { data } = matter(fs.readFileSync(path.join(contentDirectory, f), 'utf8'));
-      return { slug, ...data };
-    });
+    if (!fs.existsSync(contentDirectory)) return [];
+    return fs
+        .readdirSync(contentDirectory)
+        .filter(f => f.endsWith(".md"))
+        .map(f => {
+            const slug = f.replace(/\.md$/, "");
+            if (!slugPattern.test(slug)) {
+                throw new Error(`Invalid blog slug for OG image generation: ${slug}`);
+            }
+            const { data } = matter(fs.readFileSync(path.join(contentDirectory, f), "utf8"));
+            return { slug, ...data };
+        });
 }
 
 // ── HTML generation ───────────────────────────────────────────────────────────
 
 function esc(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;');
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#x27;");
 }
 
 function buildPortfolioOverlay() {
-  return `
+    return `
     <div class="og-title" style="font-size:88px;letter-spacing:-1px">NOTVCTO</div>
     <div class="og-desc" style="font-size:20px;letter-spacing:2px;color:#555;text-transform:uppercase">Systems Architect &amp; Vulnerability Researcher</div>
     <div class="og-url">notvc.to</div>`;
 }
 
 function buildPostOverlay(post) {
-  return `
-    <div class="og-tag">${esc(post.category || 'Blog')}</div>
-    <div class="og-title">${esc(post.ogTitle || post.title || '')}</div>
-    <div class="og-desc">${esc(post.ogSubtitle || post.description || '')}</div>
+    return `
+    <div class="og-tag">${esc(post.category || "Blog")}</div>
+    <div class="og-title">${esc(post.ogTitle || post.title || "")}</div>
+    <div class="og-desc">${esc(post.ogSubtitle || post.description || "")}</div>
     <div class="og-url">${esc(`notvc.to/blog/${post.slug}`)}</div>`;
 }
 
 function buildOGPage(overlayHtml) {
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -300,73 +303,71 @@ init();
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function generateImages() {
-  const manifest = loadManifest();
-  const posts = await getAllPosts();
-  const allowedKeys = new Set(['portfolio', ...posts.map((post) => post.slug)]);
-  cleanUnexpectedOutput(allowedKeys);
+    const manifest = loadManifest();
+    const posts = await getAllPosts();
+    const allowedKeys = new Set(["portfolio", ...posts.map(post => post.slug)]);
+    cleanUnexpectedOutput(allowedKeys);
 
-  const needsPortfolio = needsGeneration('portfolio', PORTFOLIO_HASH, manifest);
-  const postsToGenerate = posts.filter((post) =>
-    needsGeneration(post.slug, getPostHash(post), manifest)
-  );
+    const needsPortfolio = needsGeneration("portfolio", PORTFOLIO_HASH, manifest);
+    const postsToGenerate = posts.filter(post => needsGeneration(post.slug, getPostHash(post), manifest));
 
-  const totalNeeded = (needsPortfolio ? 1 : 0) + postsToGenerate.length;
+    const totalNeeded = (needsPortfolio ? 1 : 0) + postsToGenerate.length;
 
-  if (totalNeeded === 0) {
-    console.log(`OG images up to date (${posts.length} post(s) cached), skipping.`);
-    return;
-  }
-
-  const cached = posts.length - postsToGenerate.length;
-  console.log(`Generating ${totalNeeded} OG image(s)${cached > 0 ? ` (${cached} cached)` : ''}...`);
-
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--allow-file-access-from-files'],
-  });
-  const page = await browser.newPage();
-  await page.setRequestInterception(true);
-  page.on('request', (request) => {
-    if (request.url().startsWith('file://')) {
-      request.continue();
-      return;
-    }
-    request.abort();
-  });
-  await page.setViewport({ width: 1200, height: 630, deviceScaleFactor: 1 });
-
-  const tempHtmlPath = path.join(ogOutputDirectory, '.temp-og.html');
-
-  async function renderOG(overlayHtml, outputPath) {
-    fs.writeFileSync(tempHtmlPath, buildOGPage(overlayHtml));
-    await page.goto(`file://${tempHtmlPath}`, { waitUntil: 'domcontentloaded' });
-    await page.waitForSelector('body.ready');
-    const stage = await page.$('#stage');
-    await stage.screenshot({ path: outputPath });
-  }
-
-  try {
-    if (needsPortfolio) {
-      console.log('  portfolio.png');
-      await renderOG(buildPortfolioOverlay(), imagePathForKey('portfolio'));
-      manifest['portfolio'] = PORTFOLIO_HASH;
+    if (totalNeeded === 0) {
+        console.log(`OG images up to date (${posts.length} post(s) cached), skipping.`);
+        return;
     }
 
-    for (const post of postsToGenerate) {
-      console.log(`  ${post.slug}.png`);
-      await renderOG(buildPostOverlay(post), imagePathForKey(post.slug));
-      manifest[post.slug] = getPostHash(post);
-    }
-  } finally {
-    if (fs.existsSync(tempHtmlPath)) fs.unlinkSync(tempHtmlPath);
-    await browser.close();
-  }
+    const cached = posts.length - postsToGenerate.length;
+    console.log(`Generating ${totalNeeded} OG image(s)${cached > 0 ? ` (${cached} cached)` : ""}...`);
 
-  saveManifest(manifest);
-  console.log('Done.');
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox", "--allow-file-access-from-files"],
+    });
+    const page = await browser.newPage();
+    await page.setRequestInterception(true);
+    page.on("request", request => {
+        if (request.url().startsWith("file://")) {
+            request.continue();
+            return;
+        }
+        request.abort();
+    });
+    await page.setViewport({ width: 1200, height: 630, deviceScaleFactor: 1 });
+
+    const tempHtmlPath = path.join(ogOutputDirectory, ".temp-og.html");
+
+    async function renderOG(overlayHtml, outputPath) {
+        fs.writeFileSync(tempHtmlPath, buildOGPage(overlayHtml));
+        await page.goto(`file://${tempHtmlPath}`, { waitUntil: "domcontentloaded" });
+        await page.waitForSelector("body.ready");
+        const stage = await page.$("#stage");
+        await stage.screenshot({ path: outputPath });
+    }
+
+    try {
+        if (needsPortfolio) {
+            console.log("  portfolio.png");
+            await renderOG(buildPortfolioOverlay(), imagePathForKey("portfolio"));
+            manifest["portfolio"] = PORTFOLIO_HASH;
+        }
+
+        for (const post of postsToGenerate) {
+            console.log(`  ${post.slug}.png`);
+            await renderOG(buildPostOverlay(post), imagePathForKey(post.slug));
+            manifest[post.slug] = getPostHash(post);
+        }
+    } finally {
+        if (fs.existsSync(tempHtmlPath)) fs.unlinkSync(tempHtmlPath);
+        await browser.close();
+    }
+
+    saveManifest(manifest);
+    console.log("Done.");
 }
 
-generateImages().catch((err) => {
-  console.error(err);
-  process.exit(1);
+generateImages().catch(err => {
+    console.error(err);
+    process.exit(1);
 });

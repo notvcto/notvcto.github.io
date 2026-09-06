@@ -1,25 +1,24 @@
-"use client"
+"use client";
 
-import { useRef, useMemo, useEffect, useState } from "react"
-import { Canvas, useFrame, useThree } from "@react-three/fiber"
-import * as THREE from "three"
-import type { Mesh, ShaderMaterial } from "three"
-
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { Mesh, ShaderMaterial } from "three";
+import * as THREE from "three";
 
 function Sphere({ interactive = true }: { interactive?: boolean }) {
-  const meshRef = useRef<Mesh>(null)
-  const materialRef = useRef<ShaderMaterial>(null)
-  const { pointer } = useThree()
+    const meshRef = useRef<Mesh>(null);
+    const materialRef = useRef<ShaderMaterial>(null);
+    const { pointer } = useThree();
 
-  const uniforms = useMemo(
-    () => ({
-      uTime: { value: 0 },
-      uMouse: { value: [0, 0] },
-    }),
-    [],
-  )
+    const uniforms = useMemo(
+        () => ({
+            uTime: { value: 0 },
+            uMouse: { value: [0, 0] },
+        }),
+        [],
+    );
 
-  const vertexShader = `
+    const vertexShader = `
     uniform float uTime;
     varying vec2 vUv;
     varying float vDisplacement;
@@ -85,9 +84,9 @@ function Sphere({ interactive = true }: { interactive?: boolean }) {
       vec3 newPosition = position + normal * displacement;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
     }
-  `
+  `;
 
-  const fragmentShader = `
+    const fragmentShader = `
     varying vec2 vUv;
     varying float vDisplacement;
     
@@ -100,67 +99,67 @@ function Sphere({ interactive = true }: { interactive?: boolean }) {
       
       gl_FragColor = vec4(color * (1.0 - line * 0.5), 0.6);
     }
-  `
+  `;
 
-  useFrame((state, delta) => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value += delta
-      if (interactive) {
-        materialRef.current.uniforms.uMouse.value = [pointer.x, pointer.y]
-      }
-    }
+    useFrame((state, delta) => {
+        if (materialRef.current) {
+            materialRef.current.uniforms.uTime.value += delta;
+            if (interactive) {
+                materialRef.current.uniforms.uMouse.value = [pointer.x, pointer.y];
+            }
+        }
 
-    if (meshRef.current) {
-      meshRef.current.rotation.y += delta * 0.05
-      if (interactive) {
-        meshRef.current.rotation.x = THREE.MathUtils.lerp(meshRef.current.rotation.x, pointer.y * 0.2, 0.05)
-        meshRef.current.rotation.z = THREE.MathUtils.lerp(meshRef.current.rotation.z, pointer.x * 0.2, 0.05)
-      }
-    }
-  })
+        if (meshRef.current) {
+            meshRef.current.rotation.y += delta * 0.05;
+            if (interactive) {
+                meshRef.current.rotation.x = THREE.MathUtils.lerp(meshRef.current.rotation.x, pointer.y * 0.2, 0.05);
+                meshRef.current.rotation.z = THREE.MathUtils.lerp(meshRef.current.rotation.z, pointer.x * 0.2, 0.05);
+            }
+        }
+    });
 
-  return (
-    <mesh ref={meshRef}>
-      <icosahedronGeometry args={[1.8, 64]} />
-      <shaderMaterial
-        ref={materialRef}
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        uniforms={uniforms}
-        transparent
-        wireframe
-      />
-    </mesh>
-  )
+    return (
+        <mesh ref={meshRef}>
+            <icosahedronGeometry args={[1.8, 64]} />
+            <shaderMaterial
+                ref={materialRef}
+                vertexShader={vertexShader}
+                fragmentShader={fragmentShader}
+                uniforms={uniforms}
+                transparent
+                wireframe
+            />
+        </mesh>
+    );
 }
 
 export function SentientSphere({ interactive = true }: { interactive?: boolean }) {
-  const [mounted, setMounted] = useState(false)
-  
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+    const [mounted, setMounted] = useState(false);
 
-  if (!mounted) {
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return (
+            <div className="w-full h-full flex items-center justify-center">
+                <div className="w-64 h-64 rounded-full border border-white/10 animate-pulse" />
+            </div>
+        );
+    }
+
     return (
-      <div className="w-full h-full flex items-center justify-center">
-        <div className="w-64 h-64 rounded-full border border-white/10 animate-pulse" />
-      </div>
-    )
-  }
-
-  return (
-    <Canvas
-      camera={{ position: [0, 0, 5], fov: 45 }}
-      className="w-full h-full"
-      dpr={[1, 2]}
-      gl={{
-        antialias: true,
-        alpha: true,
-      }}
-    >
-      <ambientLight intensity={0.5} />
-      <Sphere interactive={interactive} />
-    </Canvas>
-  )
+        <Canvas
+            camera={{ position: [0, 0, 5], fov: 45 }}
+            className="w-full h-full"
+            dpr={[1, 2]}
+            gl={{
+                antialias: true,
+                alpha: true,
+            }}
+        >
+            <ambientLight intensity={0.5} />
+            <Sphere interactive={interactive} />
+        </Canvas>
+    );
 }
