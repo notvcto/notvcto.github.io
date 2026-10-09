@@ -19,12 +19,6 @@ It didn't go up for five months.
 
 ---
 
-*Phase 1 of Wolfram is done. The kernel boots on RISC-V and x86-64, passes smoke
-tests in QEMU, boots from USB on real hardware, and panics exactly where it should.
-Five months of nothing. Eight hours. Here's what happened.*
-
----
-
 I'm not going to make that sound cleaner than it was. I didn't have some strategic
 reason for the gap. I had a project I was proud of and couldn't find the thread.
 That happens. The code sat. The repo sat. The announcement post sat collecting
