@@ -17,8 +17,6 @@ Five months ago I wrote an announcement post for Wolfram. The last line was
 
 It didn't go up for five months.
 
----
-
 I'm not going to make that sound cleaner than it was. I didn't have some strategic
 reason for the gap. I had a project I was proud of and couldn't find the thread.
 That happens. The code sat. The repo sat. The announcement post sat collecting
