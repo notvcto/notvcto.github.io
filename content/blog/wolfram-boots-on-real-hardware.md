@@ -22,7 +22,7 @@ reason for the gap. I had a project I was proud of and couldn't find the thread.
 That happens. The code sat. The repo sat. The announcement post sat collecting
 readers who watched a repo go nowhere.
 
-Then three days ago I sat down and didn't get up until Phase 1 was done.
+Then last night I sat down and didn't get up until Phase 1 was done.
 
 ---
 
