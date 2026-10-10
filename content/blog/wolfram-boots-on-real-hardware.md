@@ -13,7 +13,7 @@ tags: ['kernel', 'os', 'rust', 'riscv', 'x86-64', 'uefi', 'systems', 'wolfram']
 ---
 
 Five months ago I wrote an announcement post for Wolfram. The last line was
-"The panic count is 1. It will go up."
+"The panic count is 1. It will go up.
 
 It didn't go up for five months.
 
