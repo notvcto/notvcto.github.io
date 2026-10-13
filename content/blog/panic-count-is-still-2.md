@@ -134,11 +134,11 @@ x86-64 saves and restores 7 registers: `rsp`, `rbp`, `rbx`, and `r12..r15` (56 b
 
 On x86-64, thread entry is handled through a stack trampoline. During context initialization, the kernel writes the thread entry address directly into the top of the kernel stack (`aligned_top - 8`). When `switch_context` restores `rsp` and executes `ret`, the CPU pops the address from the stack and jumps straight into the thread.
 
-Then Claude caught something during code review: the direction flag.
+Then I caught something during code review: the direction flag.
 
 Under the System V AMD64 ABI, the direction flag (`DF`) in `RFLAGS` must be cleared to 0 upon function entry. If a thread executed string operations with `DF=1` and yielded without clearing it, the next thread to run would execute string instructions backward and corrupt memory.
 
-We added a single `cld` instruction directly before `ret` in `wolfram/src/arch/x86_64/context.S`. The direction flag is sanitized on every context swap.
+I added a single `cld` instruction directly before `ret` in `wolfram/src/arch/x86_64/context.S`. The direction flag is sanitized on every context swap.
 
 ---
 
