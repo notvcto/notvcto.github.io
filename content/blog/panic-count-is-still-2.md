@@ -9,7 +9,7 @@ complexity: 9
 readingTime: '14 min'
 author: 'notvcto'
 description: 'Four releases after getting Wolfram to boot on real hardware, Phase 2 is mostly in tree. The kernel now has a dynamic buddy allocator, Virtual Memory Objects, full Sv39 and PML4 paging parity, and an execution container hierarchy where processes start with zero handles. The panic count is still 2, but the code running before it went from a boot stub to an operating system.'
-tags: ['kernel', 'os', 'rust', 'riscv', 'x86', 'paging', 'security', 'wolfram']
+tags: ['kernel', 'os', 'osdev', 'rust', 'riscv', 'x86', 'paging', 'security', 'wolfram']
 ---
 
 The last post ended with "The panic count is 2. Phase 2 starts now."
