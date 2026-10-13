@@ -169,6 +169,6 @@ todo!("spawn init — Phase 3")
 
 The panic count is still 2. The difference is what runs before it.
 
-The repo is available [here](https://github.com/notvcto/wolfram-os). If you want to verify the container hierarchy, run `scripts/riscv-smoke.sh` or `scripts/x86-smoke.sh`. Milestone 3 is bidirectional async channels and FastCall thread donation IPC.
+The repo is available [here](https://github.com/notvcto/wolfram-os). If you want to verify the container hierarchy, run `scripts/riscv-smoke.sh` or `scripts/x86-smoke.sh`. Milestone 3 is bidirectional async channels and FastCall thread donation IPC. Next Monday’s post will have it. Yes, I'll be posting every Monday.
 
 If you still believe an operating system needs `fork()` and ambient authority to function, clone the repo and prove where this model fails.
