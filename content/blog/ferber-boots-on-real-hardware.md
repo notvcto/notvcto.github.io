@@ -1,18 +1,18 @@
 ---
-title: 'Wolfram boots on real hardware'
+title: 'Ferber boots on real hardware'
 shortTitle: 'Phase 1 complete'
-ogTitle: 'Wolfram boots on real hardware'
+ogTitle: 'Ferber boots on real hardware'
 ogSubtitle: 'Five months of nothing. Eight hours. Phase 1 done.'
 date: '2026-08-10T00:30:00'
-category: 'Wolfram'
+category: 'Ferber'
 complexity: 6
 readingTime: '8 min'
 author: 'notvcto'
-description: 'Phase 1 of Wolfram is done. The kernel boots on RISC-V and x86-64, passes smoke tests in QEMU, boots from USB on real hardware (MSI B650M-A PRO WIFI), and panics exactly where it should. Five months of no visible progress. Eight hours of a sprint that finished it.'
-tags: ['kernel', 'os', 'rust', 'riscv', 'x86-64', 'uefi', 'systems', 'wolfram']
+description: 'Phase 1 of Ferber is done. The kernel boots on RISC-V and x86-64, passes smoke tests in QEMU, boots from USB on real hardware (MSI B650M-A PRO WIFI), and panics exactly where it should. Five months of no visible progress. Eight hours of a sprint that finished it.'
+tags: ['kernel', 'os', 'rust', 'riscv', 'x86-64', 'uefi', 'systems', 'ferber']
 ---
 
-Five months ago I wrote an announcement post for Wolfram. The last line was
+Five months ago I wrote an announcement post for Ferber. The last line was
 "The panic count is 1. It will go up."
 
 It didn't go up for five months.
@@ -66,19 +66,19 @@ The big ones:
 ELF loader, page table setup, firmware memory-map handoff to the kernel. 539 lines
 for `main.rs` alone. This is the part that made x86-64 possible.
 
-`wolfram/src/arch/x86_64/` didn't exist before this sprint. Console output.
+`ferber/src/arch/x86_64/` didn't exist before this sprint. Console output.
 Exception handling. The trap table. The entry assembly. All of it written in the
 sprint.
 
-`wolfram/src/boot_info.rs` is the interface between the bootloader and kernel:
+`ferber/src/boot_info.rs` is the interface between the bootloader and kernel:
 149 lines that define what the bootloader hands off and what the kernel expects.
 This is also new.
 
-The bitmap frame allocator in `wolfram/src/kernel/memory/bitmap.rs` went from
+The bitmap frame allocator in `ferber/src/kernel/memory/bitmap.rs` went from
 a stub to a real implementation: 282 lines tracking physical page frames,
 supporting allocation and deallocation, used by both architectures.
 
-The device-tree parser (`wolfram/src/arch/riscv64/device_tree.rs`) is 250 lines
+The device-tree parser (`ferber/src/arch/riscv64/device_tree.rs`) is 250 lines
 of RISC-V RAM detection. Required for QEMU and for any real RISC-V hardware.
 
 All of this was written, debugged, and verified in one sitting.
@@ -109,7 +109,7 @@ It got control.
 
 ## Real hardware
 
-The Uranium-238 v0.1.0 release attached a `wolfram.iso`. I put the loader and
+The Uranium-238 v0.1.0 release attached a `ferber.iso`. I put the loader and
 kernel on a FAT32 USB stick with the UEFI boot path and plugged it into the
 MSI B650M-A PRO WIFI. Disabled Secure Boot. The machine found the loader. The
 loader found the kernel. The kernel ran.
@@ -125,7 +125,7 @@ That's progress. Verifiable, specific, not dressed up.
 
 ## What Phase 2 is
 
-The kernel core. The things that make Wolfram an actual capability system rather
+The kernel core. The things that make Ferber an actual capability system rather
 than a kernel that boots and panics.
 
 Capability objects: VMOs, Channels, Processes, Threads, Jobs. Handle tables per
@@ -148,12 +148,12 @@ Phase 2 is the starting line.
 
 I'm not going to do the thing where I make inactivity sound intentional. It wasn't.
 I was working on other things, some of which shipped (VWH 4.0.0 is a different
-post), some of which didn't. Wolfram waited.
+post), some of which didn't. Ferber waited.
 
 The sprint happened because I finally had the thread again. Eight hours. I knew
 where I was going the whole time and I went there.
 
-The repo is [here](https://github.com/notvcto/wolfram-os). The ISO is attached
+The repo is [here](https://github.com/notvcto/ferber). The ISO is attached
 to the Uranium-238 v0.1.0 release. If you want to watch Phase 2 happen, watch
 the repo. If you find a way to get further than the `spawn init` panic without
 implementing init, open an issue.
