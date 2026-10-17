@@ -1,6 +1,6 @@
 ———
 
-## title: 'Building a kernel from scratch because Linux trusts too much'
+title: 'Building a kernel from scratch because Linux trusts too much'
 shortTitle: 'Introducing Ferber'
 ogTitle: 'Building a kernel from scratch because Linux trusts too much'
 ogSubtitle: 'A capability-based microkernel written in Rust'
