@@ -1,5 +1,4 @@
-———
-
+---
 title: 'Building a kernel from scratch because Linux trusts too much'
 shortTitle: 'Introducing Ferber'
 ogTitle: 'Building a kernel from scratch because Linux trusts too much'
@@ -11,6 +10,7 @@ readingTime: '11 min'
 author: 'notvcto'
 description: 'Ferber is a microkernel OS written in Rust, targeting RISC-V first, built around one idea: programs should not have access to anything they were not explicitly given. No root. No sudo. No ambient authority. Every resource is a capability handle.'
 tags: ['kernel', 'os', 'rust', 'riscv', 'security', 'capabilities', 'systems', 'ferber']
+---
 
 I ran ls /proc/self/fd on a Linux box once and spent ten minutes closing
 file descriptors I didn't know were open. Inherited from a parent process.
@@ -25,7 +25,7 @@ Until the next CVE.
 I got tired of patching holes in a foundation that was never designed to be
 secure. So I'm building Ferber.
 
-———
+---
 
 ## What Ferber is
 
@@ -47,7 +47,7 @@ This is capability-based security. The idea is from the 1960s. The implementatio
 is new: Rust, clean RISC-V hardware, no legacy constraints, no compatibility
 surface to maintain, no thirty years of decisions baked into the ABI.
 
-———
+---
 
 ## Why Rust makes this different
 
@@ -71,7 +71,7 @@ The kernel enforces capability rights at runtime. The type system enforces
 them at compile time. Two layers, one of them completely free. No other
 capability kernel can say this.
 
-———
+---
 
 ## The model in plain terms
 
@@ -102,7 +102,7 @@ handle it holds, what rights each handle grants, who granted it. On Linux
 today this information doesn't exist in one place. On Ferber it's a
 first-class kernel operation.
 
-———
+---
 
 ## Six decisions that define the kernel
 
@@ -142,7 +142,7 @@ address space: register access is memory access, no syscall overhead. DMA is
 a contiguous VMO, hardware-filled. Interrupts arrive via FastCall. A crashed
 driver is a dead process. The kernel didn't notice.
 
-———
+---
 
 ## fer
 
@@ -171,7 +171,7 @@ what capabilities a driver is requesting before you grant them. A NIC driver
 requesting all interrupt vectors and CAP_INSPECT_ALL is visible before it
 runs. That's not a feature. That's a consequence of the architecture.
 
-———
+---
 
 ## What exists today
 
@@ -185,7 +185,7 @@ syscall stubs are there. The HAL boundary is there. The rest is Phase 2.
 
 This is day one.
 
-———
+---
 
 ## Where it goes
 
