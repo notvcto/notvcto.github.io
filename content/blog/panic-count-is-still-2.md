@@ -1,15 +1,15 @@
 ---
-title: 'The panic count is still 2: shipping Wolfram v0.1.2 through v0.1.5'
-shortTitle: 'Wolfram v0.1.5 Deep Dive'
-ogTitle: 'The panic count is still 2: shipping Wolfram v0.1.2 through v0.1.5'
+title: 'The panic count is still 2: shipping Ferber v0.1.2 through v0.1.5'
+shortTitle: 'Ferber v0.1.5 Deep Dive'
+ogTitle: 'The panic count is still 2: shipping Ferber v0.1.2 through v0.1.5'
 ogSubtitle: 'Paging HAL, capability isolation, and container trees in Rust'
 date: '2026-10-12T23:45:00'
-category: 'Wolfram'
+category: 'Ferber'
 complexity: 9
 readingTime: '14 min'
 author: 'notvcto'
-description: 'Four releases after getting Wolfram to boot on real hardware, Phase 2 is mostly in tree. The kernel now has a dynamic buddy allocator, Virtual Memory Objects, full Sv39 and PML4 paging parity, and an execution container hierarchy where processes start with zero handles. The panic count is still 2, but the code running before it went from a boot stub to an operating system.'
-tags: ['kernel', 'os', 'osdev', 'rust', 'riscv', 'x86', 'paging', 'security', 'wolfram']
+description: 'Four releases after getting Ferber to boot on real hardware, Phase 2 is mostly in tree. The kernel now has a dynamic buddy allocator, Virtual Memory Objects, full Sv39 and PML4 paging parity, and an execution container hierarchy where processes start with zero handles. The panic count is still 2, but the code running before it went from a boot stub to an operating system.'
+tags: ['kernel', 'os', 'osdev', 'rust', 'riscv', 'x86', 'paging', 'security', 'ferber']
 ---
 
 The last post ended with "The panic count is 2. Phase 2 starts now."
@@ -26,7 +26,7 @@ Here is what went into the tree, what broke in the process, and why the architec
 
 Phase 1 only had a physical bitmap allocator. It handed out raw 4 KiB frames. That works for early boot page tables, but a capability system needs small, dynamic allocations for handle tables, capability nodes, and metadata.
 
-In `v0.1.2` I wrote a buddy allocator in `wolfram/src/kernel/memory/heap.rs` and wired it up as the `#[global_allocator]`. It manages free lists from order 0 (32 bytes) up to order 7 (4096 bytes). When a free list runs dry, it pulls a 4 KiB page from the physical bitmap allocator and splits it downward. When blocks are freed, they coalesce back up to their buddy.
+In `v0.1.2` I wrote a buddy allocator in `ferber/src/kernel/memory/heap.rs` and wired it up as the `#[global_allocator]`. It manages free lists from order 0 (32 bytes) up to order 7 (4096 bytes). When a free list runs dry, it pulls a 4 KiB page from the physical bitmap allocator and splits it downward. When blocks are freed, they coalesce back up to their buddy.
 
 Then reality hit. A kernel does not only allocate small structs. A multi-page thread stack, a large VMO backing store, or an address space table needs multi-page contiguous physical memory. A buddy allocator capped at 4 KiB cannot satisfy an 8 KiB request.
 
@@ -46,7 +46,7 @@ In `v0.1.3`, the RISC-V smoke test kept passing intermittently while dropping ea
 
 Two hours later CI was broken again. Commit `e426557` literally has the message `chore: fix ci. fml`.
 
-The repo had two competing workflow files trying to build ISOs and run tests independently. I wiped `iso.yml`, consolidated everything into `.github/workflows/ci.yml`, and unified the pipeline. Pushing a tag now builds the kernel for RISC-V and x86-64, runs clippy with `-D warnings` on both architectures, executes the smoke tests, builds the freestanding UEFI bootloader, formats a FAT32 image, builds `wolfram.iso` with `xorriso`, and publishes the release assets.
+The repo had two competing workflow files trying to build ISOs and run tests independently. I wiped `iso.yml`, consolidated everything into `.github/workflows/ci.yml`, and unified the pipeline. Pushing a tag now builds the kernel for RISC-V and x86-64, runs clippy with `-D warnings` on both architectures, executes the smoke tests, builds the freestanding UEFI bootloader, formats a FAT32 image, builds `ferber.iso` with `xorriso`, and publishes the release assets.
 
 During cleanup I accidentally deleted `scripts/x86-preview.sh`. CI broke immediately because the x86 smoke test depends on it.
 
@@ -60,7 +60,7 @@ I restored the script in commit `dfd928b`. It stays.
 
 In Linux, you call `malloc()` or `mmap(MAP_ANONYMOUS)` and get back a pointer. The kernel tracks the memory behind invisible backing pages. You have no handle to the memory. You cannot inspect who owns it without walking `/proc`. You cannot attenuate its rights cleanly.
 
-Wolfram does not have anonymous memory. Every byte of virtual memory is backed by a Virtual Memory Object (`Vmo`).
+Ferber does not have anonymous memory. Every byte of virtual memory is backed by a Virtual Memory Object (`Vmo`).
 
 A VMO is a typed kernel object. It holds an array of physical frames. If you need contiguous RAM for DMA or stack frames, you call `Vmo::create_contiguous()`. If you need memory-mapped I/O registers for a device driver, you call `Vmo::create_physical()`.
 
@@ -98,7 +98,7 @@ Most of the time, the child does not need any of this. It was trying to spawn an
 
 Every vulnerability involving descriptor leakage across process creation is a direct consequence of `fork()`.
 
-In Wolfram, `fork()` does not exist.
+In Ferber, `fork()` does not exist.
 
 Milestone 2 shipped in `v0.1.5`. It implemented the execution container hierarchy: `Job -> Process -> Thread`.
 
@@ -114,7 +114,7 @@ Zero ambient authority is not an add-on policy. It is the default state of exist
 
 On Linux, when a parent process dies, its surviving child processes get reparented to PID 1. They become orphans. They continue running in the background, consuming resources, until something explicitly tracks them down and kills them.
 
-In Wolfram, processes do not exist in isolation. Every process belongs to an authorizing `Job`. Jobs form a strict hierarchy rooted at a singleton `Job::create_root()`.
+In Ferber, processes do not exist in isolation. Every process belongs to an authorizing `Job`. Jobs form a strict hierarchy rooted at a singleton `Job::create_root()`.
 
 When a job is killed, the termination is synchronous and recursive. `Job::kill()` walks down the subtree, kills all child jobs, and kills all contained processes. In `Process::kill()`, every thread is marked `Dead`.
 
@@ -124,7 +124,7 @@ The entire subtree is dead before `Job::kill()` returns. There are no callbacks,
 
 ## Assembly context switching and a dirty direction flag
 
-Thread stacks in Wolfram are Virtual Memory Objects. There are no raw pointers and no heap vectors. When a thread is created, the kernel allocates a contiguous VMO for the kernel stack. The stack top is derived directly from the allocated physical frame. Thread stacks being VMOs means every byte of stack memory goes through the same capability validation as any other mappable resource.
+Thread stacks in Ferber are Virtual Memory Objects. There are no raw pointers and no heap vectors. When a thread is created, the kernel allocates a contiguous VMO for the kernel stack. The stack top is derived directly from the allocated physical frame. Thread stacks being VMOs means every byte of stack memory goes through the same capability validation as any other mappable resource.
 
 Context switching between kernel threads happens in assembly:
 
@@ -138,13 +138,13 @@ Then I caught something during code review: the direction flag.
 
 Under the System V AMD64 ABI, the direction flag (`DF`) in `RFLAGS` must be cleared to 0 upon function entry. If a thread executed string operations with `DF=1` and yielded without clearing it, the next thread to run would execute string instructions backward and corrupt memory.
 
-I added a single `cld` instruction directly before `ret` in `wolfram/src/arch/x86_64/context.S`. The direction flag is sanitized on every context swap.
+I added a single `cld` instruction directly before `ret` in `ferber/src/arch/x86_64/context.S`. The direction flag is sanitized on every context swap.
 
 ---
 
 ## The goalpost moved
 
-At the end of `wolfram/src/main.rs`, the kernel runs its in-kernel verification suite:
+At the end of `ferber/src/main.rs`, the kernel runs its in-kernel verification suite:
 
 ```text
 [task]  running Job, Process, and Thread subsystem tests...
@@ -169,6 +169,6 @@ todo!("spawn init — Phase 3")
 
 The panic count is still 2. The difference is what runs before it.
 
-The repo is available [here](https://github.com/notvcto/wolfram-os). If you want to verify the container hierarchy, run `scripts/riscv-smoke.sh` or `scripts/x86-smoke.sh`. Milestone 3 is bidirectional async channels and FastCall thread donation IPC. Next Monday’s post will have it. Yes, I'll be posting every Monday.
+The repo is available [here](https://github.com/notvcto/ferber). If you want to verify the container hierarchy, run `scripts/riscv-smoke.sh` or `scripts/x86-smoke.sh`. Milestone 3 is bidirectional async channels and FastCall thread donation IPC. Next Monday’s post will have it. Yes, I'll be posting every Monday.
 
 If you still believe an operating system needs `fork()` and ambient authority to function, clone the repo and prove where this model fails.
