@@ -78,7 +78,7 @@ export function TechMarquee() {
         <section className="relative py-8 overflow-hidden md:py-16 bg-background">
             {/* Section Header */}
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={false}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}

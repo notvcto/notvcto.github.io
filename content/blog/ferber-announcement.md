@@ -3,7 +3,7 @@ title: 'Building a kernel from scratch because Linux trusts too much'
 shortTitle: 'Introducing Ferber'
 ogTitle: 'Building a kernel from scratch because Linux trusts too much'
 ogSubtitle: 'A capability-based microkernel written in Rust'
-date: '2026-06-02T18:30:00'
+date: '2026-06-02T18:30:00-04:00'
 category: 'Ferber'
 complexity: 8
 readingTime: '11 min'

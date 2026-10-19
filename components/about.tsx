@@ -1,5 +1,7 @@
 "use client";
 
+import { useReducedMotion } from "./motion-preferences";
+
 import { EASE_IN_OUT } from "@/lib/animation";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import { useRef } from "react";
@@ -13,6 +15,7 @@ const statements = [
 ];
 
 export function About() {
+    const reducedMotion = useReducedMotion();
     const containerRef = useRef<HTMLElement>(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
@@ -26,7 +29,7 @@ export function About() {
         <section id="about" ref={containerRef} className="relative py-8 md:py-0 overflow-hidden bg-background">
             {/* Section Header */}
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={false}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
@@ -37,8 +40,8 @@ export function About() {
             </motion.div>
 
             {/* Horizontal Scroll Container */}
-            <div className="relative flex items-center overflow-hidden py-0 gap-0 h-24 md:h-32">
-                <motion.div style={{ x: smoothX }} className="flex gap-8 md:gap-24 px-6 md:px-12 whitespace-nowrap">
+            <div className={`relative flex items-center overflow-hidden py-0 gap-0 ${reducedMotion ? "" : "h-24 md:h-32"}`}>
+                <motion.div style={reducedMotion ? undefined : { x: smoothX }} className={`flex gap-8 md:gap-24 px-6 md:px-12 ${reducedMotion ? "flex-wrap" : "whitespace-nowrap"}`}>
                     {statements.map((statement, index) => (
                         <motion.p
                             key={index}
@@ -56,7 +59,7 @@ export function About() {
 
             {/* Decorative Line */}
             <motion.div
-                initial={{ scaleX: 0 }}
+                initial={false}
                 whileInView={{ scaleX: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1.5, ease: EASE_IN_OUT }}

@@ -1,8 +1,34 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
+
+/* The page commits before the WebGL scene; conceal the previous projection until its replacement is drawn. */
+body:has([data-page-sphere="document"]) [data-global-sphere]:not([data-sphere-ready="document"]),
+body:has([data-page-sphere="viewport"]) [data-global-sphere]:not([data-sphere-ready="viewport"]) {
+    visibility: hidden;
+}
+
+@keyframes page-enter {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes sphere-enter {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .page-enter {
+        animation: page-enter 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    [data-sphere-ready="viewport"] > .sphere-enter,
+    [data-sphere-ready="document"] > .sphere-enter {
+        animation: sphere-enter 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+}
 
 /* Dark portfolio theme - using dark mode as default */
 :root {
@@ -123,8 +149,13 @@
     }
 
     @media (pointer: fine) {
-        * {
+        html.custom-cursor * {
             @apply cursor-none!;
+        }
+
+        html.custom-cursor dialog:modal,
+        html.custom-cursor dialog:modal * {
+            cursor: auto !important;
         }
     }
 
@@ -178,13 +209,13 @@
         transform: translateX(0);
     }
     to {
-        transform: translateX(-50%);
+        transform: translateX(calc(-50% - 1rem));
     }
 }
 
 @keyframes marquee-right {
     from {
-        transform: translateX(-50%);
+        transform: translateX(calc(-50% - 1rem));
     }
     to {
         transform: translateX(0);
@@ -282,5 +313,13 @@
     }
     .resume-print .break-inside-avoid {
         break-inside: avoid;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
     }
 }

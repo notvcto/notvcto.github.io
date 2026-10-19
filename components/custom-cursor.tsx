@@ -1,9 +1,12 @@
 "use client";
 
+import { useReducedMotion } from "./motion-preferences";
+
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export function CustomCursor() {
+    const reducedMotion = useReducedMotion();
     const [isHovering, setIsHovering] = useState(false);
     const [isOverImage, setIsOverImage] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
@@ -19,18 +22,23 @@ export function CustomCursor() {
     const ringY = useSpring(rawY, { stiffness: 300, damping: 20, mass: 0.8 });
 
     useEffect(() => {
+        if (reducedMotion) return;
         const touchQuery = window.matchMedia("(pointer: coarse)");
         setIsTouchDevice(touchQuery.matches);
         const handleTouchChange = (e: MediaQueryListEvent) => setIsTouchDevice(e.matches);
         touchQuery.addEventListener("change", handleTouchChange);
 
         const handleMouseMove = (e: MouseEvent) => {
+            document.documentElement.classList.add("custom-cursor");
             rawX.set(e.clientX);
             rawY.set(e.clientY);
             setIsVisible(true);
         };
 
-        const handleMouseLeave = () => setIsVisible(false);
+        const handleMouseLeave = () => {
+            setIsVisible(false);
+            document.documentElement.classList.remove("custom-cursor");
+        };
         const handleMouseEnter = () => setIsVisible(true);
 
         const handleHoverStart = (e: MouseEvent) => {
@@ -61,6 +69,7 @@ export function CustomCursor() {
         document.addEventListener("mouseout", handleHoverEnd);
 
         return () => {
+            document.documentElement.classList.remove("custom-cursor");
             touchQuery.removeEventListener("change", handleTouchChange);
             window.removeEventListener("mousemove", handleMouseMove);
             document.removeEventListener("mouseenter", handleMouseEnter);
@@ -68,9 +77,9 @@ export function CustomCursor() {
             document.removeEventListener("mouseover", handleHoverStart);
             document.removeEventListener("mouseout", handleHoverEnd);
         };
-    }, [rawX, rawY]);
+    }, [rawX, rawY, reducedMotion]);
 
-    if (isTouchDevice) return null;
+    if (isTouchDevice || reducedMotion) return null;
 
     return (
         <>

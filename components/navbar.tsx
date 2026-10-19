@@ -7,6 +7,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { useDialog } from "./use-dialog";
+import { useReducedMotion } from "./motion-preferences";
+
 const navLinks = [
     { label: "About", href: "/#about" },
     { label: "Works", href: "/#works" },
@@ -20,6 +23,10 @@ export function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const pathname = usePathname();
     const lenis = useLenis();
+    const reducedMotion = useReducedMotion();
+    const dialogRef = useDialog(isMenuOpen, () => setIsMenuOpen(false), true);
+
+    useEffect(() => setIsMenuOpen(false), [pathname]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -37,8 +44,11 @@ export function Navbar() {
             if (lenis) {
                 lenis.scrollTo(targetId, {
                     duration: 4,
+                    immediate: reducedMotion,
                     easing: t => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
                 });
+            } else {
+                document.querySelector(targetId)?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth" });
             }
         }
     };
@@ -46,7 +56,7 @@ export function Navbar() {
     return (
         <>
             <motion.header
-                initial={{ y: -100 }}
+                initial={false}
                 animate={{ y: 0 }}
                 transition={{ duration: 0.8, ease: EASE_OUT_EXPO }}
                 className={`no-print fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -61,9 +71,9 @@ export function Navbar() {
                             if (pathname === "/") {
                                 e.preventDefault();
                                 if (lenis) {
-                                    lenis.scrollTo(0, { duration: 1.5 });
+                                    lenis.scrollTo(0, { duration: 1.5, immediate: reducedMotion });
                                 } else {
-                                    window.scrollTo({ top: 0, behavior: "smooth" });
+                                    window.scrollTo({ top: 0, behavior: reducedMotion ? "instant" : "smooth" });
                                 }
                             }
                         }}
@@ -106,6 +116,8 @@ export function Navbar() {
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                         className="md:hidden relative w-8 h-8 flex flex-col items-center justify-center gap-1.5"
                         aria-label="Toggle menu"
+                        aria-expanded={isMenuOpen}
+                        aria-controls="main-mobile-menu"
                     >
                         <motion.span
                             animate={isMenuOpen ? { rotate: 45, y: 5 } : { rotate: 0, y: 0 }}
@@ -124,6 +136,12 @@ export function Navbar() {
             </motion.header>
 
             {/* Mobile Menu Overlay */}
+            <dialog
+                ref={dialogRef}
+                id="main-mobile-menu"
+                aria-label="Main navigation"
+                className="fixed inset-0 m-0 h-full w-full max-h-none max-w-none border-0 bg-background/95 p-0 text-foreground backdrop:bg-background/80"
+            >
             <AnimatePresence>
                 {isMenuOpen && (
                     <motion.div
@@ -133,6 +151,7 @@ export function Navbar() {
                         transition={{ duration: 0.3 }}
                         className="fixed inset-0 z-40 bg-background/95 backdrop-blur-lg md:hidden"
                     >
+                        <button onClick={() => setIsMenuOpen(false)} aria-label="Close menu" className="absolute top-4 right-6 p-2 font-mono text-sm">Close</button>
                         <nav className="flex flex-col items-center justify-center h-full gap-8">
                             {navLinks.map((link, index) => (
                                 <Link
@@ -174,6 +193,7 @@ export function Navbar() {
                     </motion.div>
                 )}
             </AnimatePresence>
+            </dialog>
         </>
     );
 }

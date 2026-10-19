@@ -135,8 +135,8 @@ export const resume: ResumeData = {
                     es: "Creé VWH, una CLI en Rust y un estándar abierto para la verificación criptográfica y trazabilidad de artefactos digitales. Registro público de claves, especificación formal de formato.",
                 },
                 {
-                    en: "Building Wolfram, a capability-based microkernel in Rust targeting RISC-V. No ambient authority: every resource a program touches is an explicitly granted capability.",
-                    es: "Desarrollo Wolfram, un microkernel basado en capacidades escrito en Rust para RISC-V. Sin autoridad ambiental: cada recurso que un programa toca es una capacidad otorgada explícitamente.",
+                    en: "Building Ferber, a capability-based microkernel in Rust targeting RISC-V and x86-64. No ambient authority: every resource a program touches is an explicitly granted capability.",
+                    es: "Desarrollo Ferber, un microkernel basado en capacidades escrito en Rust para RISC-V y x86-64. Sin autoridad ambiental: cada recurso que un programa toca es una capacidad otorgada explícitamente.",
                 },
                 {
                     en: "Building Zero, an applied-ML research project training a security reasoning model on CTF problems through adversarial self-play (GRPO), data pipeline included.",

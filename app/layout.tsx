@@ -19,10 +19,10 @@ export const metadata: Metadata = {
         default: "NOTVCTO // SYSTEMS ARCHITECT",
         template: "%s | NOTVCTO",
     },
-    description: "Victor Soto - System Architect & Interface Designer crafting intelligent digital experiences",
+    description: "Victor Soto — Security researcher and systems programmer building kernels, cryptographic tooling, and open-source software.",
     openGraph: {
         title: "NOTVCTO // SYSTEMS ARCHITECT",
-        description: "Victor Soto - System Architect & Interface Designer crafting intelligent digital experiences",
+        description: "Victor Soto — Security researcher and systems programmer building kernels, cryptographic tooling, and open-source software.",
         url: "https://notvc.to",
         siteName: "Victor Soto Portfolio",
         locale: "en_US",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     twitter: {
         card: "summary_large_image",
         title: "NOTVCTO // SYSTEMS ARCHITECT",
-        description: "Victor Soto - System Architect & Interface Designer crafting intelligent digital experiences",
+        description: "Victor Soto — Security researcher and systems programmer building kernels, cryptographic tooling, and open-source software.",
         creator: "@notvcto",
         images: ["/og/portfolio.png"],
     },

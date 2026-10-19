@@ -23,9 +23,13 @@ const THREE_VERSION = JSON.parse(
     fs.readFileSync(path.resolve(process.cwd(), "node_modules/three/package.json"), "utf8"),
 ).version;
 
-// Hash the script itself + Three.js version so any change to rendering code or Three.js
-// version invalidates all cached images.
-const SCRIPT_HASH = hashString([fs.readFileSync(fileURLToPath(import.meta.url), "utf8"), THREE_VERSION].join("|"));
+// Font bytes matter too: dependency updates must invalidate cached previews.
+const SCRIPT_HASH = hashString([
+    fs.readFileSync(fileURLToPath(import.meta.url), "utf8"),
+    THREE_VERSION,
+    fs.readFileSync(playfairFontPath).toString("base64"),
+    fs.readFileSync(geistMonoFontPath).toString("base64"),
+].join("|"));
 
 if (!fs.existsSync(ogOutputDirectory)) {
     fs.mkdirSync(ogOutputDirectory, { recursive: true });
@@ -106,7 +110,7 @@ async function getAllPosts() {
                 throw new Error(`Invalid blog slug for OG image generation: ${slug}`);
             }
             const { data } = matter(fs.readFileSync(path.join(contentDirectory, f), "utf8"));
-            return { slug, ...data };
+            return { ...data, slug };
         });
 }
 

@@ -1,12 +1,12 @@
 "use client";
 
-import type { BlogPostMeta } from "@/lib/blog";
+import { filterPosts, type BlogPostMeta } from "@/lib/blog";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, ChevronRight, List, Search, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
+import { useDialog } from "./use-dialog";
 
 interface BlogMobileNavProps {
     posts: BlogPostMeta[];
@@ -15,38 +15,16 @@ interface BlogMobileNavProps {
 export function BlogMobileNav({ posts }: BlogMobileNavProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const [mounted, setMounted] = useState(false);
     const pathname = usePathname();
 
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    const filteredPosts = useMemo(() => {
-        const q = searchQuery.toLowerCase();
-        return posts.filter(
-            post =>
-                post.title.toLowerCase().includes(q) ||
-                post.shortTitle?.toLowerCase().includes(q) ||
-                post.category.toLowerCase().includes(q) ||
-                post.tags.some(tag => tag.toLowerCase().includes(q)),
-        );
-    }, [posts, searchQuery]);
+    const dialogRef = useDialog(isOpen, () => setIsOpen(false), true);
+    const filteredPosts = useMemo(() => filterPosts(posts, searchQuery), [posts, searchQuery]);
 
     const categories = useMemo(() => Array.from(new Set(filteredPosts.map(post => post.category))), [filteredPosts]);
 
     useEffect(() => {
         setIsOpen(false);
     }, [pathname]);
-
-    useEffect(() => {
-        document.body.style.overflow = isOpen ? "hidden" : "";
-        return () => {
-            document.body.style.overflow = "";
-        };
-    }, [isOpen]);
-
-    if (!mounted) return null;
 
     return (
         <>
@@ -65,15 +43,15 @@ export function BlogMobileNav({ posts }: BlogMobileNavProps) {
             </motion.button>
 
             {/* Overlay Drawer via Portal */}
-            {createPortal(
+            <dialog
+                ref={dialogRef}
+                id="blog-mobile-drawer"
+                aria-label="Article navigation"
+                className="fixed inset-0 m-0 h-full w-full max-h-none max-w-none border-0 bg-transparent p-0 text-foreground backdrop:bg-background/80 backdrop:backdrop-blur-md"
+            >
                 <AnimatePresence>
                     {isOpen && (
-                        <div
-                            id="blog-mobile-drawer"
-                            role="dialog"
-                            aria-modal="true"
-                            aria-label="Article navigation"
-                            className="fixed inset-0 z-[9999] md:hidden"
+                        <div className="fixed inset-0 md:hidden"
                         >
                             <motion.div
                                 initial={{ opacity: 0 }}
@@ -122,7 +100,7 @@ export function BlogMobileNav({ posts }: BlogMobileNavProps) {
                                 </div>
 
                                 {/* Content */}
-                                <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+                                <div data-lenis-prevent className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
                                     {categories.length > 0 ? (
                                         categories.map(category => (
                                             <div key={category}>
@@ -138,6 +116,7 @@ export function BlogMobileNav({ posts }: BlogMobileNavProps) {
                                                                 <li key={post.slug}>
                                                                     <Link
                                                                         href={`/blog/${post.slug}`}
+                                                                        onClick={() => setIsOpen(false)}
                                                                         aria-current={isActive ? "page" : undefined}
                                                                         className={`flex items-center justify-between p-3 rounded-xl transition-all ${
                                                                             isActive
@@ -174,9 +153,8 @@ export function BlogMobileNav({ posts }: BlogMobileNavProps) {
                             </motion.div>
                         </div>
                     )}
-                </AnimatePresence>,
-                document.body,
-            )}
+                </AnimatePresence>
+            </dialog>
         </>
     );
 }

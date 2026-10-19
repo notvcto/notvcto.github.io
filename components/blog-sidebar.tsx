@@ -1,6 +1,6 @@
 "use client";
 
-import type { BlogPostMeta } from "@/lib/blog";
+import { filterPosts, type BlogPostMeta } from "@/lib/blog";
 import { motion } from "framer-motion";
 import { BookOpen, Command, Search } from "lucide-react";
 import Link from "next/link";
@@ -37,6 +37,7 @@ function SidebarArticleLink({ post, isActive }: SidebarArticleLinkProps) {
     return (
         <Link
             href={`/blog/${post.slug}`}
+            aria-current={isActive ? "page" : undefined}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             className={`flex items-center gap-3 px-3 py-3 text-base font-sans rounded-xl transition-all duration-300 leading-relaxed group/link ${
@@ -92,7 +93,7 @@ export function BlogSidebar({ posts }: BlogSidebarProps) {
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+            if ((e.metaKey || e.ctrlKey) && e.key === "k" && searchInputRef.current?.getClientRects().length) {
                 e.preventDefault();
                 searchInputRef.current?.focus();
             }
@@ -101,16 +102,7 @@ export function BlogSidebar({ posts }: BlogSidebarProps) {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
 
-    const filteredPosts = useMemo(() => {
-        const q = searchQuery.toLowerCase();
-        return posts.filter(
-            post =>
-                post.title.toLowerCase().includes(q) ||
-                post.shortTitle?.toLowerCase().includes(q) ||
-                post.category.toLowerCase().includes(q) ||
-                post.tags.some(tag => tag.toLowerCase().includes(q)),
-        );
-    }, [posts, searchQuery]);
+    const filteredPosts = useMemo(() => filterPosts(posts, searchQuery), [posts, searchQuery]);
 
     const categories = useMemo(() => Array.from(new Set(filteredPosts.map(post => post.category))), [filteredPosts]);
 
@@ -140,7 +132,7 @@ export function BlogSidebar({ posts }: BlogSidebarProps) {
                 </div>
 
                 {/* Navigation Links */}
-                <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                <div data-lenis-prevent className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                     <div className="space-y-8">
                         {categories.length > 0 ? (
                             categories.map(category => (

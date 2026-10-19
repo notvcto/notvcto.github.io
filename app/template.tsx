@@ -1,7 +1,5 @@
 "use client";
 
-import { EASE_IN_OUT } from "@/lib/animation";
-import { motion } from "framer-motion";
 import { useLenis } from "lenis/react";
 import { usePathname } from "next/navigation";
 import type React from "react";
@@ -21,13 +19,12 @@ export default function Template({ children }: { children: React.ReactNode }) {
     }, [pathname, lenis]);
 
     return (
-        <motion.div
+        <div
             key={pathname}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: EASE_IN_OUT }}
+            className="page-enter"
+            data-page-sphere={pathname.startsWith("/blog") || pathname.startsWith("/resume") ? "document" : "viewport"}
         >
             {children}
-        </motion.div>
+        </div>
     );
 }

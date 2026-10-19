@@ -7,39 +7,44 @@ import { useEffect, useRef, useState } from "react";
 
 const projects = [
     {
+        title: "ferber",
+        description: "A capability-based microkernel for RISC-V and x86-64. Processes start with no authority.",
+        tags: ["Rust", "Microkernel", "Capabilities"],
+        image: "https://socialify.git.ci/notvcto/ferber/image?theme=Dark&font=Inter&description=1&owner=1&name=1&stargazers=1&forks=1&issues=1&language=1",
+        year: "2026",
+        github: "https://github.com/notvcto/ferber",
+    },
+    {
         title: "vwh",
+        description: "Signed artifacts with offline verification. Signature validity and attribution stay separate.",
         tags: ["Rust", "Cryptography", "CLI"],
         image: "https://socialify.git.ci/notvcto/vwh/image?theme=Dark&font=Inter&description=1&owner=1&name=1&stargazers=1&forks=1&issues=1&language=1",
         year: "2026",
         github: "https://github.com/notvcto/vwh",
     },
     {
-        title: "vsh",
-        tags: ["Rust", "Systems", "Shell"],
-        image: "https://socialify.git.ci/notvcto/vsh/image?theme=Dark&font=Inter&description=1&owner=1&name=1&stargazers=1&forks=1&issues=1&language=1",
+        title: "zero",
+        description: "Research into security reasoning in small language models. Baselines measured; dataset construction in progress.",
+        tags: ["Python", "Security", "ML Research"],
+        image: "https://socialify.git.ci/notvcto/zero/image?theme=Dark&font=Inter&description=1&owner=1&name=1&stargazers=1&forks=1&issues=1&language=1",
         year: "2026",
-        github: "https://github.com/notvcto/vsh",
+        github: "https://github.com/notvcto/zero",
     },
     {
         title: "dusky-asahi",
-        tags: ["Linux", "Wayland", "Asahi"],
+        description: "A port of the Dusky Hyprland desktop to Apple Silicon, adapted for Asahi Linux and ARM64.",
+        tags: ["Linux", "Wayland", "Apple Silicon"],
         image: "https://socialify.git.ci/notvcto/dusky-asahi/image?theme=Dark&font=Inter&description=1&owner=1&name=1&stargazers=1&forks=1&issues=1&language=1",
         year: "2026",
         github: "https://github.com/notvcto/dusky-asahi",
     },
     {
         title: "rscapt",
-        tags: ["Rust", "FFmpeg", "Performance"],
+        description: "An OBS replay buffer processor for Windows. Upscale, compress, and share clips from a terminal UI.",
+        tags: ["Rust", "FFmpeg", "OBS"],
         image: "https://socialify.git.ci/notvcto/rscapt/image?theme=Dark&font=Inter&description=1&owner=1&name=1&stargazers=1&forks=1&issues=1&language=1",
         year: "2026",
         github: "https://github.com/notvcto/rscapt",
-    },
-    {
-        title: "compress-video",
-        tags: ["Shell", "Automation", "Video"],
-        image: "https://socialify.git.ci/notvcto/compress-video/image?theme=Dark&font=Inter&description=1&owner=1&name=1&stargazers=1&forks=1&issues=1&language=1",
-        year: "2026",
-        github: "https://github.com/notvcto/compress-video",
     },
 ];
 
@@ -71,7 +76,7 @@ export function Works() {
         <section id="works" className="relative py-8 px-6 md:px-12 md:py-16 bg-background">
             {/* Section Header */}
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={false}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
@@ -88,7 +93,7 @@ export function Works() {
                 {projects.map((project, index) => (
                     <motion.div
                         key={project.title}
-                        initial={{ opacity: 0, y: 40 }}
+                        initial={false}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8, delay: index * 0.1 }}
@@ -129,6 +134,9 @@ export function Works() {
                                 >
                                     {project.title}
                                 </motion.h3>
+                                <p className="max-w-2xl text-base text-muted-foreground leading-relaxed">
+                                    {project.description}
+                                </p>
                             </div>
 
                             {/* Mobile/Touch Image Preview */}
@@ -137,6 +145,7 @@ export function Works() {
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src={project.image}
+                                        loading="lazy"
                                         alt={project.title}
                                         referrerPolicy="no-referrer"
                                         className="w-full h-full object-cover grayscale-[20%] contrast-[1.1]"

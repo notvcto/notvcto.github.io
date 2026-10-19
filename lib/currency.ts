@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 // Region → currency, stored inverted (one line per currency) so the table stays
 // readable. Flattened into a Map at module load.
 const CURRENCY_REGIONS: Record<string, string> = {
-  EUR: "AD AT AX BE BL CY DE EE ES FI FR GF GP GR HR IE IT LT LU LV MC ME MF MQ MT NL PM PT RE SI SK SM VA XK YT",
+  EUR: "AD AT AX BE BG BL CY DE EE ES FI FR GF GP GR HR IE IT LT LU LV MC ME MF MQ MT NL PM PT RE SI SK SM VA XK YT",
   USD: "US AS BQ EC FM GU IO MH MP PR PW SV TC TL UM VG VI ZW",
   GBP: "GB GG IM JE",
   DOP: "DO",
@@ -25,7 +25,6 @@ const CURRENCY_REGIONS: Record<string, string> = {
   CZK: "CZ",
   HUF: "HU",
   RON: "RO",
-  BGN: "BG",
   ISK: "IS",
   TRY: "TR",
   RUB: "RU",
@@ -52,7 +51,7 @@ const CURRENCY_REGIONS: Record<string, string> = {
   HTG: "HT",
   XCD: "AG AI DM GD KN LC MS VC",
   AWG: "AW",
-  ANG: "CW SX",
+  XCG: "CW SX",
   KYD: "KY",
   BMD: "BM",
   GYD: "GY",
@@ -313,39 +312,51 @@ export function resolveCurrency(language: string, timeZone: string): string {
 }
 
 type Rates = Record<string, number>
+type RatesCache = { rates: Rates; expires: number }
 
 const CACHE_KEY = "rates:USD"
 const API = "https://open.er-api.com/v6/latest/USD"
 
-// Shared across hook instances so navigating list ↔ detail doesn't refetch, and
-// two mounted components share one request.
-let cached: Rates | null = null
-let inflight: Promise<Rates | null> | null = null
+export function isValidRates(value: unknown): value is Rates {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+    && Object.keys(value).length > 0
+    && Object.values(value).every(rate => typeof rate === "number" && Number.isFinite(rate) && rate > 0)
+}
 
-function readCache(): Rates | null {
+export function parseRatesCache(value: unknown, now = Date.now()): RatesCache | null {
+  if (typeof value !== "object" || value === null) return null
+  const { rates, expires } = value as Partial<RatesCache>
+  return isValidRates(rates) && typeof expires === "number" && Number.isFinite(expires) && expires > now
+    ? { rates, expires } : null
+}
+
+// Shared across hook instances; each read checks expiration.
+let cached: RatesCache | null = null
+let inflight: Promise<RatesCache | null> | null = null
+
+function readCache(): RatesCache | null {
   try {
     const raw = localStorage.getItem(CACHE_KEY)
-    if (!raw) return null
-    const { rates, expires } = JSON.parse(raw)
-    return Date.now() < expires ? rates : null
+    return raw ? parseRatesCache(JSON.parse(raw)) : null
   } catch {
-    // Safari private mode throws on localStorage; bad JSON throws too.
     return null
   }
 }
 
-async function fetchRates(): Promise<Rates | null> {
+async function fetchRates(): Promise<RatesCache | null> {
   try {
     const res = await fetch(API)
+    if (!res.ok) return null
     const data = await res.json()
-    if (data.result !== "success" || !data.rates) return null
-    const expires = (data.time_next_update_unix ?? 0) * 1000 || Date.now() + 12 * 3600_000
+    if (data.result !== "success" || !isValidRates(data.rates)) return null
+    const entry = parseRatesCache({ rates: data.rates, expires: data.time_next_update_unix * 1000 })
+      ?? { rates: data.rates, expires: Date.now() + 12 * 3600_000 }
     try {
-      localStorage.setItem(CACHE_KEY, JSON.stringify({ rates: data.rates, expires }))
+      localStorage.setItem(CACHE_KEY, JSON.stringify(entry))
     } catch {
-      // Storage full or blocked — the in-memory copy still works this session.
+      // Storage blocked or full; the session cache still works.
     }
-    return data.rates
+    return entry
   } catch {
     return null
   }
@@ -364,12 +375,12 @@ export function useLocalPrice() {
     const currency = resolveCurrency(navigator.language, Intl.DateTimeFormat().resolvedOptions().timeZone)
     if (currency === "USD") return
 
-    const apply = (rates: Rates | null) => {
-      const rate = rates?.[currency]
-      if (rate) setLocal({ currency, rate })
+    const apply = (entry: RatesCache | null) => {
+      const rate = entry?.rates[currency]
+      if (typeof rate === "number" && Number.isFinite(rate) && rate > 0) setLocal({ currency, rate })
     }
 
-    const hit = cached ?? readCache()
+    const hit = parseRatesCache(cached) ?? readCache()
     if (hit) {
       cached = hit
       apply(hit)

@@ -1,7 +1,7 @@
 export interface BlogPost {
     slug: string;
     title: string;
-    shortTitle: string;
+    shortTitle?: string;
     ogTitle?: string;
     ogSubtitle?: string;
     date: string;
@@ -21,4 +21,11 @@ export function getComplexityColor(score: number): string {
     if (score < 7.0) return "text-yellow-500";
     if (score < 9.0) return "text-orange-500";
     return "text-red-500";
+}
+
+export function filterPosts(posts: BlogPostMeta[], query: string): BlogPostMeta[] {
+    const q = query.trim().toLowerCase();
+    return posts.filter(post =>
+        [post.title, post.shortTitle, post.category, ...post.tags].some(value => value?.toLowerCase().includes(q)),
+    );
 }

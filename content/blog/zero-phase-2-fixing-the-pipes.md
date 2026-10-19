@@ -3,7 +3,7 @@ title: 'Zero Phase 2: fixing the pipes'
 shortTitle: 'Phase 2: Fixing the Pipes'
 ogTitle: 'Zero Phase 2: fixing the pipes'
 ogSubtitle: 'Four broken scrapers, one crash, and a pipeline that now survives both.'
-date: '2026-05-30T17:45:00'
+date: '2026-05-30T17:45:00-04:00'
 category: 'Zero'
 complexity: 6.5
 readingTime: '5 min'

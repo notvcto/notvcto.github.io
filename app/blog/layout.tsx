@@ -17,8 +17,8 @@ export default async function BlogLayout({ children }: { children: React.ReactNo
                 <BlogMobileNav posts={posts} />
 
                 {/* Main Content Area - Center Focused */}
-                <main className="flex-1 flex justify-center pt-12 md:pt-24 pb-32">
-                    <div className="w-full max-w-3xl relative z-10">{children}</div>
+                <main className="min-w-0 flex-1 flex justify-center pt-12 md:pt-24 pb-32">
+                    <div className="min-w-0 w-full max-w-3xl relative z-10">{children}</div>
                 </main>
             </div>
         </div>

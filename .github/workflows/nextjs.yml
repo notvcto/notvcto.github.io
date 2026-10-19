@@ -93,13 +93,31 @@ jobs:
           path: public/og
           # Restore from exact match first, then fall back to any prior og cache so the
           # manifest-based skip in generate-og.mjs can reuse unchanged images.
-          key: ${{ runner.os }}-og-${{ hashFiles('content/blog/**', 'og-template.html', 'scripts/generate-og.mjs') }}
+          key: ${{ runner.os }}-og-${{ hashFiles('content/blog/**', 'scripts/generate-og.mjs', 'pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-og-
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }} --frozen-lockfile
+      - name: Lint and unit checks
+        run: |
+          pnpm lint
+          pnpm check:unit
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} run build
+      - name: Check exported site in Chrome
+        run: |
+          pnpm start > /tmp/site-preview.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid"' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then
+              pnpm check:browser
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/site-preview.log
+          exit 1
       - name: Upload artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
         with:

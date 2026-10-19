@@ -3,7 +3,7 @@ title: 'Zero Phase 2: the scraper lied'
 shortTitle: 'Phase 2: The Scraper Lied'
 ogTitle: 'Zero Phase 2: the scraper lied'
 ogSubtitle: '3,854 entries scraped. 44% were event announcements.'
-date: '2026-05-29T08:00:00'
+date: '2026-05-29T08:00:00-04:00'
 category: 'Zero'
 complexity: 7
 readingTime: '5 min'

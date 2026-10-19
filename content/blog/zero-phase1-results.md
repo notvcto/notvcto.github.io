@@ -3,7 +3,7 @@ title: 'Zero Phase 1: the floor is flat'
 shortTitle: 'Phase 1: Results'
 ogTitle: 'Zero Phase 1: the floor is flat'
 ogSubtitle: 'Baseline results across 1.5B, 3B, and 7B'
-date: '2026-05-27T22:00:00'
+date: '2026-05-27T22:00:00-04:00'
 category: 'Zero'
 complexity: 7.5
 readingTime: '6 min'

@@ -3,7 +3,7 @@ title: 'Zero Phase 2: the scraper lied... again'
 shortTitle: 'Phase 2: The Scraper Lied. Again.'
 ogTitle: 'Zero Phase 2: the scraper lied... again'
 ogSubtitle: '898 of 1735 entries were LLM honeypots. CTFtime is gone.'
-date: '2026-05-29T21:50:00'
+date: '2026-05-29T21:50:00-04:00'
 category: 'Zero'
 complexity: 7.5
 readingTime: '6 min'

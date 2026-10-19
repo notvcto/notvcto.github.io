@@ -3,7 +3,7 @@ title: 'Ferber boots on real hardware'
 shortTitle: 'Phase 1 complete'
 ogTitle: 'Ferber boots on real hardware'
 ogSubtitle: 'Five months of nothing. Eight hours. Phase 1 done.'
-date: '2026-08-10T00:30:00'
+date: '2026-08-10T00:30:00-04:00'
 category: 'Ferber'
 complexity: 6
 readingTime: '8 min'

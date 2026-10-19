@@ -1,15 +1,25 @@
+/// <reference types="react-syntax-highlighter" />
 "use client";
 
 import { getComplexityColor, type BlogPost, type BlogPostMeta } from "@/lib/blog";
-import { AnimatePresence, motion } from "framer-motion";
-import { Check, ChevronRight, Share2 } from "lucide-react";
+import { Check, ChevronRight, Share2, X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { isValidElement, useEffect, useRef, useState, type ReactNode } from "react";
+import { useDialog } from "@/components/use-dialog";
 import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import SyntaxHighlighter from "react-syntax-highlighter/dist/esm/prism-light";
+import bash from "react-syntax-highlighter/dist/esm/languages/prism/bash";
+import json from "react-syntax-highlighter/dist/esm/languages/prism/json";
+import markup from "react-syntax-highlighter/dist/esm/languages/prism/markup";
+import nasm from "react-syntax-highlighter/dist/esm/languages/prism/nasm";
+import python from "react-syntax-highlighter/dist/esm/languages/prism/python";
+import rust from "react-syntax-highlighter/dist/esm/languages/prism/rust";
+import vscDarkPlus from "react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus";
 import remarkGfm from "remark-gfm";
+
+for (const [name, grammar] of Object.entries({ bash, json, markup, nasm, python, rust })) {
+    SyntaxHighlighter.registerLanguage(name, grammar);
+}
 
 interface BlogPostClientProps {
     post: BlogPost;
@@ -18,28 +28,15 @@ interface BlogPostClientProps {
 
 export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
     const [copied, setCopied] = useState(false);
-    const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
-    const [mounted, setMounted] = useState(false);
+    const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
+    const dialogRef = useDialog(!!lightbox, () => setLightbox(null));
     const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     useEffect(() => {
         return () => {
             if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
         };
     }, []);
-
-    useEffect(() => {
-        if (!lightboxSrc) return;
-        const handleEsc = (e: KeyboardEvent) => {
-            if (e.key === "Escape") setLightboxSrc(null);
-        };
-        window.addEventListener("keydown", handleEsc);
-        return () => window.removeEventListener("keydown", handleEsc);
-    }, [lightboxSrc]);
 
     const canonicalUrl = `https://notvc.to/blog/${post.slug}`;
 
@@ -52,7 +49,7 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <span className="font-mono text-[10px] tracking-widest text-muted-foreground/40 uppercase">
+                        <span className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
                             Complexity:
                         </span>
                         <span
@@ -63,7 +60,7 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <span className="font-mono text-[10px] tracking-widest text-muted-foreground/40 uppercase">
+                        <span className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
                             Read Time:
                         </span>
                         <span className="font-mono text-[10px] text-muted-foreground uppercase">
@@ -71,7 +68,7 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
                         </span>
                     </div>
 
-                    <span className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase ml-auto opacity-50">
+                    <span className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase ml-auto">
                         {post.date.split("T")[0]}
                     </span>
                 </div>
@@ -148,48 +145,31 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
                     ),
                     tr: props => <tr className="border-b border-white/10 last:border-none!" {...props} />,
                     td: props => <td className="px-6 py-4 text-white/80 border-none!" {...props} />,
-                    code: ({ className, children }) => {
-                        const match = /language-(\w+)/.exec(className || "");
-                        const isInline = !className;
-
-                        return isInline ? (
-                            <code className="bg-white/10 px-1.5 py-0.5 rounded text-sm text-white/90 font-mono">
-                                {children}
-                            </code>
-                        ) : (
-                            <div className="my-8 rounded-xl border border-white/5 overflow-hidden shadow-2xl bg-[#0a0a0a]">
-                                <div className="flex items-center justify-between px-4 py-2 bg-white/[0.03] border-b border-white/5">
-                                    <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
-                                        {match?.[1] || "code"}
-                                    </span>
-                                    <div className="flex gap-1.5">
-                                        <div className="w-2 h-2 rounded-full bg-white/10" />
-                                        <div className="w-2 h-2 rounded-full bg-white/10" />
-                                    </div>
+                    code: ({ children, className }) => (
+                        <code className={`bg-white/10 px-1.5 py-0.5 rounded text-sm text-white/90 font-mono [overflow-wrap:anywhere] ${className || ""}`}>
+                            {children}
+                        </code>
+                    ),
+                    pre: ({ children }) => {
+                        const code = isValidElement<{ className?: string; children?: ReactNode }>(children) ? children.props : null;
+                        const label = /language-([\w-]+)/.exec(code?.className || "")?.[1] || "text";
+                        const language = label === "asm" ? "nasm" : label === "html" ? "markup" : label;
+                        return (
+                            <div className="not-prose my-8 rounded-xl border border-white/5 overflow-hidden bg-[#0a0a0a]">
+                                <div className="px-4 py-2 bg-white/[0.03] border-b border-white/5 font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
+                                    {label}
                                 </div>
                                 <SyntaxHighlighter
                                     style={vscDarkPlus}
-                                    language={match?.[1] || "text"}
-                                    PreTag="div"
-                                    customStyle={{
-                                        margin: 0,
-                                        padding: "1.5rem",
-                                        background: "transparent",
-                                        fontSize: "0.875rem",
-                                        lineHeight: "1.7",
-                                    }}
-                                    codeTagProps={{
-                                        style: {
-                                            fontFamily: "inherit",
-                                        },
-                                    }}
+                                    language={language}
+                                    PreTag="pre"
+                                    customStyle={{ margin: 0, padding: "1.5rem", background: "transparent", fontSize: "0.875rem", lineHeight: "1.7" }}
                                 >
-                                    {String(children).replace(/\n$/, "")}
+                                    {String(code?.children ?? "").replace(/\n$/, "")}
                                 </SyntaxHighlighter>
                             </div>
                         );
                     },
-                    pre: props => <div className="not-prose">{props.children}</div>,
                     img: ({ src, alt }) => {
                         const safeSrc =
                             typeof src === "string" && src.startsWith("/") && !src.startsWith("//") ? src : "";
@@ -200,38 +180,39 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
 
                         if (!safeSrc) {
                             return (
-                                <div className="my-8 not-prose rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3 font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
+                                <span className="block my-8 not-prose rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3 font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
                                     Remote image blocked
-                                </div>
+                                </span>
                             );
                         }
 
                         return (
-                            <figure className="my-8 not-prose rounded-xl border border-white/5 overflow-hidden shadow-2xl bg-[#0a0a0a]">
-                                <div className="flex items-center justify-between px-4 py-2 bg-white/[0.03] border-b border-white/5">
+                            <span role="figure" className="block my-8 not-prose rounded-xl border border-white/5 overflow-hidden shadow-2xl bg-[#0a0a0a]">
+                                <span className="flex items-center justify-between px-4 py-2 bg-white/[0.03] border-b border-white/5">
                                     <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
                                         {fmt}
                                     </span>
-                                    <div className="flex gap-1.5">
-                                        <div className="w-2 h-2 rounded-full bg-white/10" />
-                                        <div className="w-2 h-2 rounded-full bg-white/10" />
-                                    </div>
-                                </div>
+                                    <span className="flex gap-1.5">
+                                        <span className="w-2 h-2 rounded-full bg-white/10" />
+                                        <span className="w-2 h-2 rounded-full bg-white/10" />
+                                    </span>
+                                </span>
+                                <button type="button" className="block w-full" aria-label={`Enlarge ${alt || "image"}`} onClick={() => setLightbox({ src: safeSrc, alt: alt || "" })}>
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     src={safeSrc}
                                     alt={alt || ""}
                                     loading="lazy"
                                     referrerPolicy="no-referrer"
-                                    onClick={() => setLightboxSrc(safeSrc)}
                                     className="w-full object-cover cursor-zoom-in transition-opacity duration-300 hover:opacity-90"
                                 />
+                                </button>
                                 {alt && (
-                                    <figcaption className="px-4 py-2 border-t border-white/5 text-center font-mono text-[11px] tracking-widest text-muted-foreground uppercase bg-white/[0.02]">
+                                    <span className="block px-4 py-2 border-t border-white/5 text-center font-mono text-[11px] tracking-widest text-muted-foreground uppercase bg-white/[0.02]">
                                         {alt}
-                                    </figcaption>
+                                    </span>
                                 )}
-                            </figure>
+                            </span>
                         );
                     },
                 }}
@@ -239,34 +220,22 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
                 {post.content}
             </ReactMarkdown>
 
-            {mounted &&
-                createPortal(
-                    <AnimatePresence>
-                        {lightboxSrc && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                                onClick={() => setLightboxSrc(null)}
-                                className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 md:p-8 cursor-zoom-out"
-                            >
-                                <motion.img
-                                    initial={{ scale: 0.92, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    exit={{ scale: 0.92, opacity: 0 }}
-                                    transition={{ duration: 0.2 }}
-                                    src={lightboxSrc}
-                                    alt=""
-                                    referrerPolicy="no-referrer"
-                                    onClick={e => e.stopPropagation()}
-                                    className="max-w-full max-h-[90vh] rounded-xl border border-white/10 object-contain cursor-default shadow-2xl"
-                                />
-                            </motion.div>
-                        )}
-                    </AnimatePresence>,
-                    document.body,
+            <dialog
+                ref={dialogRef}
+                aria-label={lightbox?.alt || "Image preview"}
+                onClick={event => { if (event.target === event.currentTarget) setLightbox(null); }}
+                className="fixed inset-0 m-0 h-full w-full max-h-none max-w-none border-0 bg-black/90 p-4 md:p-8 text-white backdrop:bg-black/70"
+            >
+                {lightbox && (
+                    <div className="flex h-full items-center justify-center pointer-events-none">
+                        <button onClick={() => setLightbox(null)} aria-label="Close image preview" className="pointer-events-auto absolute top-4 right-4 p-3 rounded-full bg-black border border-white/20">
+                            <X className="w-5 h-5" />
+                        </button>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={lightbox.src} alt={lightbox.alt} referrerPolicy="no-referrer" className="pointer-events-auto max-w-full max-h-[90vh] object-contain rounded-xl" />
+                    </div>
                 )}
+            </dialog>
 
             <footer className="mt-20 pt-12 border-t border-white/5 not-prose space-y-8">
                 {nextPost && (

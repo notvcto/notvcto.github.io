@@ -1,5 +1,6 @@
 "use client";
 
+import { StarRating } from "@/components/star-rating";
 import { EASE_OUT_EXPO } from "@/lib/animation";
 import { useLocalPrice } from "@/lib/currency";
 import {
@@ -13,13 +14,13 @@ import {
     type WishlistItem,
 } from "@/lib/items";
 import { motion } from "framer-motion";
-import { ChevronDown, LayoutGrid, List, Search, Star } from "lucide-react";
+import { ChevronDown, LayoutGrid, List, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 const fadeIn = {
-    initial: { opacity: 0, y: 20 },
+    initial: false,
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true },
     transition: { duration: 0.8, ease: EASE_OUT_EXPO },
@@ -30,30 +31,6 @@ type ViewMode = "list" | "grid";
 
 const categories: Category[] = ["Tools", "RF Gear", "Storage", "Electronics", "Hardware"];
 
-function StarRating({ rating }: { rating: number }) {
-    const fullStars = Math.floor(rating);
-    const hasHalf = rating % 1 >= 0.5;
-    const emptyStars = 3 - fullStars - (hasHalf ? 1 : 0);
-
-    return (
-        <div className="flex items-center gap-0.5">
-            {[...Array(fullStars)].map((_, i) => (
-                <Star key={`full-${i}`} className="w-3.5 h-3.5 fill-accent text-accent" />
-            ))}
-            {hasHalf && (
-                <div className="relative w-3.5 h-3.5">
-                    <Star className="absolute inset-0 w-3.5 h-3.5 fill-none text-muted-foreground" />
-                    <div className="absolute inset-0 overflow-hidden" style={{ width: "50%" }}>
-                        <Star className="w-3.5 h-3.5 fill-accent text-accent" />
-                    </div>
-                </div>
-            )}
-            {[...Array(emptyStars)].map((_, i) => (
-                <Star key={`empty-${i}`} className="w-3.5 h-3.5 fill-none text-muted-foreground" />
-            ))}
-        </div>
-    );
-}
 
 function ProductImage({ item, sizes }: { item: WishlistItem; sizes: string }) {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -75,7 +52,7 @@ function ProductImage({ item, sizes }: { item: WishlistItem; sizes: string }) {
                 <Image
                     key={idx}
                     src={img}
-                    alt={item.title.en}
+                    alt=""
                     fill
                     className={`object-contain p-1.5 group-hover:scale-105 transition-all duration-700 ${
                         idx === currentImageIndex ? "opacity-100" : "opacity-0"
@@ -104,17 +81,13 @@ export function WishlistClient() {
             const savedLang = localStorage.getItem("wishlist:lang");
             const savedView = localStorage.getItem("wishlist:view");
 
-            let finalLang: Lang = "en";
-
             // Hash takes precedence and saves to localStorage
             if (hash === "#es") {
-                finalLang = "es";
                 setLang("es");
                 try {
                     localStorage.setItem("wishlist:lang", "es");
                 } catch {}
             } else if (savedLang === "en" || savedLang === "es") {
-                finalLang = savedLang;
                 setLang(savedLang);
             }
 
@@ -230,9 +203,9 @@ export function WishlistClient() {
             const query = searchQuery.toLowerCase();
             result = result.filter(
                 item =>
-                    t(item.title).toLowerCase().includes(query) ||
-                    t(item.notes).toLowerCase().includes(query) ||
-                    item.category.toLowerCase().includes(query),
+                    item.title[lang].toLowerCase().includes(query) ||
+                    item.notes[lang].toLowerCase().includes(query) ||
+                    categoryNames[item.category][lang].toLowerCase().includes(query),
             );
         }
 
@@ -272,16 +245,12 @@ export function WishlistClient() {
         return sorted;
     }, [searchQuery, selectedCategories, sortOption, lang]);
 
-    if (!isInitialized) {
-        return null;
-    }
-
     return (
         <main className="relative z-10 max-w-6xl mx-auto px-6 md:px-8 pt-28 md:pt-36 pb-24">
             <article lang={lang}>
                 {/* Header */}
                 <motion.header
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={false}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: EASE_OUT_EXPO }}
                     className="mb-12 border-b border-white/10 pb-8"
@@ -321,6 +290,8 @@ export function WishlistClient() {
                     {/* Shipping Info Toggle */}
                     <button
                         onClick={() => setShowShipping(!showShipping)}
+                        aria-expanded={showShipping}
+                        aria-controls="wishlist-shipping"
                         data-cursor-hover
                         className="flex items-center gap-2 font-mono text-[10px] md:text-xs tracking-wider text-accent hover:text-accent/80 transition-colors"
                     >
@@ -333,6 +304,7 @@ export function WishlistClient() {
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
+                            id="wishlist-shipping"
                             className="mt-4 p-4 border border-white/10 rounded-lg bg-white/5"
                         >
                             <p className="font-sans text-sm text-muted-foreground mb-2">{t(ui.shippingNote)}</p>
@@ -361,6 +333,7 @@ export function WishlistClient() {
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
                             placeholder={t(ui.search)}
+                            aria-label={t(ui.search)}
                             className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg font-mono text-sm tracking-wider text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent/50 transition-colors"
                         />
                     </div>
@@ -375,6 +348,7 @@ export function WishlistClient() {
                                 <button
                                     key={category}
                                     onClick={() => toggleCategory(category)}
+                                    aria-pressed={selectedCategories.has(category)}
                                     data-cursor-hover
                                     className={`font-mono text-[10px] md:text-xs tracking-wider px-3 py-1.5 border rounded-full transition-all duration-300 ${
                                         selectedCategories.has(category)
@@ -391,10 +365,11 @@ export function WishlistClient() {
                     {/* Sort and View Controls */}
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-4">
-                            <p className="font-mono text-[10px] md:text-xs tracking-[0.3em] text-muted-foreground uppercase">
+                            <label htmlFor="wishlist-sort" className="font-mono text-[10px] md:text-xs tracking-[0.3em] text-muted-foreground uppercase">
                                 {t(ui.sortBy)}:
-                            </p>
+                            </label>
                             <select
+                                id="wishlist-sort"
                                 value={sortOption}
                                 onChange={e => setSortOption(e.target.value as SortOption)}
                                 className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 font-mono text-[10px] md:text-xs tracking-wider text-foreground focus:outline-none focus:border-accent/50 transition-colors"
@@ -423,6 +398,7 @@ export function WishlistClient() {
                             <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg p-1">
                                 <button
                                     onClick={() => setViewMode("grid")}
+                                    aria-pressed={viewMode === "grid"}
                                     data-cursor-hover
                                     className={`p-1.5 rounded transition-colors ${
                                         viewMode === "grid"
@@ -435,6 +411,7 @@ export function WishlistClient() {
                                 </button>
                                 <button
                                     onClick={() => setViewMode("list")}
+                                    aria-pressed={viewMode === "list"}
                                     data-cursor-hover
                                     className={`p-1.5 rounded transition-colors ${
                                         viewMode === "list"
@@ -461,7 +438,7 @@ export function WishlistClient() {
                         {filteredAndSortedItems.map((item, index) => (
                             <motion.div
                                 key={item.id}
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={false}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.3, delay: index * 0.01, ease: EASE_OUT_EXPO }}
                             >
@@ -523,7 +500,7 @@ export function WishlistClient() {
                         {filteredAndSortedItems.map((item, index) => (
                             <motion.div
                                 key={item.id}
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={false}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.3, delay: index * 0.01, ease: EASE_OUT_EXPO }}
                                 className="flex"

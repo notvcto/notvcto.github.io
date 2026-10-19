@@ -1,19 +1,79 @@
 "use client";
 
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useReducedMotion } from "./motion-preferences";
+
+import { addAfterEffect, Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { Mesh, ShaderMaterial } from "three";
 import * as THREE from "three";
 
-function Sphere({ interactive = true }: { interactive?: boolean }) {
+function SphereProjection({ sliceToDocument, onFrameReady }: {
+    sliceToDocument: boolean;
+    onFrameReady?: (sliced: boolean) => void;
+}) {
+    const { size, invalidate } = useThree();
+    const documentHeight = useRef(0);
+    const prepared = useRef(false);
+
+    useLayoutEffect(() => {
+        prepared.current = false;
+        const measure = () => {
+            documentHeight.current = document.body.getBoundingClientRect().height;
+            invalidate();
+        };
+        measure();
+        const observer = new ResizeObserver(measure);
+        if (sliceToDocument) observer.observe(document.body);
+        const onScroll = () => invalidate();
+        if (sliceToDocument) window.addEventListener("scroll", onScroll, { passive: true });
+        const unsubscribe = addAfterEffect(() => {
+            if (!prepared.current) return;
+            // Reveal only after the renderer has submitted a frame with this projection.
+            onFrameReady?.(sliceToDocument);
+            unsubscribe();
+        });
+        return () => {
+            unsubscribe();
+            observer.disconnect();
+            window.removeEventListener("scroll", onScroll);
+        };
+    }, [size.width, size.height, sliceToDocument, invalidate, onFrameReady]);
+
+    useFrame(({ camera }) => {
+        if (!(camera instanceof THREE.PerspectiveCamera)) return;
+        if (sliceToDocument) {
+            // Preserve the full-document projection while allocating only a viewport-sized canvas.
+            camera.setViewOffset(
+                size.width,
+                Math.max(size.height, documentHeight.current),
+                0,
+                window.scrollY,
+                size.width,
+                size.height,
+            );
+        } else if (camera.view?.enabled || camera.aspect !== size.width / size.height) {
+            camera.clearViewOffset();
+            camera.aspect = size.width / size.height;
+            camera.updateProjectionMatrix();
+        }
+        prepared.current = true;
+    }, -1);
+
+    return null;
+}
+
+function Sphere({ active, reducedMotion }: { active: boolean; reducedMotion: boolean }) {
     const meshRef = useRef<Mesh>(null);
     const materialRef = useRef<ShaderMaterial>(null);
-    const { pointer } = useThree();
+    const invalidate = useThree(state => state.invalidate);
+
+    useLayoutEffect(() => {
+        if (active) invalidate();
+    }, [active, invalidate]);
 
     const uniforms = useMemo(
         () => ({
             uTime: { value: 0 },
-            uMouse: { value: [0, 0] },
         }),
         [],
     );
@@ -101,20 +161,14 @@ function Sphere({ interactive = true }: { interactive?: boolean }) {
     }
   `;
 
-    useFrame((state, delta) => {
+    useFrame((_, delta) => {
+        if (reducedMotion || !active) return;
         if (materialRef.current) {
             materialRef.current.uniforms.uTime.value += delta;
-            if (interactive) {
-                materialRef.current.uniforms.uMouse.value = [pointer.x, pointer.y];
-            }
         }
 
         if (meshRef.current) {
             meshRef.current.rotation.y += delta * 0.05;
-            if (interactive) {
-                meshRef.current.rotation.x = THREE.MathUtils.lerp(meshRef.current.rotation.x, pointer.y * 0.2, 0.05);
-                meshRef.current.rotation.z = THREE.MathUtils.lerp(meshRef.current.rotation.z, pointer.x * 0.2, 0.05);
-            }
         }
     });
 
@@ -133,8 +187,17 @@ function Sphere({ interactive = true }: { interactive?: boolean }) {
     );
 }
 
-export function SentientSphere({ interactive = true }: { interactive?: boolean }) {
+export function SentientSphere({
+    active = true,
+    sliceToDocument = false,
+    onFrameReady,
+}: {
+    active?: boolean;
+    sliceToDocument?: boolean;
+    onFrameReady?: (sliced: boolean) => void;
+}) {
     const [mounted, setMounted] = useState(false);
+    const reducedMotion = !!useReducedMotion();
 
     useEffect(() => {
         setMounted(true);
@@ -151,15 +214,16 @@ export function SentientSphere({ interactive = true }: { interactive?: boolean }
     return (
         <Canvas
             camera={{ position: [0, 0, 5], fov: 45 }}
-            className="w-full h-full"
+            className="sphere-enter w-full h-full"
             dpr={[1, 2]}
+            frameloop={reducedMotion || !active ? "demand" : "always"}
             gl={{
                 antialias: true,
                 alpha: true,
             }}
         >
-            <ambientLight intensity={0.5} />
-            <Sphere interactive={interactive} />
+            <SphereProjection sliceToDocument={sliceToDocument} onFrameReady={onFrameReady} />
+            <Sphere active={active} reducedMotion={reducedMotion} />
         </Canvas>
     );
 }

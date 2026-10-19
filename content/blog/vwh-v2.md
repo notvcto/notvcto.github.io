@@ -3,7 +3,7 @@ title: 'VWH v2: a valid signature is not a witness'
 shortTitle: 'VWH v2'
 ogTitle: 'VWH v2: a valid signature is not a witness'
 ogSubtitle: 'Dual signatures, a bug that failed every sealed artifact, and why I published my own private keys'
-date: '2026-06-15T20:00:00'
+date: '2026-06-15T20:00:00-04:00'
 category: 'Engineering'
 complexity: 7.8
 readingTime: '11 min'

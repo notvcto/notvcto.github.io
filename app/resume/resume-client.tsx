@@ -7,7 +7,7 @@ import { Printer } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const fadeIn = {
-    initial: { opacity: 0, y: 20 },
+    initial: false,
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true },
     transition: { duration: 0.8, ease: EASE_OUT_EXPO },
@@ -42,7 +42,7 @@ export function ResumeClient() {
             <article lang={lang}>
                 {/* Header */}
                 <motion.header
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={false}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: EASE_OUT_EXPO }}
                     className="mb-12 border-b border-white/10 pb-8"
@@ -136,7 +136,7 @@ export function ResumeClient() {
                     <SectionLabel index={2} label={t(ui.experience)} />
                     <div className="space-y-8">
                         {resume.experience.map(job => (
-                            <div key={job.org + job.period.en} className="border-t border-white/10 pt-6">
+                            <div key={job.org + job.role.en + job.period.en} className="border-t border-white/10 pt-6">
                                 <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
                                     <h3 className="font-sans text-xl md:text-2xl font-light tracking-tight">
                                         {t(job.role)}

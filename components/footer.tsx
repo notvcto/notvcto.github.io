@@ -1,15 +1,18 @@
 "use client";
 
 import { EASE_IN_OUT } from "@/lib/animation";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function Footer() {
     const [time, setTime] = useState("");
     const [isHovered, setIsHovered] = useState(false);
+    const footerRef = useRef<HTMLElement>(null);
+    const visible = useInView(footerRef);
 
     useEffect(() => {
+        if (!visible) return;
         let rafId: number;
         const tick = () => {
             const now = new Date();
@@ -22,10 +25,10 @@ export function Footer() {
         };
         rafId = requestAnimationFrame(tick);
         return () => cancelAnimationFrame(rafId);
-    }, []);
+    }, [visible]);
 
     return (
-        <footer id="contact" className="relative bg-background">
+        <footer ref={footerRef} id="contact" className="relative bg-background">
             {/* Main CTA */}
             <motion.a
                 href="mailto:contact@notvc.to"

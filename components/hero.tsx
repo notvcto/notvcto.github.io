@@ -1,5 +1,7 @@
 "use client";
 
+import { useReducedMotion } from "./motion-preferences";
+
 import { EASE_IN_OUT } from "@/lib/animation";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useLenis } from "lenis/react";
@@ -8,6 +10,7 @@ import { useRef } from "react";
 export function Hero() {
     const containerRef = useRef<HTMLElement>(null);
     const lenis = useLenis();
+    const reducedMotion = useReducedMotion();
     const { scrollYProgress } = useScroll({
         target: containerRef,
         offset: ["start start", "end start"],
@@ -20,12 +23,12 @@ export function Hero() {
         <section ref={containerRef} className="relative h-svh w-full overflow-hidden bg-transparent">
             {/* Typography Overlay */}
             <motion.div
-                style={{ opacity, scale }}
+                style={reducedMotion ? undefined : { opacity, scale }}
                 className="relative z-10 h-full flex flex-col justify-between p-6 sm:p-8 md:p-12 md:px-12 md:py-20 py-24"
             >
                 {/* Top Left */}
                 <motion.div
-                    initial={{ opacity: 0, y: 40 }}
+                    initial={false}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, delay: 0.2, ease: EASE_IN_OUT }}
                     className="max-w-[90%] md:max-w-none"
@@ -42,7 +45,7 @@ export function Hero() {
 
                 {/* Center Button */}
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
+                    initial={false}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.6, ease: EASE_IN_OUT }}
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
@@ -52,7 +55,9 @@ export function Hero() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => {
-                            if (lenis) {
+                            if (reducedMotion) {
+                                document.querySelector("#about")?.scrollIntoView();
+                            } else if (lenis) {
                                 lenis.scrollTo("#about", {
                                     duration: 4,
                                     easing: t => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
@@ -73,7 +78,7 @@ export function Hero() {
 
                 {/* Bottom Right */}
                 <motion.div
-                    initial={{ opacity: 0, y: -40 }}
+                    initial={false}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, delay: 0.4, ease: EASE_IN_OUT }}
                     className="self-end text-right max-w-[90%] md:max-w-none"
@@ -91,13 +96,13 @@ export function Hero() {
 
             {/* Scroll Indicator */}
             <motion.div
-                initial={{ opacity: 0 }}
+                initial={false}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.5 }}
                 className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
             >
                 <motion.div
-                    animate={{ y: [0, 8, 0] }}
+                    animate={{ y: reducedMotion ? 0 : [0, 8, 0] }}
                     transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
                     className="flex flex-col items-center gap-2"
                 >

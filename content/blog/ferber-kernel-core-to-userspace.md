@@ -3,7 +3,7 @@ title: 'From kernel core to userspace: Ferber v0.1.6 through v0.2.6'
 shortTitle: 'Ferber enters userspace'
 ogTitle: 'From kernel core to userspace: Ferber v0.1.6 through v0.2.6'
 ogSubtitle: 'Capability ownership, sparse RAM, blocking IPC, and the first separately built ELF'
-date: '2026-10-19T08:00:00'
+date: '2026-10-19T08:00:00-04:00'
 category: 'Ferber'
 complexity: 9
 readingTime: '25 min'

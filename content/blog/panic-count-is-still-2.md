@@ -3,7 +3,7 @@ title: 'The panic count is still 2: shipping Ferber v0.1.2 through v0.1.5'
 shortTitle: 'Ferber v0.1.5 Deep Dive'
 ogTitle: 'The panic count is still 2: shipping Ferber v0.1.2 through v0.1.5'
 ogSubtitle: 'Paging HAL, capability isolation, and container trees in Rust'
-date: '2026-10-12T23:45:00'
+date: '2026-10-12T23:45:00-04:00'
 category: 'Ferber'
 complexity: 9
 readingTime: '14 min'

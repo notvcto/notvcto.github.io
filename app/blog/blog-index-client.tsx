@@ -1,13 +1,13 @@
 "use client";
 
-import type { BlogPost } from "@/lib/blog";
+import type { BlogPostMeta } from "@/lib/blog";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface BlogIndexClientProps {
-    firstPost: BlogPost | null;
+    firstPost: BlogPostMeta | null;
     latestDate: string | null;
 }
 
@@ -40,7 +40,7 @@ export function BlogIndexClient({ firstPost, latestDate }: BlogIndexClientProps)
         const postDate = new Date(latestDate);
         const ageMs = Date.now() - postDate.getTime();
         const ageDays = ageMs / (1000 * 60 * 60 * 24);
-        if (ageDays < 7) {
+        if (ageDays >= 0 && ageDays < 7) {
             setLatestStatus(`Last updated ${formatDistanceToNow(postDate)} ago`);
         }
     }, [latestDate]);
@@ -69,22 +69,21 @@ export function BlogIndexClient({ firstPost, latestDate }: BlogIndexClientProps)
                         <span className="text-white">whoami</span>
                     </div>
                     <div className="mt-4 text-muted-foreground leading-relaxed">
-                        I&apos;m a System Architect and Interface Designer obsessed with building intelligent digital
-                        experiences. This blog serves as a log for my technical investigations, architectural patterns,
-                        and design philosophies.
+                        I&apos;m Vic. I build systems and look for the assumptions that break them. Most of my work
+                        lives in Rust, operating systems, and security research.
                     </div>
                 </div>
             </div>
 
             <section className="space-y-6 text-muted-foreground font-sans leading-relaxed text-lg">
                 <p>
-                    The goal of this site is to document the techniques, steps, and thought processes I use while
-                    solving complex engineering challenges. It also serves as a place for me to track my progress and
-                    hopefully help others learn alongside me.
+                    This is where I document the work: building Ferber, a capability-based microkernel;
+                    separating signature validity from attribution in VWH; and testing how small language models
+                    reason through security problems with Zero.
                 </p>
                 <p>
-                    Each entry here is a deep dive into a specific problem space, ranging from low-level systems
-                    optimization to the aesthetics of human-computer interaction.
+                    I write about what I tried, what broke, and what the results actually prove. Expect kernel
+                    internals, cryptographic tooling, and security investigations with enough detail to check my work.
                 </p>
             </section>
 
