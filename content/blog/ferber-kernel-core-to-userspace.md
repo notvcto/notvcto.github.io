@@ -5,13 +5,23 @@ ogTitle: 'From kernel core to userspace: Ferber v0.1.6 through v0.2.6'
 ogSubtitle: 'Capability ownership, sparse RAM, blocking IPC, and the first separately built ELF'
 date: '2026-10-19T08:00:00-04:00'
 category: 'Ferber'
-complexity: 9
+complexity: 9.0
 readingTime: '25 min'
 author: 'notvcto'
 description: 'Nine releases took Ferber from kernel IPC primitives to executing a separately built ELF on physical x86-64 hardware. Since v0.1.5, Ferber gained a userspace privilege boundary, capability and channel syscalls, sparse physical-memory management, cooperative scheduling, and a bounded static ELF loader. Getting those features to coexist meant fixing lock ordering, defining capability ownership, closing wakeup races, and moving task destruction onto a stack that would survive it. Both architectures pass the QEMU suites, physical x86-64 has run the ELF fixture, and the project survived a complete rename. Wolfram became Ferber.'
-tags: ['kernel', 'os', 'osdev', 'rust', 'riscv', 'x86-64', 'memory', 'ipc', 'elf', 'capabilities', 'ferber']
+tags:
+  - 'kernel'
+  - 'os'
+  - 'osdev'
+  - 'rust'
+  - 'riscv'
+  - 'x86-64'
+  - 'memory'
+  - 'ipc'
+  - 'elf'
+  - 'capabilities'
+  - 'ferber'
 ---
-
 Two channel endpoints sending at the same time could deadlock. Every ordinary boot probe could still pass.
 
 The problem was sitting in the lock order. One side could hold endpoint A and wait for B while the other held B and waited for A. A single active CPU with interrupts disabled gave that bug very little opportunity to introduce itself.
