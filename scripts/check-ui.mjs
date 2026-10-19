@@ -102,6 +102,7 @@ try {
     await noScript.setJavaScriptEnabled(false);
     for (const path of ["/wishlist", "/wishlist/helping-hands", "/resume"]) {
         await noScript.goto(new URL(path, base).href, { waitUntil: "domcontentloaded" });
+        await new Promise(resolve => setTimeout(resolve, 600));
         const main = await noScript.$("main");
         assert.ok(main, `${path} must export its content without JavaScript`);
         assert.ok((await main.evaluate(element => element.textContent)).trim().length > 100);
