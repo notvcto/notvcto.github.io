@@ -1,6 +1,8 @@
 // Bilingual resume data. `L` is a localized string leaf — one tree, both
 // languages side by side, so a missing translation is a type error.
-export type L = { en: string; es: string };
+
+export type L = { en: string; es: string; };
+
 export type Lang = "en" | "es";
 
 export interface ResumeData {
@@ -35,6 +37,7 @@ export interface ResumeData {
 }
 
 // UI chrome labels (section headings, buttons).
+
 export const ui = {
     resume: { en: "Resume", es: "Currículum" },
     print: { en: "Print", es: "Imprimir" },
@@ -66,8 +69,8 @@ export const resume: ResumeData = {
         },
     },
     summary: {
-        en: "Security researcher and systems programmer with hands-on network and infrastructure administration experience. Vulnerability findings triaged by Riot Games Security. Reports submitted to the U.S. Department of Defense, Agoda, and Neon bug bounty programs. I build open-source security tooling in Rust, from a cryptographic artifact-verification standard to a capability-based microkernel, and design and operate self-hosted infrastructure end to end, from GPON and routing hardware up through monitored, systemd-managed services. Bilingual (English/Spanish). US citizen based in the Dominican Republic, available for remote or on-site roles.",
-        es: "Investigador de seguridad y programador de sistemas con experiencia práctica en administración de redes e infraestructura. Hallazgos de vulnerabilidades validados por Riot Games Security. Reportes presentados a los programas de recompensas del Departamento de Defensa de EE. UU., Agoda y Neon. Construyo herramientas de seguridad de código abierto en Rust, desde un estándar de verificación criptográfica de artefactos hasta un microkernel basado en capacidades, y diseño y opero infraestructura auto-alojada de extremo a extremo, desde el hardware de GPON y enrutamiento hasta servicios monitoreados y gestionados con systemd. Bilingüe (inglés/español). Ciudadano estadounidense radicado en República Dominicana, disponible para roles remotos o presenciales.",
+        en: "Independent security researcher and systems programmer building low-level software, security tools, and self-hosted infrastructure across Rust, TypeScript, Python, C, and shell. Projects include Ferber, a capability-based microkernel for RISC-V64 and x86-64, and VWH, a cryptographic artifact-verification tool and format. Reported vulnerabilities to Riot Games Security and programs run by the U.S. Department of Defense, Agoda, and Neon. Experience in firmware reverse engineering, GPON and network administration, and operating Linux services. Bilingual English/Spanish.",
+        es: "Investigador de seguridad y programador de sistemas independiente. Desarrollo software de bajo nivel, herramientas de seguridad e infraestructura autoalojada con Rust, TypeScript, Python, C y shell. Entre mis proyectos están Ferber, un microkernel basado en capacidades para RISC-V64 y x86-64, y VWH, una herramienta y especificación para la verificación criptográfica de artefactos. Presenté reportes de vulnerabilidades a Riot Games Security y a programas del Departamento de Defensa de EE. UU., Agoda y Neon. Experiencia en ingeniería inversa de firmware, administración de redes y GPON, y operación de servicios Linux. Bilingüe en inglés y español.",
     },
     experience: [
         {
@@ -91,8 +94,8 @@ export const resume: ResumeData = {
                     es: "Ingeniería inversa del firmware de un router de ISP (ZTE F670L): descifré los archivos de configuración del fabricante, encontré una cuenta privilegiada no documentada y credenciales de infraestructura expuestas. Publiqué la metodología.",
                 },
                 {
-                    en: "Discovered and coordinated disclosure of a critical (CVSS 8.8) authentication weakness affecting an entire national ISP's subscriber base: GPON credentials derivable from data broadcast in the clear. Withheld the full technical report and used a PGP-signed initial contact when the national CSIRT's published encryption key was found expired, maintaining responsible disclosure standards despite the recipient's own infrastructure gaps.",
-                    es: "Descubrí y coordiné la divulgación de una debilidad crítica de autenticación (CVSS 8.8) que afecta a toda la base de abonados de un ISP nacional: credenciales GPON derivables de datos transmitidos en claro. Retuve el reporte técnico completo y usé un primer contacto firmado con PGP al encontrar que la clave de cifrado publicada por el CSIRT nacional había expirado, manteniendo estándares de divulgación responsable pese a las brechas de infraestructura del propio receptor.",
+                    en: "Discovered and coordinated disclosure of a high-severity (CVSS 8.8) authentication weakness affecting an entire national ISP's subscriber base: GPON credentials derivable from data broadcast in the clear. Withheld the full technical report and used a PGP-signed initial contact when the national CSIRT's published encryption key was found expired, maintaining responsible disclosure standards despite the recipient's own infrastructure gaps.",
+                    es: "Descubrí y coordiné la divulgación de una debilidad de autenticación de gravedad alta (CVSS 8.8) que afecta a toda la base de abonados de un ISP nacional: credenciales GPON derivables de datos transmitidos en claro. Retuve el reporte técnico completo y usé un primer contacto firmado con PGP al encontrar que la clave de cifrado publicada por el CSIRT nacional había expirado, manteniendo estándares de divulgación responsable pese a las brechas de infraestructura del propio receptor.",
                 },
             ],
         },
@@ -116,8 +119,8 @@ export const resume: ResumeData = {
                     es: "Opero un servidor independiente basado en LiveKit (MatrixRTC) que provee llamadas en tiempo real para el servidor Matrix.",
                 },
                 {
-                    en: "Redesigning home network infrastructure end to end: replacing ISP-provided hardware with a Huawei MA5671A GPON SFP stick and a MikroTik hEX S router, after finding critical vulnerabilities in the original ISP equipment's firmware.",
-                    es: "Rediseño integral de la infraestructura de red doméstica: reemplazo del equipo provisto por el ISP con un stick GPON Huawei MA5671A y un router MikroTik hEX S, tras encontrar vulnerabilidades críticas en el firmware del equipo original del ISP.",
+                    en: "Redesigning home network infrastructure after finding critical vulnerabilities in ISP-provided equipment. Successfully tested live internet connectivity with a Huawei MA5671A GPON SFP ONU; planning MikroTik hEX S routing for the replacement network.",
+                    es: "Rediseño de la infraestructura de red doméstica tras encontrar vulnerabilidades críticas en el equipo del ISP. Comprobé la conexión real a internet mediante un módulo GPON SFP ONU Huawei MA5671A; planifico el enrutamiento con MikroTik hEX S para la nueva red.",
                 },
                 {
                     en: "Manage DNS, WireGuard VPN tunnels, and TLS certificate lifecycles across multiple ARM and x86 VPS instances.",
@@ -134,12 +137,20 @@ export const resume: ResumeData = {
             period: { en: "2024 — Present", es: "2024 — Actualidad" },
             bullets: [
                 {
-                    en: "Created VWH, a Rust CLI and open standard for cryptographic verification and accountability of digital artifacts. Public key registry, formal format specification.",
-                    es: "Creé VWH, una CLI en Rust y un estándar abierto para la verificación criptográfica y trazabilidad de artefactos digitales. Registro público de claves, especificación formal de formato.",
+                    en: "Designed and implemented Ferber (github.com/notvcto/ferber), an open-source capability-based Rust microkernel targeting RISC-V64 (OpenSBI) and x86-64 (UEFI). Built firmware-derived physical-memory management, virtual memory and VMO-backed mappings, and userspace privilege transitions. Booted on both architectures in QEMU and verified earlier kernel milestones on physical x86-64 hardware.",
+                    es: "Diseñé e implementé Ferber (github.com/notvcto/ferber), un microkernel de código abierto basado en capacidades, escrito en Rust para RISC-V64 (OpenSBI) y x86-64 (UEFI). Implementé gestión de memoria física basada en los mapas del firmware, memoria virtual y mapeos respaldados por VMOs, y transiciones a modo usuario. Arranqué ambas arquitecturas en QEMU y validé hitos anteriores del kernel en hardware x86-64 real.",
                 },
                 {
-                    en: "Building Ferber, a capability-based microkernel in Rust targeting RISC-V and x86-64. No ambient authority: every resource a program touches is an explicitly granted capability.",
-                    es: "Desarrollo Ferber, un microkernel basado en capacidades escrito en Rust para RISC-V y x86-64. Sin autoridad ambiental: cada recurso que un programa toca es una capacidad otorgada explícitamente.",
+                    en: "Implemented explicit-rights capability handles with delegation, attenuation, and hierarchical revocation; bidirectional IPC with capability transfer, transactional failure handling, blocking receives, and a cooperative resident scheduler. Tested lifetime and resource-accounting invariants across repeated process teardown.",
+                    es: "Implementé manejadores de capacidades con permisos explícitos, delegación, atenuación y revocación jerárquica; IPC bidireccional con transferencia de capacidades, manejo transaccional de fallos, recepción bloqueante y un planificador cooperativo de tareas residentes. Verifiqué invariantes de vida útil y contabilidad de recursos tras múltiples ciclos de finalización de procesos.",
+                },
+                {
+                    en: "Built an ELF64 userspace loader and a versioned, cross-architecture Rust startup ABI with an explicitly delegated bootstrap channel. Added separately delivered boot executables (RISC-V initrd and x86-64 UEFI payload), protected boot-payload mappings, and negative protocol tests. The external-payload path passed cross-architecture QEMU CI; physical-hardware validation is pending.",
+                    es: "Implementé un cargador ELF64 para espacio de usuario y una ABI de inicio de Rust versionada y común a ambas arquitecturas, con un canal de arranque delegado explícitamente. Añadí ejecutables entregados por separado (initrd en RISC-V y carga UEFI en x86-64), mapeos protegidos y pruebas negativas del protocolo. La ruta de carga externa superó la CI con QEMU en ambas arquitecturas; falta validarla en hardware físico.",
+                },
+                {
+                    en: "Created VWH, a Rust CLI and open standard for cryptographic verification and accountability of digital artifacts. Public key registry, formal format specification.",
+                    es: "Creé VWH, una CLI en Rust y un estándar abierto para la verificación criptográfica y trazabilidad de artefactos digitales. Registro público de claves, especificación formal de formato.",
                 },
                 {
                     en: "Building Zero, an applied-ML research project training a security reasoning model on CTF problems through adversarial self-play (GRPO), data pipeline included.",
