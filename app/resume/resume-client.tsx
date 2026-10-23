@@ -25,6 +25,7 @@ export function ResumeClient() {
     // Always render EN first — matches the statically exported HTML, so no
     // hydration mismatch. The #es hash applies post-hydration.
     const [lang, setLang] = useState<Lang>("en");
+    const [phoneForPrint, setPhoneForPrint] = useState("");
 
     useEffect(() => {
         if (window.location.hash === "#es") setLang("es");
@@ -54,6 +55,14 @@ export function ResumeClient() {
 
                         {/* Controls — hidden in print */}
                         <div className="no-print flex items-center gap-4">
+                            <input
+                                type="tel"
+                                value={phoneForPrint}
+                                onChange={event => setPhoneForPrint(event.target.value)}
+                                aria-label={t(ui.phoneForPrint)}
+                                placeholder={t(ui.phoneForPrint)}
+                                className="w-36 bg-transparent border-b border-white/10 px-1 py-1 font-mono text-[10px] tracking-wider text-foreground placeholder:text-muted-foreground focus:border-white/30 focus:outline-none"
+                            />
                             <div className="flex items-center gap-2 font-mono text-[10px] md:text-xs tracking-[0.3em]">
                                 {(["en", "es"] as const).map(code => (
                                     <button
@@ -115,6 +124,7 @@ export function ResumeClient() {
                             {resume.contact.github}
                         </a>
                         {resume.contact.location && <span>{t(resume.contact.location)}</span>}
+                        <span className="resume-print-phone">{t(ui.phone)}: {phoneForPrint || "____________________"}</span>
                     </div>
                     {resume.contact.availability && (
                         <p className="mt-3 font-mono text-[10px] md:text-xs tracking-wider text-accent">

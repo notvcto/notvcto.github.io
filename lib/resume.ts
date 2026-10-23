@@ -38,6 +38,8 @@ export interface ResumeData {
 export const ui = {
     resume: { en: "Resume", es: "Currículum" },
     print: { en: "Print", es: "Imprimir" },
+    phone: { en: "Phone", es: "Teléfono" },
+    phoneForPrint: { en: "Phone for print", es: "Teléfono para imprimir" },
     summary: { en: "Summary", es: "Resumen" },
     experience: { en: "Experience", es: "Experiencia" },
     skills: { en: "Skills", es: "Habilidades" },
