@@ -206,6 +206,10 @@ export const resume: ResumeData = {
                 "systemd",
                 "Cloud VPS Administration",
                 "Monitoring & Alerting",
+                "CI/CD",
+                "GitHub Actions",
+                "Automated Testing",
+                "Cross-Compilation"
             ],
         },
         {
