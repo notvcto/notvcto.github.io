@@ -40,6 +40,7 @@ export const ui = {
     print: { en: "Print", es: "Imprimir" },
     phone: { en: "Phone", es: "Teléfono" },
     phoneForPrint: { en: "Phone for print", es: "Teléfono para imprimir" },
+    dominicanId: { en: "Dominican ID", es: "Cédula" },
     summary: { en: "Summary", es: "Resumen" },
     experience: { en: "Experience", es: "Experiencia" },
     skills: { en: "Skills", es: "Habilidades" },

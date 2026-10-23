@@ -262,6 +262,10 @@ body:has([data-page-sphere="viewport"]) [data-global-sphere]:not([data-sphere-re
         display: inline !important;
     }
 
+    .resume-print-id {
+        display: inline !important;
+    }
+
     /* framer-motion leaves below-fold sections at opacity:0 / translated —
      without this reset anything not yet scrolled into view prints blank */
     * {
@@ -321,6 +325,10 @@ body:has([data-page-sphere="viewport"]) [data-global-sphere]:not([data-sphere-re
 }
 
 .resume-print-phone {
+    display: none;
+}
+
+.resume-print-id {
     display: none;
 }
 

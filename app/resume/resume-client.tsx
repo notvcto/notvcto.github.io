@@ -26,6 +26,7 @@ export function ResumeClient() {
     // hydration mismatch. The #es hash applies post-hydration.
     const [lang, setLang] = useState<Lang>("en");
     const [phoneForPrint, setPhoneForPrint] = useState("");
+    const [idForPrint, setIdForPrint] = useState("");
 
     useEffect(() => {
         if (window.location.hash === "#es") setLang("es");
@@ -61,6 +62,15 @@ export function ResumeClient() {
                                 onChange={event => setPhoneForPrint(event.target.value)}
                                 aria-label={t(ui.phoneForPrint)}
                                 placeholder={t(ui.phoneForPrint)}
+                                className="w-36 bg-transparent border-b border-white/10 px-1 py-1 font-mono text-[10px] tracking-wider text-foreground placeholder:text-muted-foreground focus:border-white/30 focus:outline-none"
+                            />
+                            <input
+                                type="text"
+                                value={idForPrint}
+                                onChange={event => setIdForPrint(event.target.value)}
+                                aria-label={t(ui.dominicanId)}
+                                placeholder={t(ui.dominicanId)}
+                                autoComplete="off"
                                 className="w-36 bg-transparent border-b border-white/10 px-1 py-1 font-mono text-[10px] tracking-wider text-foreground placeholder:text-muted-foreground focus:border-white/30 focus:outline-none"
                             />
                             <div className="flex items-center gap-2 font-mono text-[10px] md:text-xs tracking-[0.3em]">
@@ -125,6 +135,7 @@ export function ResumeClient() {
                         </a>
                         {resume.contact.location && <span>{t(resume.contact.location)}</span>}
                         <span className="resume-print-phone">{t(ui.phone)}: {phoneForPrint || "____________________"}</span>
+                        {idForPrint && <span className="resume-print-id">{t(ui.dominicanId)}: {idForPrint}</span>}
                     </div>
                     {resume.contact.availability && (
                         <p className="mt-3 font-mono text-[10px] md:text-xs tracking-wider text-accent">
