@@ -84,7 +84,7 @@ function AdUnit({ placement }: { placement: AdPlacement }) {
     }, [state, unavailable]);
     if (collapsed) return null;
     return <section ref={frame} className={`ad-compartment ad-${placement} not-prose no-print`} data-ad-compartment={placement} aria-label="Advertisements">
-        <span className="ad-label">Advertisements</span>
+        <span className="ad-label">AD</span>
         <div ref={space} className="ad-space"/>
     </section>;
 }
@@ -97,8 +97,9 @@ export function AdCompartment({ placement }: { placement: AdPlacement }) {
         if (dismissed || (placement !== "intro" && placement !== "index")) return null;
         return <aside className="blog-support-note not-prose no-print" data-ad-blocker-notice aria-label="A note about advertising">
             <button type="button" onClick={dismiss} aria-label="Dismiss adblocker notice">×</button>
-            <p>hey, looks like you&apos;re using an adblocker.</p>
-            <p>that&apos;s fine. i use one too.</p>
+            <span className="support-note-label"><span aria-hidden="true"/>A note about ads / 01</span>
+            <h2>blocking ads? fair enough.</h2>
+            <p>i use an adblocker too.</p>
             <p>ads help support my work, but you&apos;re under no obligation to disable yours. everything stays accessible either way.</p>
         </aside>;
     }

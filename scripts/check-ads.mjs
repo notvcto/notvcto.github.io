@@ -209,7 +209,7 @@ try {
                 await f.visit(article);
                 await f.page.waitForSelector("article h1", { visible: true });
                 if (["blocked", "adsbygoogle-blocked"].includes(mode)) {
-                    await f.page.waitForFunction(() => document.body.textContent.includes("hey, looks like you're using an adblocker."));
+                    await f.page.waitForFunction(() => document.body.textContent.includes("blocking ads? fair enough."));
                     await f.page.waitForSelector("[data-ad-blocker-notice]", { visible: true });
                     assert.equal(await f.page.$$eval("[data-ad-blocker-notice]", elements => elements.length), 1);
                     await f.page.click('[data-ad-blocker-notice] button');

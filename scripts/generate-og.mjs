@@ -13,9 +13,10 @@ const playfairFontPath = path.resolve(
     process.cwd(),
     "node_modules/@fontsource/playfair-display/files/playfair-display-latin-400-normal.woff2",
 );
+const playfairItalicFontPath = playfairFontPath.replace("400-normal", "400-italic");
 const geistMonoFontPath = path.resolve(
     process.cwd(),
-    "node_modules/@fontsource/geist-mono/files/geist-mono-latin-500-normal.woff2",
+    "node_modules/@fontsource/geist-mono/files/geist-mono-latin-400-normal.woff2",
 );
 
 // Pin the installed Three.js version into the hash so a version bump invalidates cached images.
@@ -29,6 +30,7 @@ const SCRIPT_HASH = hashString([
     THREE_VERSION,
     fs.readFileSync(playfairFontPath).toString("base64"),
     fs.readFileSync(geistMonoFontPath).toString("base64"),
+    fs.readFileSync(playfairItalicFontPath).toString("base64"),
 ].join("|"));
 
 if (!fs.existsSync(ogOutputDirectory)) {
@@ -128,7 +130,7 @@ function esc(str) {
 function buildPortfolioOverlay() {
     return `
     <div class="og-title" style="font-size:88px;letter-spacing:-1px">NOTVCTO</div>
-    <div class="og-desc" style="font-size:20px;letter-spacing:2px;color:#555;text-transform:uppercase">Systems Architect &amp; Vulnerability Researcher</div>
+    <div class="og-desc" style="font-family:'Geist Mono',monospace;font-style:normal;font-size:20px;letter-spacing:2px;color:#a1a1aa;text-transform:uppercase">Systems Architect &amp; Vulnerability Researcher</div>
     <div class="og-url">notvc.to</div>`;
 }
 
@@ -160,8 +162,8 @@ function buildOGPage(overlayHtml) {
       padding: 0 88px; gap: 20px;
     }
     .og-tag   { font-family: 'Geist Mono', monospace; font-size: 18px; color: #555; letter-spacing: 4px; text-transform: uppercase; }
-    .og-title { font-family: 'Playfair Display', Georgia, serif; font-size: 64px; font-weight: 700; font-style: italic; color: #fefefe; line-height: 1.12; max-width: 620px; }
-    .og-desc  { font-family: 'Geist Mono', monospace; font-size: 22px; color: #666; max-width: 580px; }
+    .og-title { font-family: 'Playfair Display', Georgia, serif; font-size: 64px; font-weight: 400; font-style: normal; letter-spacing: -.025em; color: #fefefe; line-height: 1.12; max-width: 620px; }
+    .og-desc  { font-family: 'Playfair Display', Georgia, serif; font-weight: 400; font-style: italic; font-size: 22px; line-height: 1.6; color: #a1a1aa; max-width: 580px; }
     .og-url   { font-family: 'Geist Mono', monospace; font-size: 16px; color: #333; position: absolute; bottom: 48px; left: 88px; }
   </style>
 </head>
@@ -279,26 +281,31 @@ function animate(t) {
 }
 
 async function init() {
-  try {
     const pf = new FontFace(
       'Playfair Display',
       'url(file://${playfairFontPath})',
       { weight: '400', style: 'normal' }
     );
+    const pi = new FontFace(
+      'Playfair Display',
+      'url(file://${playfairItalicFontPath})',
+      { weight: '400', style: 'italic' }
+    );
     const gm = new FontFace(
       'Geist Mono',
       'url(file://${geistMonoFontPath})',
-      { weight: '500' }
+      { weight: '400' }
     );
-    await Promise.all([pf.load(), gm.load()]);
+    await Promise.all([pf.load(), pi.load(), gm.load()]);
     document.fonts.add(pf);
+    document.fonts.add(pi);
     document.fonts.add(gm);
-  } catch(e) {}
+    await document.fonts.ready;
   animate(0);
   setTimeout(() => document.body.classList.add('ready'), 100);
 }
 
-init();
+init().catch(error => { window.__ogError = String(error); });
 </script>
 </body>
 </html>`;
@@ -327,7 +334,7 @@ async function generateImages() {
 
     const browser = await puppeteer.launch({
         headless: true,
-        args: ["--no-sandbox", "--disable-setuid-sandbox", "--allow-file-access-from-files"],
+        args: ["--no-sandbox", "--disable-setuid-sandbox", "--allow-file-access-from-files", "--enable-unsafe-swiftshader"],
     });
     const page = await browser.newPage();
     await page.setRequestInterception(true);
@@ -345,7 +352,9 @@ async function generateImages() {
     async function renderOG(overlayHtml, outputPath) {
         fs.writeFileSync(tempHtmlPath, buildOGPage(overlayHtml));
         await page.goto(`file://${tempHtmlPath}`, { waitUntil: "domcontentloaded" });
-        await page.waitForSelector("body.ready");
+        await page.waitForFunction(() => document.body.classList.contains("ready") || window.__ogError);
+        const fontError = await page.evaluate(() => window.__ogError);
+        if (fontError) throw new Error(`OG rendering failed: ${fontError}`);
         const stage = await page.$("#stage");
         await stage.screenshot({ path: outputPath });
     }
