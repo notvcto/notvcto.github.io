@@ -139,6 +139,7 @@ try {
         } else {
             await f.visit(article);
             await f.page.waitForSelector('[data-ad-compartment="intro"] ins[data-ad-status="filled"]');
+            assert.equal(await f.page.$eval('[data-ad-compartment="intro"]', element => getComputedStyle(element).animationName), "none", "Reduced-motion preferences must disable compartment animation");
             await emulateDesktopPointer(f.page);
             await scrollToSlot(f.page, "end");
             await f.page.waitForFunction(() => window.__adRequests?.length === 3);
@@ -148,6 +149,8 @@ try {
             await scrollToSlot(f.page, "intro");
             await f.page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "no-preference" }]);
             await pause();
+            assert.equal(await f.page.$eval('[data-ad-compartment="intro"]', element => getComputedStyle(element).animationName), "ad-compartment-enter");
+            assert.equal(await f.page.$eval('[data-ad-compartment="intro"] ins.adsbygoogle', element => getComputedStyle(element).transitionDuration), "0.48s");
             await f.page.mouse.move(80, 30);
             await f.page.waitForFunction(() => Array.from(document.querySelectorAll("div")).some(element => element.classList.contains("z-[10000]") && Number(getComputedStyle(element).opacity) > 0.5));
             const adBounds = await f.page.$eval('[data-ad-compartment="intro"]', element => element.getBoundingClientRect().toJSON());
