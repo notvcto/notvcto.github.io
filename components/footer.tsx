@@ -74,15 +74,15 @@ export function Footer() {
 
             {/* Footer Info */}
             <div className="px-8 md:px-12 py-8 border-t border-white/10">
-                <div className="flex flex-col md:flex-row items-center md:justify-between gap-8 md:gap-4 text-center md:text-left">
+                <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-8 md:gap-4 text-center md:text-left">
                     {/* Local Time */}
-                    <div className="font-mono text-xs tracking-widest text-muted-foreground">
+                    <div className="font-mono text-xs tracking-widest text-muted-foreground md:justify-self-start">
                         <span className="mr-2">LOCAL TIME</span>
                         <span className="text-white tabular-nums">{time}</span>
                     </div>
 
                     {/* Links */}
-                    <div className="flex flex-wrap justify-center gap-6 md:gap-8">
+                    <div className="flex flex-wrap justify-center gap-6 md:gap-8 md:justify-self-center">
                         {[
                             { label: "LinkedIn", href: "https://www.linkedin.com/in/notvcto/" },
                             { label: "GitHub", href: "https://github.com/notvcto" },
@@ -109,7 +109,7 @@ export function Footer() {
                     </div>
 
                     {/* Copyright */}
-                    <p className="font-mono text-xs tracking-widest text-muted-foreground">
+                    <p className="font-mono text-xs tracking-widest text-muted-foreground md:justify-self-end">
                         © {new Date().getFullYear()}
                     </p>
                 </div>

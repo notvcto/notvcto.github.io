@@ -122,6 +122,14 @@ try {
     }
     await noScript.close();
 
+    await page.setViewport({ width: 1800, height: 900 });
+    await visit("/");
+    const footerLinksCenter = await page.$eval('#contact a[href="https://x.com/notvcto"]', link => {
+        const bounds = link.parentElement.getBoundingClientRect();
+        return bounds.left + bounds.width / 2;
+    });
+    assert.ok(Math.abs(footerLinksCenter - 900) < 1, "Footer links must remain centered independently of side-content widths");
+
     await page.setViewport({ width: 1440, height: 900 });
     await visit("/wishlist#es");
     await page.waitForFunction(() => document.querySelector("article")?.lang === "es");
