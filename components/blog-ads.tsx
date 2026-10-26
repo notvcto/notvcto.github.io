@@ -56,7 +56,8 @@ function AdUnit({ placement }: { placement: AdPlacement }) {
         if (state !== "ready" || !container || !area) return;
         let active = true;
         const status = new MutationObserver(() => {
-            if (area.querySelector("ins")?.dataset.adStatus === "unfilled") setUnavailable(true);
+            const ad = area.querySelector<HTMLElement>("ins.adsbygoogle");
+            if (!ad || ad.dataset.adStatus === "unfilled" || getComputedStyle(ad).display === "none" || getComputedStyle(ad).visibility === "hidden") setUnavailable(true);
         });
         const observer = new IntersectionObserver(entries => {
             if (!active || !entries.some(entry => entry.isIntersecting) || area.getBoundingClientRect().width <= 0 || requestedAds.has(container)) return;
@@ -68,7 +69,8 @@ function AdUnit({ placement }: { placement: AdPlacement }) {
             element.dataset.adClient = adsConfig.client;
             element.dataset.adSlot = adsConfig.slots[placement];
             area.append(element);
-            status.observe(element, { attributes: true, attributeFilter: ["data-ad-status"] });
+            status.observe(area, { childList: true });
+            status.observe(element, { attributes: true, attributeFilter: ["class", "data-ad-status", "style"] });
             try {
                 window.adsbygoogle ??= [] as Record<string, never>[];
                 window.adsbygoogle.push({});
@@ -78,15 +80,7 @@ function AdUnit({ placement }: { placement: AdPlacement }) {
         return () => { active = false; observer.disconnect(); status.disconnect(); };
     }, [state, placement]);
     useEffect(() => {
-        if (!(unavailable || state === "failed") || !frame.current) return;
-        const element = frame.current;
-        const collapseBelowViewport = () => {
-            if (element.getBoundingClientRect().top >= window.innerHeight) setCollapsed(true);
-        };
-        collapseBelowViewport();
-        const observer = new IntersectionObserver(collapseBelowViewport);
-        observer.observe(element);
-        return () => observer.disconnect();
+        if (unavailable || state === "failed") setCollapsed(true);
     }, [state, unavailable]);
     if (collapsed) return null;
     return <section ref={frame} className={`ad-compartment ad-${placement} not-prose no-print`} data-ad-compartment={placement} data-native-cursor aria-label="Advertisements">

@@ -17,9 +17,10 @@ export const requestedAds = new WeakSet<HTMLElement>();
 
 export function detectAdBlocking() {
     return blocker ??= new Promise<boolean>(resolve => {
-        const probe = document.createElement("div");
-        probe.className = "adsbox ad-banner";
-        probe.style.cssText = "position:absolute;left:-9999px;width:1px;height:1px;pointer-events:none";
+        const probe = document.createElement("ins");
+        probe.className = "adsbygoogle adsbox ad-banner";
+        probe.dataset.adClient = adsConfig.client;
+        probe.style.cssText = "display:block;position:absolute;left:-9999px;width:1px;height:1px;pointer-events:none";
         probe.setAttribute("aria-hidden", "true");
         document.body.append(probe);
         requestAnimationFrame(() => {

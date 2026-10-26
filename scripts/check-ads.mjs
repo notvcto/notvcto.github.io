@@ -67,17 +67,21 @@ async function fixture(mode = "filled", viewport = { width: 1600, height: 1000 }
             await request.abort().catch(() => {});
         }
     });
-    if (mode === "blocked") {
-        await page.evaluateOnNewDocument(() => {
+    if (["blocked", "adsbygoogle-blocked", "slot-blocked"].includes(mode)) {
+        await page.evaluateOnNewDocument(mode => {
             const observer = new MutationObserver(() => {
                 if (!document.head) return;
                 const style = document.createElement("style");
-                style.textContent = ".adsbox, .ad-banner, .ads-banner { display: none !important; }";
+                style.textContent = mode === "blocked"
+                    ? ".adsbox, .ad-banner, .ads-banner { display: none !important; }"
+                    : mode === "adsbygoogle-blocked"
+                        ? "ins.adsbygoogle { display: none !important; }"
+                        : "ins.adsbygoogle[data-ad-slot] { display: none !important; }";
                 document.head.append(style);
                 observer.disconnect();
             });
             observer.observe(document, { childList: true, subtree: true });
-        });
+        }, mode);
     }
     const visit = path => page.goto(new URL(path, base).href, { waitUntil: "domcontentloaded" });
     return { context, page, visit, errors, sdkRequests };
@@ -193,12 +197,12 @@ try {
                 assert.deepEqual(f.errors, []);
             } finally { await f.context.close(); }
         }
-        for (const mode of ["unfilled", "refused", "failed", "blocked"]) {
+        for (const mode of ["unfilled", "refused", "failed", "blocked", "adsbygoogle-blocked", "slot-blocked"]) {
             const f = await fixture(mode);
             try {
                 await f.visit(article);
                 await f.page.waitForSelector("article h1", { visible: true });
-                if (mode === "blocked") {
+                if (["blocked", "adsbygoogle-blocked"].includes(mode)) {
                     await f.page.waitForFunction(() => document.body.textContent.includes("hey, looks like you're using an adblocker."));
                     await f.page.waitForSelector("[data-ad-blocker-notice]", { visible: true });
                     assert.equal(await f.page.$$eval("[data-ad-blocker-notice]", elements => elements.length), 1);
@@ -212,6 +216,9 @@ try {
                     await pause();
                     assert.equal(await f.page.$("[data-ad-blocker-notice]"), null, `${mode} is not proof of an ad blocker`);
                     assert.equal(await f.page.$('iframe[title="Fixture advertisement"]'), null);
+                    if (["unfilled", "failed", "slot-blocked"].includes(mode)) {
+                        await f.page.waitForFunction(() => !document.querySelector('[data-ad-compartment="intro"]'));
+                    }
                 }
                 assert.ok(await f.page.$("article p"), "Articles must stay readable regardless of ad state");
                 assert.deepEqual(f.errors, []);
