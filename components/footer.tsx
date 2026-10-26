@@ -3,6 +3,7 @@
 import { EASE_IN_OUT } from "@/lib/animation";
 import { motion, useInView } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 export function Footer() {
@@ -81,7 +82,7 @@ export function Footer() {
                     </div>
 
                     {/* Links */}
-                    <div className="flex gap-8">
+                    <div className="flex flex-wrap justify-center gap-6 md:gap-8">
                         {[
                             { label: "LinkedIn", href: "https://www.linkedin.com/in/notvcto/" },
                             { label: "GitHub", href: "https://github.com/notvcto" },
@@ -98,6 +99,13 @@ export function Footer() {
                                 {link.label}
                             </a>
                         ))}
+                        <Link
+                            href="/privacy"
+                            data-cursor-hover
+                            className="font-mono text-xs tracking-widest text-muted-foreground hover:text-white transition-colors duration-300"
+                        >
+                            Privacy
+                        </Link>
                     </div>
 
                     {/* Copyright */}

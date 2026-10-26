@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import puppeteer from "puppeteer";
+import { blockLiveAds } from "./block-live-ads.mjs";
 
 const base = process.argv[2] ?? "http://127.0.0.1:3000";
 const browser = await puppeteer.launch({
@@ -9,6 +10,7 @@ const browser = await puppeteer.launch({
 
 try {
     const page = await browser.newPage();
+    await blockLiveAds(page);
     page.setDefaultTimeout(30_000);
     await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
     await page.evaluateOnNewDocument(() => {
@@ -184,6 +186,7 @@ try {
     assert.equal(await page.$eval(".page-enter", element => getComputedStyle(element).animationName), "none");
     assert.equal(await page.$eval(".sphere-enter", element => getComputedStyle(element).animationName), "none");
     const noScript = await browser.newPage();
+    await blockLiveAds(noScript);
     await noScript.setJavaScriptEnabled(false);
     await noScript.goto(new URL("/resume", base).href, { waitUntil: "domcontentloaded" });
     // Page-side animation-frame polling is disabled along with JavaScript.

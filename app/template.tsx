@@ -22,7 +22,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
         <div
             key={pathname}
             className="page-enter"
-            data-page-sphere={pathname.startsWith("/blog") || pathname.startsWith("/resume") ? "document" : "viewport"}
+            data-page-sphere={pathname.startsWith("/blog") || pathname.startsWith("/resume") || pathname === "/privacy" ? "document" : "viewport"}
         >
             {children}
         </div>

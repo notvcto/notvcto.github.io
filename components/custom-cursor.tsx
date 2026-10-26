@@ -11,6 +11,7 @@ export function CustomCursor() {
     const [isOverImage, setIsOverImage] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const [isTouchDevice, setIsTouchDevice] = useState(false);
+    const [isNative, setIsNative] = useState(false);
 
     // Motion values bypass React's render cycle — no re-render on every mouse pixel
     const rawX = useMotionValue(0);
@@ -29,6 +30,7 @@ export function CustomCursor() {
         touchQuery.addEventListener("change", handleTouchChange);
 
         const handleMouseMove = (e: MouseEvent) => {
+            setIsNative(e.target instanceof Element && !!e.target.closest("[data-native-cursor]"));
             document.documentElement.classList.add("custom-cursor");
             rawX.set(e.clientX);
             rawY.set(e.clientY);
@@ -44,6 +46,7 @@ export function CustomCursor() {
         const handleHoverStart = (e: MouseEvent) => {
             const target = e.target;
             if (!(target instanceof Element)) return;
+            setIsNative(!!target.closest("[data-native-cursor]"));
             if (target.closest("a, button, input, textarea, select, [contenteditable=\"true\"], [data-cursor-hover]")) setIsHovering(true);
             setIsOverImage(target.tagName === "IMG");
         };
@@ -79,7 +82,7 @@ export function CustomCursor() {
         };
     }, [rawX, rawY, reducedMotion]);
 
-    if (isTouchDevice || reducedMotion) return null;
+    if (isTouchDevice || reducedMotion || isNative) return null;
 
     return (
         <>

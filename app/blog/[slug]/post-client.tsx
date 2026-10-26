@@ -16,6 +16,7 @@ import python from "react-syntax-highlighter/dist/esm/languages/prism/python";
 import rust from "react-syntax-highlighter/dist/esm/languages/prism/rust";
 import vscDarkPlus from "react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus";
 import remarkGfm from "remark-gfm";
+import { AdCompartment } from "@/components/blog-ads";
 
 for (const [name, grammar] of Object.entries({ bash, json, markup, nasm, python, rust })) {
     SyntaxHighlighter.registerLanguage(name, grammar);
@@ -80,6 +81,8 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
                     {post.description}
                 </p>
             </header>
+
+            <AdCompartment placement="intro"/>
 
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
@@ -219,6 +222,8 @@ export function BlogPostClient({ post, nextPost }: BlogPostClientProps) {
             >
                 {post.content}
             </ReactMarkdown>
+
+            <AdCompartment placement="end"/>
 
             <dialog
                 ref={dialogRef}

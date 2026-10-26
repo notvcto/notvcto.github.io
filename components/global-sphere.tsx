@@ -7,7 +7,7 @@ import { SentientSphere } from "./sentient-sphere";
 
 export function GlobalSphere() {
     const pathname = usePathname();
-    const dimmed = pathname?.startsWith("/blog") || pathname?.startsWith("/resume");
+    const dimmed = pathname?.startsWith("/blog") || pathname?.startsWith("/resume") || pathname === "/privacy";
     const [covered, setCovered] = useState(false);
     const [readyMode, setReadyMode] = useState<"document" | "viewport" | null>(null);
     const onFrameReady = useCallback((sliced: boolean) => {

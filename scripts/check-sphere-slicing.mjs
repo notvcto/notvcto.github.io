@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { PerspectiveCamera, Vector3 } from "three";
 import puppeteer from "puppeteer";
+import { blockLiveAds } from "./block-live-ads.mjs";
 
 // A slice must project each world point to the same document pixel as the full camera.
 for (const height of [900, 2518, 22103]) {
@@ -26,6 +27,7 @@ const browser = await puppeteer.launch({
 });
 try {
     const page = await browser.newPage();
+    await blockLiveAds(page);
     // Capture the real component's camera projection without adding production diagnostics.
     await page.evaluateOnNewDocument(() => {
         const locations = new WeakMap();

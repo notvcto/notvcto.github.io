@@ -6,6 +6,7 @@ import { BookOpen, Command, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { AdCompartment } from "./blog-ads";
 
 interface BlogSidebarProps {
     posts: BlogPostMeta[];
@@ -108,7 +109,7 @@ export function BlogSidebar({ posts }: BlogSidebarProps) {
 
     return (
         <aside className="hidden md:flex w-72 lg:w-80 flex-col sticky h-[calc(100vh-8rem)] top-24 shrink-0">
-            <div className="flex-1 bg-[#0a0a0a]/40 backdrop-blur-md border border-white/5 rounded-2xl flex flex-col overflow-hidden shadow-2xl">
+            <div className="flex-1 min-h-0 bg-[#0a0a0a]/40 backdrop-blur-md border border-white/5 rounded-2xl flex flex-col overflow-hidden shadow-2xl">
                 {/* Search Bar */}
                 <div className="p-4 border-b border-white/5">
                     <div className="relative group">
@@ -164,6 +165,7 @@ export function BlogSidebar({ posts }: BlogSidebarProps) {
                     </div>
                 </div>
             </div>
+            {pathname !== "/blog" && <AdCompartment placement="sidebar"/>}
         </aside>
     );
 }

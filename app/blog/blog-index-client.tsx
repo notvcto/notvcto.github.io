@@ -5,6 +5,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { AdCompartment } from "@/components/blog-ads";
 
 interface BlogIndexClientProps {
     firstPost: BlogPostMeta | null;
@@ -106,6 +107,8 @@ export function BlogIndexClient({ firstPost, latestDate }: BlogIndexClientProps)
                     </div>
                 </Link>
             )}
+
+            <AdCompartment placement="index"/>
 
             <footer className="pt-12 border-t border-white/5 opacity-30">
                 <div className="flex items-center gap-4 font-mono text-[9px] tracking-[0.2em] text-muted-foreground uppercase">

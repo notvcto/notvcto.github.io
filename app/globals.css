@@ -157,6 +157,11 @@ body:has([data-page-sphere="viewport"]) [data-global-sphere]:not([data-sphere-re
         html.custom-cursor dialog:modal * {
             cursor: auto !important;
         }
+
+        html.custom-cursor [data-native-cursor],
+        html.custom-cursor [data-native-cursor] * {
+            cursor: auto !important;
+        }
     }
 
     body {
@@ -182,6 +187,31 @@ body:has([data-page-sphere="viewport"]) [data-global-sphere]:not([data-sphere-re
     opacity: 0.03;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
+
+.ad-compartment {
+    margin: 48px 0;
+    padding: 9px;
+    border: 1px solid #ffffff12;
+    border-radius: 12px;
+    background: #0a0a0a;
+    min-width: 0;
+}
+.ad-label { display: block; margin-bottom: 10px; color: #a1a1aa; font: 9px/1.5 var(--font-geist-mono), monospace; letter-spacing: .16em; text-transform: uppercase; }
+.ad-space { min-height: 100px; width: 100%; }
+.ad-space ins { margin: 0 auto; }
+.ad-compartment iframe { position: relative; z-index: 10001; background: #0a0a0a; }
+.ad-sidebar { display: none; margin: 24px 0 0; flex-shrink: 0; }
+.ad-sidebar .ad-space { height: 250px; }
+@media (min-width: 1280px) and (min-height: 900px) and (pointer: fine) {
+    .ad-sidebar { display: block; }
+}
+.ad-notice { position: relative; margin: 48px 0; padding: 20px 40px 20px 20px; border: 1px solid #ffffff12; border-radius: 12px; background: #0a0a0a; color: var(--muted-foreground); font-size: 14px; line-height: 1.7; }
+.ad-notice p { margin: 0 0 8px; }
+.ad-notice p:last-child { margin-bottom: 0; }
+.ad-notice button { position: absolute; right: 10px; top: 10px; width: 28px; height: 28px; border-radius: 6px; font-size: 20px; }
+.ad-notice button:focus-visible { outline: 1px solid var(--accent); }
+.blog-privacy-links { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 48px; font: 10px/1.6 var(--font-geist-mono), monospace; color: var(--muted-foreground); }
+.blog-privacy-links button:disabled { opacity: .5; }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {

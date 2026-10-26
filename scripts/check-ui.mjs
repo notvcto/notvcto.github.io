@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import puppeteer from "puppeteer";
+import { blockLiveAds } from "./block-live-ads.mjs";
 
 const base = process.argv[2] || "http://127.0.0.1:3000";
 const browser = await puppeteer.launch({
@@ -9,6 +10,7 @@ const browser = await puppeteer.launch({
 
 try {
     const page = await browser.newPage();
+    await blockLiveAds(page);
     page.setDefaultTimeout(10_000);
     page.setDefaultNavigationTimeout(20_000);
     const errors = [];
@@ -97,6 +99,7 @@ try {
     console.log("Blog fences, tablet layout, nested scrolling, and mobile dialogs pass.");
 
     const noScript = await browser.newPage();
+    await blockLiveAds(noScript);
     noScript.setDefaultTimeout(10_000);
     noScript.setDefaultNavigationTimeout(20_000);
     await noScript.setJavaScriptEnabled(false);

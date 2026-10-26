@@ -9,7 +9,7 @@
         "lint": "eslint .",
         "start": "serve out -l 3000",
         "check:unit": "node lib/currency.check.ts && node lib/blog.check.ts && node lib/sphere-coverage.check.ts",
-        "check:browser": "node scripts/check-ui.mjs && node scripts/check-sphere-slicing.mjs && node scripts/check-sphere-navigation.mjs"
+        "check:browser": "node scripts/check-ui.mjs && node scripts/check-sphere-slicing.mjs && node scripts/check-sphere-navigation.mjs && node scripts/check-ads.mjs"
     },
     "dependencies": {
         "@react-three/fiber": "9.6.1",
