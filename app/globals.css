@@ -158,10 +158,6 @@ body:has([data-page-sphere="viewport"]) [data-global-sphere]:not([data-sphere-re
             cursor: auto !important;
         }
 
-        html.custom-cursor [data-native-cursor],
-        html.custom-cursor [data-native-cursor] * {
-            cursor: auto !important;
-        }
     }
 
     body {

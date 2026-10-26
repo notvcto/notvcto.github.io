@@ -83,7 +83,7 @@ function AdUnit({ placement }: { placement: AdPlacement }) {
         if (unavailable || state === "failed") setCollapsed(true);
     }, [state, unavailable]);
     if (collapsed) return null;
-    return <section ref={frame} className={`ad-compartment ad-${placement} not-prose no-print`} data-ad-compartment={placement} data-native-cursor aria-label="Advertisements">
+    return <section ref={frame} className={`ad-compartment ad-${placement} not-prose no-print`} data-ad-compartment={placement} aria-label="Advertisements">
         <span className="ad-label">Advertisements</span>
         <div ref={space} className="ad-space"/>
     </section>;

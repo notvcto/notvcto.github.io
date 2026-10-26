@@ -150,9 +150,12 @@ try {
             await pause();
             await f.page.mouse.move(80, 30);
             await f.page.waitForFunction(() => Array.from(document.querySelectorAll("div")).some(element => element.classList.contains("z-[10000]") && Number(getComputedStyle(element).opacity) > 0.5));
+            const adBounds = await f.page.$eval('[data-ad-compartment="intro"]', element => element.getBoundingClientRect().toJSON());
+            await f.page.mouse.move(adBounds.x + 14, adBounds.y + 14);
+            await f.page.waitForFunction(() => Array.from(document.querySelectorAll("div")).some(element => element.classList.contains("z-[10000]") && Number(getComputedStyle(element).opacity) > 0.5));
             const adFrame = await f.page.$('[data-ad-compartment="intro"] iframe');
-            const adBounds = await adFrame.boundingBox();
-            await f.page.mouse.move(adBounds.x + adBounds.width / 2, adBounds.y + adBounds.height / 2);
+            const frameBounds = await adFrame.boundingBox();
+            await f.page.mouse.move(frameBounds.x + frameBounds.width / 2, frameBounds.y + frameBounds.height / 2);
             assert.ok(await adFrame.evaluate(element => Number(getComputedStyle(element).zIndex) > 10000), "The native ad frame must paint above the custom cursor");
             await f.page.mouse.move(80, 30);
             await f.page.waitForFunction(() => Array.from(document.querySelectorAll("div")).some(element => element.classList.contains("z-[10000]") && Number(getComputedStyle(element).opacity) > 0.5));
