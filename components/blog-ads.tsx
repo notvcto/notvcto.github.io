@@ -95,7 +95,7 @@ export function AdCompartment({ placement }: { placement: AdPlacement }) {
     if (!adsConfig.enabled) return null;
     if (state === "blocked") {
         if (dismissed || (placement !== "intro" && placement !== "index")) return null;
-        return <aside className="ad-notice not-prose no-print" data-ad-blocker-notice aria-label="A note about advertising">
+        return <aside className="blog-support-note not-prose no-print" data-ad-blocker-notice aria-label="A note about advertising">
             <button type="button" onClick={dismiss} aria-label="Dismiss adblocker notice">×</button>
             <p>hey, looks like you&apos;re using an adblocker.</p>
             <p>that&apos;s fine. i use one too.</p>

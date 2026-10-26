@@ -73,7 +73,7 @@ async function fixture(mode = "filled", viewport = { width: 1600, height: 1000 }
                 if (!document.head) return;
                 const style = document.createElement("style");
                 style.textContent = mode === "blocked"
-                    ? ".adsbox, .ad-banner, .ads-banner { display: none !important; }"
+                    ? ".adsbox, .ad-banner, .ads-banner, .ad-notice { display: none !important; }"
                     : mode === "adsbygoogle-blocked"
                         ? "ins.adsbygoogle { display: none !important; }"
                         : "ins.adsbygoogle[data-ad-slot] { display: none !important; }";
