@@ -22,7 +22,8 @@ export default function PrivacyPage() {
                 <section>
                     <h2>Loading a page sends a network request.</h2>
                     <p>Victor Soto maintains notvc.to. The site is hosted on GitHub Pages. Delivering a page sends information such as your IP address, browser headers, and requested URL to the hosting infrastructure. GitHub handles information it receives under its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noreferrer">privacy statement</a>.</p>
-                    <p>The site has no visitor accounts, public submission forms, or separate analytics service. Contact links open your email application. If you email me, your address and message pass through our email providers so I can receive and answer them.</p>
+                    <p>The site has no visitor accounts or public submission forms. Cloudflare Web Analytics measures page views, visits, and page performance; its reports can include page paths, referring sites, countries, browsers, and device categories. Cloudflare says the service does not collect or use visitors&apos; personal data. Its browser beacon may be blocked by ad-blocking extensions. See <a href="https://developers.cloudflare.com/web-analytics/about/" rel="noreferrer">Cloudflare&apos;s Web Analytics information</a>.</p>
+                    <p>Contact links open your email application. If you email me, your address and message pass through our email providers so I can receive and answer them.</p>
                 </section>
 
                 <section>
