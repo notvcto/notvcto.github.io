@@ -5,11 +5,20 @@ ogTitle: 'The panic count is still 2: shipping Ferber v0.1.2 through v0.1.5'
 ogSubtitle: 'Paging HAL, capability isolation, and container trees in Rust'
 date: '2026-10-12T23:45:00-04:00'
 category: 'Ferber'
-complexity: 9
+complexity: 9.0
 readingTime: '14 min'
 author: 'notvcto'
 description: 'Four releases after getting Ferber to boot on real hardware, Phase 2 is mostly in tree. The kernel now has a dynamic buddy allocator, Virtual Memory Objects, full Sv39 and PML4 paging parity, and an execution container hierarchy where processes start with zero handles. The panic count is still 2, but the code running before it went from a boot stub to an operating system.'
-tags: ['kernel', 'os', 'osdev', 'rust', 'riscv', 'x86', 'paging', 'security', 'ferber']
+tags:
+  - 'kernel'
+  - 'os'
+  - 'osdev'
+  - 'rust'
+  - 'riscv'
+  - 'x86'
+  - 'paging'
+  - 'security'
+  - 'ferber'
 ---
 
 The last post ended with "The panic count is 2. Phase 2 starts now."
@@ -169,6 +178,6 @@ todo!("spawn init — Phase 3")
 
 The panic count is still 2. The difference is what runs before it.
 
-The repo is available [here](https://github.com/notvcto/ferber). If you want to verify the container hierarchy, run `scripts/riscv-smoke.sh` or `scripts/x86-smoke.sh`. Milestone 3 is bidirectional async channels and FastCall thread donation IPC. Next Monday’s post will have it. Yes, I'll be posting every Monday.
+The repo is available [here](https://github.com/ferber-os/ferber). If you want to verify the container hierarchy, run `scripts/riscv-smoke.sh` or `scripts/x86-smoke.sh`. Milestone 3 is bidirectional async channels and FastCall thread donation IPC. Next Monday’s post will have it. Yes, I'll be posting every Monday.
 
 If you still believe an operating system needs `fork()` and ambient authority to function, clone the repo and prove where this model fails.
