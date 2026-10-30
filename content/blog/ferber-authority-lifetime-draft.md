@@ -343,6 +343,6 @@ These remain Uranium-238 prereleases. Version `0.3.0` stays reserved.
 
 Execution is still cooperative, integer-only and single-CPU with interrupts masked. Event-driven idle, preemption, SMP and hierarchical memory charging remain ahead. The new primitives make service launch possible to design against an actual consumer. They do not make that consumer exist automatically.
 
-The repository is [here](https://github.com/notvcto/ferber). The earlier [kernel-core-to-userspace deep dive](https://notvc.to/blog/ferber-kernel-core-to-userspace) covers the scheduler, original ELF checkpoint and the work this week built on.
+The repository is [here](https://github.com/ferber-os/ferber). The earlier [kernel-core-to-userspace deep dive](https://notvc.to/blog/ferber-kernel-core-to-userspace) covers the scheduler, original ELF checkpoint and the work this week built on.
 
 Closing a handle is easy. Prove that nothing can still write before you call its memory immutable.
