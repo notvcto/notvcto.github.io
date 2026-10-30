@@ -463,6 +463,6 @@ The existing primitives now have to compose across an interface the kernel's res
 
 FastCall and an on-disk filesystem can follow on their own paths. They do not need to block the first startup protocol. Useful init will still require considerably more than an ELF reaching its entry point. VMO syscalls, user-created task lifetimes, recoverable user faults, preemption, FP/vector state, IRQ-safe allocation, and SMP remain unfinished.
 
-The code and roadmap are at [notvcto/ferber](https://github.com/notvcto/ferber).
+The code and roadmap are at [notvcto/ferber](https://github.com/ferber-os/ferber).
 
 Start init without making it an exception to the security model.
