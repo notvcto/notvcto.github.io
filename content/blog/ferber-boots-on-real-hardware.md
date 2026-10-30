@@ -5,11 +5,19 @@ ogTitle: 'Ferber boots on real hardware'
 ogSubtitle: 'Five months of nothing. Eight hours. Phase 1 done.'
 date: '2026-08-10T00:30:00-04:00'
 category: 'Ferber'
-complexity: 6
+complexity: 6.0
 readingTime: '8 min'
 author: 'notvcto'
 description: 'Phase 1 of Ferber is done. The kernel boots on RISC-V and x86-64, passes smoke tests in QEMU, boots from USB on real hardware (MSI B650M-A PRO WIFI), and panics exactly where it should. Five months of no visible progress. Eight hours of a sprint that finished it.'
-tags: ['kernel', 'os', 'rust', 'riscv', 'x86-64', 'uefi', 'systems', 'ferber']
+tags:
+  - 'kernel'
+  - 'os'
+  - 'rust'
+  - 'riscv'
+  - 'x86-64'
+  - 'uefi'
+  - 'systems'
+  - 'ferber'
 ---
 
 Five months ago I wrote an announcement post for Ferber. The last line was
@@ -153,7 +161,7 @@ post), some of which didn't. Ferber waited.
 The sprint happened because I finally had the thread again. Eight hours. I knew
 where I was going the whole time and I went there.
 
-The repo is [here](https://github.com/notvcto/ferber). The ISO is attached
+The repo is [here](https://github.com/ferber-os/ferber). The ISO is attached
 to the Uranium-238 v0.1.0 release. If you want to watch Phase 2 happen, watch
 the repo. If you find a way to get further than the `spawn init` panic without
 implementing init, open an issue.
