@@ -6,7 +6,7 @@ export async function blockLiveAds(page) {
     await page.setRequestInterception(true);
     page.on("request", request => {
         const host = new URL(request.url()).hostname;
-        if (host === "bauval.org" || /(?:googlesyndication|doubleclick|googleadservices|fundingchoicesmessages)\./.test(host)) {
+        if (["bauval.org", "ads.notvc.to"].includes(host) || /(?:googlesyndication|doubleclick|googleadservices|fundingchoicesmessages)\./.test(host)) {
             void request.abort("blockedbyclient").catch(() => {});
         } else {
             void request.continue().catch(() => {});

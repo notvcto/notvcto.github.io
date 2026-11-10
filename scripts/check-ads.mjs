@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import puppeteer from "puppeteer";
+import worker from "../cloudflare/ads/worker.mjs";
 
 const base = process.argv.slice(2).find(value => !value.startsWith("--")) || "http://127.0.0.1:3000";
 const enabled = process.argv.includes("--enabled") || process.env.NEXT_PUBLIC_ADSTERRA_ENABLED === "true";
@@ -38,6 +39,11 @@ async function fixture(mode = "filled", width = 1600) {
     page.on("request", async request => {
         try {
             const url = new URL(request.url());
+            if (url.hostname === "ads.notvc.to") {
+                const response = await worker.fetch(new Request(request.url()));
+                const body = (await response.text()).replace("'https://notvc.to'", JSON.stringify(new URL(base).origin));
+                return await request.respond({ status: response.status, contentType: "text/html", body });
+            }
             if (url.hostname === "bauval.org") {
                 const key = url.pathname.split("/").at(-1);
                 requests.push(key);

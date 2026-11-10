@@ -1,7 +1,7 @@
 "use client";
 
 import { adsConfig, selectAdUnit, type AdPlacement } from "@/lib/ads";
-import { buildAdDocument, detectAdBlocking } from "@/lib/ads-runtime";
+import { detectAdBlocking } from "@/lib/ads-runtime";
 import { AnimatePresence, motion } from "framer-motion";
 import { useReducedMotion } from "./motion-preferences";
 import { createPortal } from "react-dom";
@@ -71,24 +71,22 @@ export function BlogAdsProvider({ children }: { children: ReactNode }) {
 
 function BannerFrame({ unit, onFailure }: { unit: NonNullable<ReturnType<typeof selectAdUnit>>; onFailure: () => void }) {
     const ref = useRef<HTMLIFrameElement>(null);
-    const [document, setDocument] = useState("");
     const [loaded, setLoaded] = useState(false);
     useEffect(() => {
-        const token = crypto.randomUUID();
+        const token = unit.key;
         function receive(event: MessageEvent) {
-            if (event.source !== ref.current?.contentWindow || event.data?.type !== "blog-ad" || event.data.token !== token) return;
+            if (event.origin !== adsConfig.frameOrigin || event.source !== ref.current?.contentWindow || event.data?.type !== "blog-ad" || event.data.token !== token) return;
             if (event.data.status === "loaded") setLoaded(true);
             if (event.data.status === "failed") onFailure();
         }
         window.addEventListener("message", receive);
-        setDocument(buildAdDocument(unit.key, unit.width, unit.height, token));
         // Covers requests that hang before the child document can report an error.
         const timeout = setTimeout(() => { if (ref.current?.dataset.loaded !== "true") onFailure(); }, 16000);
         return () => { window.removeEventListener("message", receive); clearTimeout(timeout); };
     }, [unit, onFailure]);
     return <iframe ref={ref} title="Advertisement" className="ad-frame" width={unit.width} height={unit.height}
-        sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" referrerPolicy="strict-origin-when-cross-origin"
-        srcDoc={document || undefined} data-loaded={loaded} />;
+        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" referrerPolicy="strict-origin-when-cross-origin"
+        src={`${adsConfig.frameOrigin}/ad-frame/${unit.key}`} data-loaded={loaded} />;
 }
 
 function AdUnit({ placement }: { placement: AdPlacement }) {

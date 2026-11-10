@@ -1,6 +1,6 @@
 # Separate-origin banner wrappers
 
-The Worker serves only `/ad-frame/<32-hex-key>` from the portfolio's static export, at `https://ads.notvc.to`. The portfolio must publish those generated wrappers first. It returns HTML with explicit framing restrictions and an origin-keyed agent cluster to prevent document.domain relaxation.
+The standalone Worker serves only the three configured `/ad-frame/<key>` pages at `https://ads.notvc.to`. It generates their HTML directly and makes no upstream fetches. It returns HTML with explicit framing restrictions and an origin-keyed agent cluster to prevent document.domain relaxation.
 
 The frame permits scripts and same-origin access within the ad origin, allowing Adsterra to populate its about:blank creative frame. Cross-origin rules prevent it reading the portfolio. The parent validates both the message origin and the frame window. This separates document access, not all third-party tracking: both hosts are still same-site, and advertising partners can receive requests and use their own storage after consent.
 
@@ -19,10 +19,9 @@ Alternatively, create a Worker through the Cloudflare dashboard, paste `worker.m
 
 ## Activation order
 
-1. Publish the static `/ad-frame/<key>` routes on the portfolio.
-2. Deploy the Worker and custom domain.
-3. Check one wrapper returns HTTP 200 and Content-Type text/html from ads.notvc.to, without redirecting to notvc.to.
-4. Publish the portfolio change that loads the cross-origin wrappers.
-5. Verify a real banner after consent, and confirm withdrawal removes its frame.
+1. Deploy the Worker and custom domain.
+2. Check one wrapper returns HTTP 200 and Content-Type text/html from ads.notvc.to, without redirecting to notvc.to.
+3. Publish the portfolio change that loads the cross-origin wrappers.
+4. Verify a real banner after consent, and confirm withdrawal removes its frame.
 
 Confirm Adsterra accepts these units when their loader is served from the subdomain. Never click live ads to test. Roll back by disabling NEXT_PUBLIC_ADSTERRA_ENABLED and rebuilding the portfolio.

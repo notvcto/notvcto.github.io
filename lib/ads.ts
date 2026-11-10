@@ -1,6 +1,7 @@
 export type AdPlacement = "intro" | "end" | "sidebar" | "index";
 
 export const adsConfig = {
+    frameOrigin: "https://ads.notvc.to",
     enabled: process.env.NEXT_PUBLIC_ADSTERRA_ENABLED === "true",
     units: {
         wide: { key: "4354f360f5c39181fda663c280098eaf", width: 468, height: 60 },

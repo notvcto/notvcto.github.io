@@ -6,7 +6,7 @@ Public unit keys and dimensions live in `lib/ads.ts`; the supplied tags load fro
 
 ## Placement and lifecycle
 
-Each display tag runs inside a separate sandboxed frame so `atOptions` and `document.write` are isolated. The frame permits scripts and advertiser links in new tabs; it prohibits navigating the portfolio's top-level page. It has no same-origin access to the portfolio. Compatibility with actual provider scripts must be confirmed before enabling production; do not weaken isolation silently if a tag fails.
+Each display tag runs inside a separate sandboxed frame at `ads.notvc.to`, served by the Worker in `cloudflare/ads`. Its same-origin permission allows the vendor to populate its own blank creative frame; the different origin prevents access to the portfolio document. The Worker generates the wrapper HTML directly, with no upstream fetch. The parent verifies both the sending frame and message origin. Banner configuration and script execution remain separate for each placement. See `cloudflare/ads/README.md` for deployment order. Do not serve these same-origin-enabled frames from the portfolio origin.
 
 Content placements select 468×60 or 320×50 from the usable content width, accounting for padding. The sidebar uses 300×250 and retains its existing desktop-only visibility rule. Undersized or hidden placements make no ad requests. Near-viewport frames load once per mount/selected size, stay mounted while scrolling, and are removed on route exit, withdrawal, or incompatible resize. There is no timed refresh.
 
