@@ -21,7 +21,7 @@ export function buildAdDocument(key: string, width: number, height: number, toke
     if (!/^[a-f0-9]{32}$/.test(key) || !/^[a-z0-9-]+$/i.test(token) || ![width, height].every(value => Number.isInteger(value) && value > 0)) {
         throw new Error("Invalid banner configuration");
     }
-    return `<!doctype html><html><head><meta name="referrer" content="strict-origin-when-cross-origin"><style>html,body{margin:0;padding:0;background:#0a0a0a;overflow:hidden}</style></head><body>
+    return `<!doctype html><html><head><meta name="robots" content="noindex"><meta name="referrer" content="strict-origin-when-cross-origin"><style>html,body{margin:0;padding:0;background:#0a0a0a;overflow:hidden}</style></head><body>
 <script>
 const notify = status => parent.postMessage({type:'blog-ad',token:'${token}',status}, '*');
 const timeout = setTimeout(() => notify('failed'), 15000);

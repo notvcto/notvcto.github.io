@@ -1,0 +1,8 @@
+{
+  "name": "notvcto-ad-frames",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-10",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "ads.notvc.to", "custom_domain": true }]
+}
