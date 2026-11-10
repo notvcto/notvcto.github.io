@@ -97,6 +97,13 @@ try {
             await f.page.addStyleTag({ content: "@media(min-width:1280px) and (min-height:900px) and (pointer:none){.ad-sidebar{display:block}}" });
             for (const placement of ["intro", "sidebar", "end"]) await scroll(f, placement);
             assert.equal(f.requests.length, 3, "One request per visible placement");
+            for (const placement of ["intro", "sidebar", "end"]) {
+                const spacing = await f.page.$eval(`[data-ad-compartment="${placement}"]`, element => {
+                    const frame = element.querySelector(".ad-frame");
+                    return element.getBoundingClientRect().width - frame.getBoundingClientRect().width;
+                });
+                assert.equal(spacing, 20, "Compartment must fit its creative plus padding and border");
+            }
             const frame = await (await f.page.$('[data-ad-compartment="intro"] .ad-frame')).contentFrame();
             assert.equal(await frame.evaluate(() => {
                 try { void parent.document.body; return false; } catch { return true; }

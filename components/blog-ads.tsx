@@ -90,28 +90,30 @@ function BannerFrame({ unit, onFailure }: { unit: NonNullable<ReturnType<typeof 
 }
 
 function AdUnit({ placement }: { placement: AdPlacement }) {
+    const available = useRef<HTMLDivElement>(null);
     const space = useRef<HTMLDivElement>(null);
     const [unit, setUnit] = useState<ReturnType<typeof selectAdUnit>>();
     const [nearby, setNearby] = useState(false);
     const [failedKey, setFailedKey] = useState<string | null>(null);
     useEffect(() => {
         const area = space.current;
-        if (!area) return;
-        const resize = new ResizeObserver(entries => setUnit(selectAdUnit(placement, entries[0].contentRect.width)));
+        const parent = available.current;
+        if (!area || !parent) return;
+        const resize = new ResizeObserver(entries => setUnit(selectAdUnit(placement, entries[0].contentRect.width - 20)));
         const intersection = new IntersectionObserver(entries => setNearby(entries.some(entry => entry.isIntersecting)), { rootMargin: "300px 0px" });
-        resize.observe(area); intersection.observe(area);
+        resize.observe(parent); intersection.observe(area);
         return () => { resize.disconnect(); intersection.disconnect(); };
     }, [placement]);
     const [requested, setRequested] = useState(false);
     useEffect(() => { if (nearby && unit) setRequested(true); }, [nearby, unit]);
     const fail = useCallback(() => { if (unit) setFailedKey(unit.key); }, [unit]);
     const unavailable = !unit || failedKey === unit.key;
-    return <section className={`ad-compartment ad-${placement} not-prose no-print`} data-ad-compartment={placement} data-unavailable={unavailable} aria-label="Advertisements">
+    return <div ref={available} className="ad-placement"><section style={unit ? { width: unit.width + 20 } : undefined} className={`ad-compartment ad-${placement} not-prose no-print`} data-ad-compartment={placement} data-unavailable={unavailable} aria-label="Advertisements">
         <span className="ad-label">AD</span>
-        <div ref={space} className="ad-space" style={unit ? { minHeight: unit.height + (placement === "sidebar" ? 18 : 48) } : undefined}>
+        <div ref={space} className="ad-space" style={unit ? { minHeight: unit.height + 18 } : undefined}>
             {requested && unit && !unavailable && <BannerFrame key={unit.key} unit={unit} onFailure={fail} />}
         </div>
-    </section>;
+    </section></div>;
 }
 
 export function AdCompartment({ placement }: { placement: AdPlacement }) {
