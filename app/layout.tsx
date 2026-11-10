@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Playfair_Display } from "next/font/google";
 import type React from "react";
 import "./globals.css";
-import { adsConfig } from "@/lib/ads";
 
 const playfair = Playfair_Display({
     subsets: ["latin"],
@@ -15,7 +14,6 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    other: { "google-adsense-account": adsConfig.client },
     metadataBase: new URL("https://notvc.to"),
     title: {
         default: "NOTVCTO // SYSTEMS ARCHITECT",

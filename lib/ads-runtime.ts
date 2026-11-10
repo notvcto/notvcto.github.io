@@ -1,25 +1,9 @@
-import { adsConfig } from "./ads";
-
-type MessageCallback = Record<string, () => void>;
-declare global {
-    interface Window {
-        adsbygoogle?: { push: (command: Record<string, never>) => unknown };
-        googlefc?: {
-            callbackQueue: { push: (callback: MessageCallback) => unknown };
-            showRevocationMessage?: () => void;
-        };
-    }
-}
-
-let sdk: Promise<void> | undefined;
 let blocker: Promise<boolean> | undefined;
-export const requestedAds = new WeakSet<HTMLElement>();
 
 export function detectAdBlocking() {
     return blocker ??= new Promise<boolean>(resolve => {
-        const probe = document.createElement("ins");
-        probe.className = "adsbygoogle adsbox ad-banner";
-        probe.dataset.adClient = adsConfig.client;
+        const probe = document.createElement("div");
+        probe.className = "adsbox ad-banner";
         probe.style.cssText = "display:block;position:absolute;left:-9999px;width:1px;height:1px;pointer-events:none";
         probe.setAttribute("aria-hidden", "true");
         document.body.append(probe);
@@ -32,29 +16,22 @@ export function detectAdBlocking() {
     });
 }
 
-export function loadAdSense() {
-    return sdk ??= new Promise<void>((resolve, reject) => {
-        const script = document.createElement("script");
-        script.id = "blog-adsense";
-        script.async = true;
-        script.crossOrigin = "anonymous";
-        script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsConfig.client}`;
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error("AdSense could not load"));
-        document.head.append(script);
-    });
-}
-
-export function onPrivacyReady(callback: () => void) {
-    const api = window.googlefc ??= { callbackQueue: [] as MessageCallback[] };
-    api.callbackQueue ??= [] as MessageCallback[];
-    const queue = api.callbackQueue;
-    const command = { CONSENT_API_READY: callback };
-    queue.push(command);
-    return () => {
-        if (Array.isArray(queue)) {
-            const index = queue.indexOf(command);
-            if (index !== -1) queue.splice(index, 1);
-        }
-    };
+// Each frame has its own atOptions and document.write target.
+export function buildAdDocument(key: string, width: number, height: number, token: string) {
+    if (!/^[a-f0-9]{32}$/.test(key) || !/^[a-z0-9-]+$/i.test(token) || ![width, height].every(value => Number.isInteger(value) && value > 0)) {
+        throw new Error("Invalid banner configuration");
+    }
+    return `<!doctype html><html><head><meta name="referrer" content="strict-origin-when-cross-origin"><style>html,body{margin:0;padding:0;background:#0a0a0a;overflow:hidden}</style></head><body>
+<script>
+const notify = status => parent.postMessage({type:'blog-ad',token:'${token}',status}, '*');
+const timeout = setTimeout(() => notify('failed'), 15000);
+document.addEventListener('load', event => {
+    if (event.target instanceof HTMLIFrameElement || event.target instanceof HTMLImageElement) {
+        clearTimeout(timeout); notify('loaded');
+    }
+}, true);
+window.atOptions = {key:'${key}',format:'iframe',height:${height},width:${width},params:{}};
+</script>
+<script src="https://bauval.org/22/${key}" onerror="clearTimeout(timeout);notify('failed')"></script>
+</body></html>`;
 }

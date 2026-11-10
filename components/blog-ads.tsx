@@ -1,99 +1,126 @@
 "use client";
 
-import { adsConfig, type AdPlacement } from "@/lib/ads";
-import { detectAdBlocking, loadAdSense, onPrivacyReady, requestedAds } from "@/lib/ads-runtime";
+import { adsConfig, selectAdUnit, type AdPlacement } from "@/lib/ads";
+import { buildAdDocument, detectAdBlocking } from "@/lib/ads-runtime";
+import { AnimatePresence, motion } from "framer-motion";
+import { useReducedMotion } from "./motion-preferences";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
-type AdState = "pending" | "ready" | "blocked" | "failed";
+type Consent = "allow" | "deny" | null;
+const consentKey = "blog:adsterra-consent:v1";
 const dismissalKey = "blog:adblock-notice-dismissed";
+let memoryConsent: Consent = null;
 let dismissedInMemory = false;
-const AdsContext = createContext({ state: "pending" as AdState, dismissed: false, dismiss: () => {}, privacyReady: false });
+const AdsContext = createContext({ blocked: null as boolean | null, consent: null as Consent, dismissed: false, dismiss: () => {}, openSettings: () => {} });
 
 export function BlogAdsProvider({ children }: { children: ReactNode }) {
-    const [state, setState] = useState<AdState>("pending");
+    const reducedMotion = useReducedMotion();
+    const [blocked, setBlocked] = useState<boolean | null>(null);
+    const [consent, setConsent] = useState<Consent>(null);
     const [dismissed, setDismissed] = useState(dismissedInMemory);
-    const [privacyReady, setPrivacyReady] = useState(false);
+    const [settingsOpen, setSettingsOpen] = useState(false);
     useEffect(() => {
         if (!adsConfig.enabled) return;
         let active = true;
-        let stopPrivacyCallback = () => {};
-        try { if (localStorage.getItem(dismissalKey) === "1") setDismissed(true); } catch { /* Storage is optional. */ }
-        void detectAdBlocking().then(async blocked => {
-            if (!active) return;
-            if (blocked) { setState("blocked"); return; }
-            try {
-                await loadAdSense();
-                if (active) {
-                    stopPrivacyCallback = onPrivacyReady(() => { if (active) setPrivacyReady(true); });
-                    setState("ready");
-                }
-            }
-            catch { if (active) setState("failed"); }
-        });
-        return () => { active = false; stopPrivacyCallback(); };
+        let stored = memoryConsent;
+        try {
+            const preference = JSON.parse(localStorage.getItem(consentKey) || "null");
+            stored = preference?.expires > Date.now() && ["allow", "deny"].includes(preference.value) ? preference.value : null;
+            if (localStorage.getItem(dismissalKey) === "1") setDismissed(true);
+        } catch { /* Storage is optional. */ }
+        setConsent(stored);
+        setSettingsOpen(stored === null || window.location.hash === "#privacy-settings");
+        if (window.location.hash === "#privacy-settings") window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        void detectAdBlocking().then(value => { if (active) setBlocked(value); });
+        return () => { active = false; };
     }, []);
+    function choose(value: Exclude<Consent, null>) {
+        memoryConsent = value;
+        setConsent(value);
+        setSettingsOpen(false);
+        try { localStorage.setItem(consentKey, JSON.stringify({ value, expires: Date.now() + 180 * 86400000 })); } catch { /* Keep the in-memory preference. */ }
+    }
     function dismiss() {
         dismissedInMemory = true; setDismissed(true);
         try { localStorage.setItem(dismissalKey, "1"); } catch { /* Keep the in-memory preference. */ }
     }
-    return <AdsContext.Provider value={{ state, dismissed, dismiss, privacyReady }}>
+    return <AdsContext.Provider value={{ blocked, consent, dismissed, dismiss, openSettings: () => setSettingsOpen(true) }}>
         {children}
-        {adsConfig.enabled && <noscript><style>{"[data-ad-compartment]{display:none!important}"}</style></noscript>}
+        {typeof document !== "undefined" && createPortal(<AnimatePresence>
+        {adsConfig.enabled && settingsOpen && <motion.aside
+            initial={{ opacity: 0, y: reducedMotion ? 0 : 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: reducedMotion ? 0 : 8 }}
+            transition={{ duration: reducedMotion ? 0 : 0.22, ease: "easeOut" }}
+            className="blog-consent no-print" aria-label="Advertising privacy choices">
+            <span className="support-note-label">NOTVCTO / PRIVACY</span>
+            <h2>A choice before the ads.</h2>
+            <p>Allow Adsterra and its advertising partners to load ads on blog pages? They receive network information such as your IP address and browser details and may use cookies or similar storage to deliver and measure ads, including personalized ads.</p>
+            <p>You can decline and keep reading, or change your choice through Privacy and cookie settings. Withdrawing stops future ad requests; it does not erase data already received by advertisers. <Link href="/privacy">Read the privacy policy</Link>.</p>
+            <div className="flex flex-wrap gap-3 mt-5">
+                <button type="button" onClick={() => choose("deny")}>Decline ads</button>
+                <button type="button" onClick={() => choose("allow")}>Allow ads</button>
+            </div>
+        </motion.aside>}
+        </AnimatePresence>, document.body)}
     </AdsContext.Provider>;
 }
 
+function BannerFrame({ unit, onFailure }: { unit: NonNullable<ReturnType<typeof selectAdUnit>>; onFailure: () => void }) {
+    const ref = useRef<HTMLIFrameElement>(null);
+    const [document, setDocument] = useState("");
+    const [loaded, setLoaded] = useState(false);
+    useEffect(() => {
+        const token = crypto.randomUUID();
+        function receive(event: MessageEvent) {
+            if (event.source !== ref.current?.contentWindow || event.data?.type !== "blog-ad" || event.data.token !== token) return;
+            if (event.data.status === "loaded") setLoaded(true);
+            if (event.data.status === "failed") onFailure();
+        }
+        window.addEventListener("message", receive);
+        setDocument(buildAdDocument(unit.key, unit.width, unit.height, token));
+        // Covers requests that hang before the child document can report an error.
+        const timeout = setTimeout(() => { if (ref.current?.dataset.loaded !== "true") onFailure(); }, 16000);
+        return () => { window.removeEventListener("message", receive); clearTimeout(timeout); };
+    }, [unit, onFailure]);
+    return <iframe ref={ref} title="Advertisement" className="ad-frame" width={unit.width} height={unit.height}
+        sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" referrerPolicy="strict-origin-when-cross-origin"
+        srcDoc={document || undefined} data-loaded={loaded} />;
+}
+
 function AdUnit({ placement }: { placement: AdPlacement }) {
-    const { state } = useContext(AdsContext);
-    const frame = useRef<HTMLElement>(null);
     const space = useRef<HTMLDivElement>(null);
-    const [unavailable, setUnavailable] = useState(false);
-    const [collapsed, setCollapsed] = useState(false);
+    const [unit, setUnit] = useState<ReturnType<typeof selectAdUnit>>();
+    const [nearby, setNearby] = useState(false);
+    const [failedKey, setFailedKey] = useState<string | null>(null);
     useEffect(() => {
-        const container = frame.current;
         const area = space.current;
-        if (state !== "ready" || !container || !area) return;
-        let active = true;
-        const status = new MutationObserver(() => {
-            const ad = area.querySelector<HTMLElement>("ins.adsbygoogle");
-            if (!ad || ad.dataset.adStatus === "unfilled" || getComputedStyle(ad).display === "none" || getComputedStyle(ad).visibility === "hidden") setUnavailable(true);
-        });
-        const observer = new IntersectionObserver(entries => {
-            if (!active || !entries.some(entry => entry.isIntersecting) || area.getBoundingClientRect().width <= 0 || requestedAds.has(container)) return;
-            requestedAds.add(container); observer.disconnect();
-            // Keep hidden/unrequested units out of Google's global processing queue.
-            const element = document.createElement("ins");
-            element.className = "adsbygoogle";
-            Object.assign(element.style, { display: "block", width: placement === "sidebar" ? "300px" : "100%", maxWidth: placement === "sidebar" ? "300px" : "728px", height: placement === "sidebar" ? "250px" : "100px" });
-            element.dataset.adClient = adsConfig.client;
-            element.dataset.adSlot = adsConfig.slots[placement];
-            area.append(element);
-            status.observe(area, { childList: true });
-            status.observe(element, { attributes: true, attributeFilter: ["class", "data-ad-status", "style"] });
-            try {
-                window.adsbygoogle ??= [] as Record<string, never>[];
-                window.adsbygoogle.push({});
-            } catch { setUnavailable(true); }
-        }, { rootMargin: "300px 0px" });
-        observer.observe(container);
-        return () => { active = false; observer.disconnect(); status.disconnect(); };
-    }, [state, placement]);
-    useEffect(() => {
-        if (unavailable || state === "failed") setCollapsed(true);
-    }, [state, unavailable]);
-    if (collapsed) return null;
-    return <section ref={frame} className={`ad-compartment ad-${placement} not-prose no-print`} data-ad-compartment={placement} aria-label="Advertisements">
+        if (!area) return;
+        const resize = new ResizeObserver(entries => setUnit(selectAdUnit(placement, entries[0].contentRect.width)));
+        const intersection = new IntersectionObserver(entries => setNearby(entries.some(entry => entry.isIntersecting)), { rootMargin: "300px 0px" });
+        resize.observe(area); intersection.observe(area);
+        return () => { resize.disconnect(); intersection.disconnect(); };
+    }, [placement]);
+    const [requested, setRequested] = useState(false);
+    useEffect(() => { if (nearby && unit) setRequested(true); }, [nearby, unit]);
+    const fail = useCallback(() => { if (unit) setFailedKey(unit.key); }, [unit]);
+    const unavailable = !unit || failedKey === unit.key;
+    return <section className={`ad-compartment ad-${placement} not-prose no-print`} data-ad-compartment={placement} data-unavailable={unavailable} aria-label="Advertisements">
         <span className="ad-label">AD</span>
-        <div ref={space} className="ad-space"/>
+        <div ref={space} className="ad-space" style={unit ? { minHeight: unit.height + (placement === "sidebar" ? 18 : 48) } : undefined}>
+            {requested && unit && !unavailable && <BannerFrame key={unit.key} unit={unit} onFailure={fail} />}
+        </div>
     </section>;
 }
 
 export function AdCompartment({ placement }: { placement: AdPlacement }) {
-    const { state, dismissed, dismiss } = useContext(AdsContext);
+    const { blocked, consent, dismissed, dismiss } = useContext(AdsContext);
     const pathname = usePathname();
-    if (!adsConfig.enabled) return null;
-    if (state === "blocked") {
+    if (!adsConfig.enabled || blocked === null) return null;
+    if (blocked) {
         if (dismissed || (placement !== "intro" && placement !== "index")) return null;
         return <aside className="blog-support-note not-prose no-print" data-ad-blocker-notice aria-label="A note about advertising">
             <button type="button" onClick={dismiss} aria-label="Dismiss adblocker notice">×</button>
@@ -103,22 +130,14 @@ export function AdCompartment({ placement }: { placement: AdPlacement }) {
             <p>ads help support my work, but you&apos;re under no obligation to disable yours. everything stays accessible either way.</p>
         </aside>;
     }
+    if (consent !== "allow") return null;
     return <AdUnit key={`${pathname}:${placement}`} placement={placement}/>;
 }
 
 export function BlogPrivacyLinks() {
-    const { privacyReady, state } = useContext(AdsContext);
-    function openSettings() {
-        onPrivacyReady(() => window.googlefc?.showRevocationMessage?.());
-    }
-    useEffect(() => {
-        if (!adsConfig.enabled || !privacyReady || window.location.hash !== "#privacy-settings") return;
-        window.history.replaceState(null, "", window.location.pathname + window.location.search);
-        onPrivacyReady(() => window.googlefc?.showRevocationMessage?.());
-    }, [privacyReady]);
+    const { openSettings } = useContext(AdsContext);
     return <footer className="blog-privacy-links no-print">
         <Link href="/privacy">Privacy</Link>
-        {adsConfig.enabled && <button type="button" disabled={!privacyReady} onClick={openSettings}>Privacy and cookie settings</button>}
-        {adsConfig.enabled && (state === "failed" || state === "blocked") && <span>Advertising and privacy controls could not load.</span>}
+        {adsConfig.enabled && <button type="button" onClick={openSettings}>Privacy and cookie settings</button>}
     </footer>;
 }

@@ -15,7 +15,7 @@ export default function PrivacyPage() {
                 <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">NOTVCTO / PRIVACY</span>
                 <h1 className="mt-5 mb-5 font-playfair text-5xl md:text-7xl tracking-tight text-white">Your visit. Your choices.</h1>
                 <p className="text-lg italic leading-relaxed text-muted-foreground">This page explains what your browser stores, which outside services receive requests, and how advertising choices work on this site.</p>
-                <p className="mt-6 font-mono text-[10px] tracking-widest uppercase text-muted-foreground">Last updated October 26, 2026</p>
+                <p className="mt-6 font-mono text-[10px] tracking-widest uppercase text-muted-foreground">Last updated November 10, 2026</p>
             </header>
 
             <div className="space-y-10 pt-10 text-base leading-7 text-muted-foreground [&_h2]:font-playfair [&_h2]:text-2xl [&_h2]:text-white [&_h2]:mb-4 [&_p+p]:mt-4 [&_a]:underline [&_a]:underline-offset-4 [&_a]:decoration-white/30 [&_a:hover]:text-white">
@@ -28,7 +28,7 @@ export default function PrivacyPage() {
 
                 <section>
                     <h2>Preferences stay in your browser.</h2>
-                    <p>The wishlist saves your language and display preferences in local storage and its scroll position in session storage. Currency conversion uses your browser language and timezone to select a currency locally, then caches exchange rates in local storage. The adblocker notice also remembers its dismissal in local storage.</p>
+                    <p>The wishlist saves your language and display preferences in local storage and its scroll position in session storage. Currency conversion uses your browser language and timezone to select a currency locally, then caches exchange rates in local storage. The adblocker notice also remembers its dismissal in local storage. Advertising choices for Adsterra are stored in your browser for up to 180 days; if storage is unavailable, the choice lasts for the current visit.</p>
                     <p>You can remove these preferences through your browser&apos;s site-data controls. Blocking storage does not prevent you from reading the site. The optional phone number and Dominican ID fields used when printing a résumé stay in the page&apos;s memory; the site does not upload or persist those values.</p>
                 </section>
 
@@ -41,22 +41,18 @@ export default function PrivacyPage() {
                 <section>
                     <h2>Advertising follows your choices.</h2>
                     {adsConfig.enabled ? (
-                        <p>Blog pages use Google AdSense to help support my work. Advertising compartments appear only in the blog. Moving to another section removes those compartments, but Google code already loaded during a blog visit can remain in that browser tab until a full reload or the tab closes.</p>
+                        <p>Blog pages offer optional Adsterra display advertising to help support my work. Ad scripts load only after you allow them. Moving outside the blog or withdrawing permission removes the advertising frames and stops further requests from those frames.</p>
                     ) : (
-                        <p>Google AdSense integration is being prepared. Advertising is currently disabled, and the site does not load AdSense advertising scripts in this state. The advertising information below describes what applies when serving is enabled.</p>
+                        <p>Adsterra display advertising is being prepared. Advertising is currently disabled and no advertising scripts load in this state.</p>
                     )}
-                    <p>When ads are enabled, third-party vendors, including Google, may use cookies to serve ads based on prior visits to this site or other websites. Google&apos;s advertising cookies allow it and its partners to show ads based on those visits. Other participating ad vendors may use their own cookies. Where consent is required, personalization depends on your choices.</p>
-                    <p>Google&apos;s <a href="https://policies.google.com/technologies/partner-sites" rel="noreferrer">partner-site privacy information</a> explains its data use. You can manage personalized advertising through <a href="https://myadcenter.google.com/" rel="noreferrer">Google&apos;s ad settings</a> and participating third-party advertising choices through <a href="https://optout.aboutads.info/" rel="noreferrer">YourAdChoices</a>.</p>
+                    <p>If you allow ads, Adsterra and its advertising partners receive requests that can include your IP address, browser and device details, referring site, and ad interactions. They may use cookies or similar technologies to deliver, personalize, and measure advertising. Advertiser links open websites with their own privacy policies.</p>
+                    <p>Read <a href="https://adsterra.com/privacy-policy-managed/" rel="noreferrer">Adsterra&apos;s privacy policy</a> for its description of advertising data processing and available rights.</p>
                 </section>
 
                 <section>
                     <h2>Refusing consent keeps the site accessible.</h2>
-                    {adsConfig.enabled ? (
-                        <p>Google&apos;s consent message provides the applicable choices, including consent, refusal, and managing options. You can reopen those choices through <Link href="/blog#privacy-settings">Privacy and cookie settings</Link>. Google determines whether limited or non-personalized advertising can be served under the resulting choices.</p>
-                    ) : (
-                        <p>A consent-management message will be configured before advertising is enabled. Once serving is active, Privacy and cookie settings in the blog will let you revisit the applicable choices.</p>
-                    )}
-                    <p>Declining personalization or using an adblocker does not restrict the articles. Non-personalized ads can still use cookies or similar storage where permitted, so they are not a substitute for any required consent.</p>
+                    <p>When advertising is enabled, the blog asks you to allow or decline Adsterra advertising before loading its scripts. You can revisit that choice through <Link href="/blog#privacy-settings">Privacy and cookie settings</Link>. Declining ads or using an adblocker does not restrict the articles.</p>
+                    <p>Withdrawing permission stops further requests and removes active ad frames. It cannot recall information already received by third parties or delete cookies they set; you can manage stored data through your browser and contact the relevant provider about its processing.</p>
                 </section>
 
                 <section>

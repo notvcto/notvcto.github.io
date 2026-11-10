@@ -1,37 +1,31 @@
 # Advertising setup
 
-Live advertising defaults to disabled. The publisher account is `ca-pub-7234987851785688`; the ownership meta tag and `/ads.txt` are published independently of serving. There are no production placeholder boxes while serving is disabled.
+The blog uses optional Adsterra display banners. Serving defaults to disabled. Set the GitHub Actions repository variable `NEXT_PUBLIC_ADSTERRA_ENABLED=true` and rebuild only after reviewing real creatives, tag compatibility, and the account's consent requirements. Set it to `false` and rebuild to stop serving.
 
-## Verify the site first
+Public unit keys and dimensions live in `lib/ads.ts`; the supplied tags load from `https://bauval.org/22/<key>`. No account credentials belong in source. The existing intro, article-end, index-footer, and desktop-sidebar placements remain. Native Banner, Popunder, Social Bar, and Smartlink tags are not integrated. Keep adult inventory disabled in Adsterra.
 
-Deploy the site, then add `notvc.to` in AdSense and select ownership verification using the account meta tag. Complete the account setup and request review. The privacy policy is at `https://notvc.to/privacy`.
+## Placement and lifecycle
 
-Keep Auto ads off. The application places display units explicitly; do not enable automatic placement, mobile size expansion, or filling/optimizing empty placements. Advertiser creatives retain their original appearance inside the site's labeled frames.
-Keep Google's blocking-recovery overlay off; the site uses its own optional, dismissible inline note.
+Each display tag runs inside a separate sandboxed frame so `atOptions` and `document.write` are isolated. The frame permits scripts and advertiser links in new tabs; it prohibits navigating the portfolio's top-level page. It has no same-origin access to the portfolio. Compatibility with actual provider scripts must be confirmed before enabling production; do not weaken isolation silently if a tag fails.
 
-## Prepare consent and placements
+Content placements select 468×60 or 320×50 from the usable content width, accounting for padding. The sidebar uses 300×250 and retains its existing desktop-only visibility rule. Undersized or hidden placements make no ad requests. Near-viewport frames load once per mount/selected size, stay mounted while scrolling, and are removed on route exit, withdrawal, or incompatible resize. There is no timed refresh.
 
-In AdSense Privacy & messaging, publish the applicable Google consent messages. Enable consent, refusal, and managing options; configure the European regulations message and relevant US-state privacy choices. Google's certified CMP and ad runtime determine what advertising is eligible under the reader's choices. The app does not override consent or force personalization. The blog's Privacy and cookie settings control reopens Google's message once its API is available.
+Loading an inner frame or image reveals the banner; this is not proof of paid fill. Scripts that fail or produce no detectable content within 15 seconds collapse their compartment. A frame-level fallback handles a stalled document. Network errors alone never trigger the adblock notice.
 
-Create four responsive display units and record each `data-ad-slot` value:
+## Consent and disclosures
 
-| Unit | Repository variable |
-| --- | --- |
-| Blog introduction | `NEXT_PUBLIC_ADSENSE_INTRO_SLOT` |
-| Blog article end | `NEXT_PUBLIC_ADSENSE_END_SLOT` |
-| Blog desktop sidebar | `NEXT_PUBLIC_ADSENSE_SIDEBAR_SLOT` |
-| Blog landing footer | `NEXT_PUBLIC_ADSENSE_INDEX_SLOT` |
+A first-party panel asks visitors to allow or decline Adsterra advertising before any ad requests. Both choices are available without restricting content. The versioned preference lasts up to 180 days in local storage, with an in-memory fallback. Blog privacy settings reopen it. Withdrawal removes all ad frames; it cannot delete data or cookies already held by third parties. Previous Google consent does not authorize Adsterra.
 
-These IDs and the publisher ID are public, not secrets. Configure them as GitHub Actions repository variables. `NEXT_PUBLIC_ADSENSE_CLIENT` optionally overrides the publisher ID. Set `NEXT_PUBLIC_ADSENSE_ENABLED=true` only once AdSense reports the site as Ready and consent messages are published. All four numeric slot IDs and a valid publisher ID must be present; incomplete configuration disables serving.
+This panel gates script loading; it is not a certified CMP and does not manufacture IAB consent strings. Confirm the current account/vendor requirements, including whether a supported CMP is required, before live serving. Update the disclosure or consent integration if the account requires additional purposes, vendors, or signals.
 
-Changes to repository variables require a new build/deployment. Run the Pages workflow manually after changing them. Set `NEXT_PUBLIC_ADSENSE_ENABLED=false` and rebuild to disable advertising.
+The privacy page describes Adsterra and links to its privacy policy. The old Google ownership tag, authorization entry, runtime and Funding Choices controls have been removed.
 
-## Verify without live advertising traffic
+Set `ADSTERRA_ADS_TXT` to the exact multiline seller records supplied by the account, then rebuild. Until records are supplied, `/ads.txt` contains only a comment. Do not derive seller IDs from banner keys.
 
-The standard browser checks block Google's advertising endpoints. `node scripts/check-ads.mjs` checks the disabled verification export; `node scripts/check-ads.mjs --enabled` exercises a serving-enabled export using an intercepted SDK and mocked advertiser frames. Never click a live ad during testing.
+## Checks and activation
 
-For an enabled local fixture build, set the serving flag and all four slot variables to numeric fixture values before building. Serve that export on loopback and run the enabled check, then rebuild with serving disabled before preparing the verification deployment. Test IDs must not be deployed.
+`node scripts/check-ads.mjs` checks a disabled export. For local enabled fixtures, build with `NEXT_PUBLIC_ADSTERRA_ENABLED=true`, serve the export on loopback, then run `node scripts/check-ads.mjs http://127.0.0.1:4173 --enabled`. The fixture intercepts Adsterra tags and blocks all external requests; no live ad impressions or clicks are used.
 
-Main compartments reserve 100px for the creative. The 300×250 sidebar unit appears only at 1280×900 or larger with a fine pointer. Unfilled slots below the viewport collapse; visible or already-passed slots retain their reserved space to avoid moving the reader's text. A conservative CSS-blocking probe can show one optional note; network failures, consent refusal, and unfilled inventory do not establish adblocking.
+The general browser checks explicitly block the configured banner host as well as legacy Google endpoints. If the tag host changes, update both the config/loader and request blockers.
 
-Leaving the blog removes the compartments and pending initialization work. Smooth navigation retains an already-loaded Google runtime until a full document reload. Direct visits to the portfolio, résumé, wishlist, or privacy page do not load the advertising SDK. The CMS and its private previews do not integrate this advertising runtime.
+Before live activation, confirm Adsterra permits reuse of the supplied units across the configured placements, obtain any required ads.txt lines, confirm consent requirements, and review banner appearance and advertiser navigation in a controlled preview. Never click live ads to test revenue. Rebuild with serving disabled after fixture testing. Neither the CMS nor private previews load these tags.
